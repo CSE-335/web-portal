@@ -4,11 +4,16 @@
 
 ### Team Members
 
-Ethan Reed - Team Coordinator, Full-Stack
-Natalie Parker - Team Lead, Full-Stack, Database Designer
-Arielle Talania - Full-Stack, DevOps Engineer, UI/UX Designer
-Djeinabou Bah - Team Moderator, Front-End
-Sergio Gonzalez - Back-End, Database Designer
+**Ethan Reed** - Team Coordinator, Full-Stack 
+<br>
+**Natalie Parker** - Team Lead, Full-Stack, Database Designer
+<br>
+**Arielle Talania** - Full-Stack, DevOps Engineer, UI/UX Designer
+<br>
+**Djeinabou Bah** - Team Moderator, Front-End
+<br>
+**Sergio Gonzalez** - Back-End, Database Designer
+<br>
 
 Project Description
 
