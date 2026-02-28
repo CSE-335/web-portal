@@ -32,9 +32,9 @@ Project details
 
 ### Features
 
-- [x] Feature 1
-- [x] Feature 2
-- [ ] Feature 3
+- [ ] Implementation of AI-Enhanced Learning. Students will recieve subtle help from AI that manages the difficulty scaling and student's concept regocnition.
+- [ ] Physical Mobile Sensor Integration. Games will include a feature that allows students to use their physical phone sensor data to manipulate or progress through the game.
+- [ ] Showcasing Games Through a Web Portal. Students and Educators will be able to visit a web portal that houses all games created by us.
 
 ### Software Stack / Technologies Used
 
