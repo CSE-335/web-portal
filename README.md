@@ -15,7 +15,7 @@
 **Sergio Gonzalez** - Back-End, Database Designer
 <br>
 
-Project Description
+This project focuses on the development of AI-enhanced STEM learning games for students throughout highschool and college, with a focus on integrating real-time physical mobile sensor data into web-develloped gameplay. These games aim to extend beyond the traditional educational simulations to engage students in more sophisticated, hands-on experiences, utilizing the use of AI that applies socratic questioning and tiered hints to ensure students learn intuitively at their own pace.
 
 </div>
 
