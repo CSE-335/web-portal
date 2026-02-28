@@ -1,6 +1,10 @@
 <div align="center">
 
-# Project Title
+# Spring 2026 CSE 120 - Team 335 - Advancing STEM Education via AI-Generated Games
+
+### Team Members
+
+Ethan Reed - Natalie Parker - Arielle Talania - Djeinabou Bah - Sergio Gonzalez
 
 Project Description
 
@@ -13,7 +17,9 @@ Project details
 
 ### Goals
 
-List main objectives, problems you aim to solve.
+- Create educational games that implement AI to give students a smoother learning process
+- Implement features that manipulate physical mobile sensors into web games to allow students to have more interactive experiences
+- Use AI integration to personalize student's experiences and help them learn at their own pace
 
 ### Features
 
@@ -23,10 +29,10 @@ List main objectives, problems you aim to solve.
 
 ### Software Stack / Technologies Used
 
-- Language: ...
-- Framework: ...
-- Database: ...
-- etc...
+- Language: Javascript, HTML, CSS
+- Frontend Frameworks: React, Kaplay.js, Three.js
+- Backend Frameworks: Next.js
+- Database: 
 
 ## Quickstart
 
