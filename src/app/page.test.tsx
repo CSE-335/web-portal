@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MantineProvider } from '@mantine/core';
-import Home from '../app/page';
+import Home from './page';
 
 describe('Home page', () => {
   it('renders the title', () => {

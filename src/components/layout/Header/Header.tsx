@@ -1,6 +1,6 @@
 import { Group } from "@mantine/core"
-import Navbar from "./Navbar"
-import UtilityNav from "./UtilityNav"
+import Navbar from "./Navbar/Navbar"
+import UtilityNav from "./UtilityNav/UtilityNav"
 
 export default function Header() {
   return (
