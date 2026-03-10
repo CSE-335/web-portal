@@ -16,6 +16,7 @@ type GameEmbedProps = {
           title={title}
           className="w-full border-0"
           style={{ height }}
+          allow="microphone; autoplay"
           allowFullScreen
         />
       </div>
