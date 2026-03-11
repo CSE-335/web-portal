@@ -151,6 +151,7 @@ function StemSectionRight({ title }: { title: string }) {
 }
 
 export default function HomePage() {
+
   const sonicGame = games.find(
     (game) => game.slug === "sonic-fingerprint-lab"
   );
@@ -165,12 +166,22 @@ export default function HomePage() {
         background:
           "linear-gradient(180deg, #1C1B26 0%, #282736 99.99%, #69658C 100%)",
       }}
-    >
+      >
       <Header />
 
       <main className="flex-1 pb-10">
         <HeroBanner />
-        {/* Science */} 
+
+        <div className="mt-4 flex justify-center px-4 md:px-6">
+          <Link
+            href="/alt-home"
+            className="inline-flex rounded-full bg-[#176BFF] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0f5ae0]"
+          >
+            View Alternate Homepage
+          </Link>
+        </div>
+
+        {/* Science */}
         <section className="mt-8 px-4 md:mt-10 md:px-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:gap-5">
             <div className="flex flex-col gap-4 lg:w-[42%]">
