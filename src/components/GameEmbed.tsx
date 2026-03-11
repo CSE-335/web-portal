@@ -10,7 +10,7 @@ export default function GameEmbed({
   height = "800px",
 }: GameEmbedProps) {
   return (
-    <div className="overflow-hidden rounded-[20px] bg-black/20">
+    <div className="overflow-hidden bg-black/20">
       <iframe
         src={src}
         title={title}
