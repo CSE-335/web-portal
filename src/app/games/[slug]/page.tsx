@@ -212,27 +212,10 @@ export default async function GamePage({ params }: GamePageProps) {
 
           <div className="rounded-[24px] border border-white/10 bg-[#273267]/92 p-5 shadow-[0_16px_36px_rgba(0,0,0,0.22)]">
             <h2 className="text-2xl font-extrabold">Game Description</h2>
-
             <div className="mt-4 space-y-4 text-base leading-relaxed text-white/82">
-              <p>
-                {game.title} is part of the LLNL STEM Games portal, designed to
-                make STEM learning more interactive, approachable, and engaging
-                for students.
-              </p>
-
-              <p>
-                This game focuses on <span className="font-semibold">{game.subject.toLowerCase()}</span>{" "}
-                concepts through hands-on play and guided exploration. Students
-                can experiment directly with the core ideas, build confidence
-                through repetition, and learn at their own pace in a format that
-                feels more active than a traditional worksheet or lecture.
-              </p>
-
-              <p>
-                AI-assisted feedback is intended to support understanding during
-                gameplay by helping students reflect on mistakes, recognize
-                patterns, and continue improving as they progress.
-              </p>
+              {game.longDescription.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
             </div>
           </div>
         </section>
