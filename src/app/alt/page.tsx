@@ -2,6 +2,7 @@ import Link from "next/link";
 import WelcomeBanner from "@/components/alt-home/WelcomeBanner";
 import GameListCard from "@/components/alt-home/GameListCard";
 import { games } from "@/data/games";
+import BottomButtons from "@/components/home/BottomButtons";
 
 export default function AltHomePage() {
   const randomGame = games[Math.floor(Math.random() * games.length)];
@@ -27,21 +28,7 @@ export default function AltHomePage() {
           ))}
         </section>
 
-        <section className="my-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Link
-            href={`/games/${randomGame.slug}`}
-            className="inline-flex rounded-[20px] border border-white/10 bg-white/10 px-5 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/15"
-          >
-            ⇄ Random Game
-          </Link>
-
-          <a
-            href="#top"
-            className="inline-flex rounded-[20px] bg-[#176BFF] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0f5ae0]"
-          >
-            ↑ Back to the top
-          </a>
-        </section>
+        <BottomButtons />
       </div>
     </main>
   );

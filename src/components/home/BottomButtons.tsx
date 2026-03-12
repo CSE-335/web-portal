@@ -1,18 +1,26 @@
 import { Button, Group } from "@mantine/core";
 import { BLUE_RADIAL_GRADIENT } from "@/constants/layout";
 
-export default function BottomButtons() {
+type BottomButtonsProps = {
+  random?: boolean;
+};
+
+export default function BottomButtons({ random }: BottomButtonsProps) {
   return (
     <Group justify="center" gap="md" mt={48} px="md">
-      <Button
-        size="lg"
-        radius="xl"
-        fw={700}
-        color="#525B86"
-        miw={178}
-      >
-        Random Game
-      </Button>
+      {/*hide the random button if false is passed in*/}
+      {random != false &&
+        <Button
+          size="lg"
+          radius="xl"
+          fw={700}
+          color="#525B86"
+          miw={178}
+        >
+          Random Game
+        </Button>
+      }
+
 
       <Button
         component="a"

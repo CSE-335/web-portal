@@ -5,6 +5,7 @@ import GameToolbar from "@/components/game-page/GameToolbar";
 import GameDetails from "@/components/game-page/GameDetails";
 import GameDescription from "@/components/game-page/GameDescription";
 import { getGameBySlug, games } from "@/data/games";
+import BottomButtons from "@/components/home/BottomButtons";
 
 type GamePageProps = {
   params: Promise<{
@@ -59,14 +60,7 @@ export default async function GamePage({ params }: GamePageProps) {
           <GameDescription longDescription={game.longDescription} />
         </section>
 
-        <section className="my-10 flex justify-center">
-          <a
-            href="#top"
-            className="inline-flex rounded-full bg-[#176BFF] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0f5ae0]"
-          >
-            ↑ Back to the top
-          </a>
-        </section>
+        <BottomButtons random={false} />
       </div>
     </main>
   );
