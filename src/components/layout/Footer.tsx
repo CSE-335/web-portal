@@ -11,7 +11,7 @@ const footerLinks = [
 export default function Footer() {
   return (
     <footer
-      className="mt-2 flex w-full flex-col items-center gap-5 px-4 pt-10 pb-8"
+      className="flex w-full flex-col items-center gap-5 px-4 pt-10 pb-8"
       style={{ background: "#343C61" }}
     >
       <img

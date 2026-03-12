@@ -9,12 +9,12 @@ export type GameMeta = {
   embedHeight?: string;
   featured?: boolean;
 };
-  
+
 export const games: GameMeta[] = [
   {
     slug: "matrix-meadow",
     title: "Matrix Meadow Academy",
-    subject: "Mathematics",
+    subject: "Science",
     description:
       "Practice matrix multiplication through interactive monster scaling challenges and AI-assisted feedback.",
     longDescription: [
