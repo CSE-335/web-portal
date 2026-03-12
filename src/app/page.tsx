@@ -1,154 +1,12 @@
+import Link from "next/link";
 import Header from "@/components/layout/Header/Header";
 import Footer from "@/components/layout/Footer";
-
-const CARD_GRADIENT =
-  "linear-gradient(90deg, #2A2F4E 0%, #2A305B 12.98%, #222748 100%)";
-
-function PlaceholderCard({ className = "" }: { className?: string }) {
-  return (
-    <div
-      className={`w-full rounded-[20px] ${className}`}
-      style={{ background: CARD_GRADIENT }}
-    />
-  );
-}
-
+import HeroBanner from "@/components/home/HeroBanner";
+import GameCard from "@/components/home/GameCard";
+import PlaceholderCard from "@/components/home/PlaceholderCard";
+import StemSectionLeft from "@/components/home/StemSectionLeft";
+import StemSectionRight from "@/components/home/StemSectionRight";
 import { games } from "@/data/games";
-import Link from "next/link";
-
-function GameCard({
-  title,
-  description,
-  href,
-  imageSrc,
-  className = "",
-}: {
-  title: string;
-  description: string;
-  href: string;
-  imageSrc: string;
-  className?: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className={`group relative block w-full overflow-hidden rounded-[20px] border border-white/10 ${className}`}
-      style={{ background: CARD_GRADIENT }}
-    >
-      <img
-        src={imageSrc}
-        alt={title}
-        className="h-full w-full object-cover opacity-80 transition duration-300 group-hover:scale-[1.02] group-hover:opacity-90"
-      />
-
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent p-4">
-        <h3 className="text-lg font-extrabold text-white md:text-xl">
-          {title}
-        </h3>
-        <p className="mt-1 text-sm text-white/85">{description}</p>
-      </div>
-    </Link>
-  );
-}
-
-function HeroBanner() {
-  return (
-    <section className="mt-5 px-4 md:mx-6 md:px-0">
-      <div
-        className="flex flex-col items-center gap-6 rounded-[20px] px-6 py-7 md:flex-row md:gap-8 md:px-10"
-        style={{ background: CARD_GRADIENT }}
-      >
-        <div className="flex shrink-0 items-center gap-4">
-          <img
-            src="/images/llnl-stem-logo.png"
-            alt="LLNL STEM Games Logo"
-            className="h-auto w-[90px] object-contain md:w-[139px]"
-          />
-          <h1
-            className="text-center text-xl font-extrabold leading-tight text-white md:text-[24px]"
-            style={{ textShadow: "0 2px 2px rgba(37, 61, 107, 0.72)" }}
-          >
-            Welcome to LLNL
-            <br />
-            STEM Games
-          </h1>
-        </div>
-
-        <div className="hidden h-12 w-px self-center bg-white/20 md:block" />
-
-        <div className="flex flex-1 flex-wrap justify-center gap-6 md:justify-start md:gap-8">
-          <div className="flex items-center gap-2">
-            <span className="text-lg text-white">🎮</span>
-            <span
-              className="text-sm font-extrabold text-white md:text-[20px]"
-              style={{ textShadow: "0 2px 2px rgba(37, 61, 107, 0.72)" }}
-            >
-              Interactive learning
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-lg text-white">💾</span>
-            <span
-              className="text-sm font-extrabold text-white md:text-[20px]"
-              style={{ textShadow: "0 2px 2px rgba(37, 61, 107, 0.72)" }}
-            >
-              Save your progress
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-lg text-white">💻</span>
-            <span
-              className="text-sm font-extrabold text-white md:text-[20px]"
-              style={{ textShadow: "0 2px 2px rgba(37, 61, 107, 0.72)" }}
-            >
-              Play on any device
-            </span>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function StemSectionLeft({ title }: { title: string }) {
-  return (
-    <section className="mt-8 px-4 md:mt-10 md:px-6">
-      <div className="flex flex-col gap-4 lg:flex-row lg:gap-5">
-        <div className="flex flex-col gap-4 lg:w-[42%]">
-          <h2 className="text-4xl leading-none font-extrabold text-white md:text-[48px]">
-            {title}
-          </h2>
-          <PlaceholderCard className="h-[200px] md:h-[280px] lg:h-[309px]" />
-        </div>
-
-        <div className="lg:flex-1">
-          <PlaceholderCard className="h-[250px] md:h-[340px] lg:h-[406px]" />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function StemSectionRight({ title }: { title: string }) {
-  return (
-    <section className="mt-8 px-4 md:mt-10 md:px-6">
-      <div className="flex flex-col gap-4 lg:flex-row lg:gap-5">
-        <div className="lg:flex-1">
-          <PlaceholderCard className="h-[250px] md:h-[340px] lg:h-[406px]" />
-        </div>
-
-        <div className="flex flex-col gap-4 lg:w-[42%]">
-          <h2 className="text-4xl leading-none font-extrabold text-white md:text-[48px]">
-            {title}
-          </h2>
-          <PlaceholderCard className="h-[200px] md:h-[280px] lg:h-[309px]" />
-        </div>
-      </div>
-    </section>
-  );
-}
 
 export default function HomePage() {
 
@@ -208,13 +66,13 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* BLANK for now */} 
+        {/* BLANK for now */}
         <StemSectionRight title="Technology" />
         <StemSectionLeft title="Engineering" />
 
 
 
-        {/* Math */} 
+        {/* Math */}
         <section className="mt-8 px-4 md:mt-10 md:px-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:gap-5">
             <div className="lg:flex-1">
