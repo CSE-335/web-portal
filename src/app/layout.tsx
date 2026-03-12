@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { ColorSchemeScript, MantineProvider, createTheme, mantineHtmlProps } from '@mantine/core';
 import '@mantine/core/styles.css';
 import '../styles/globals.css'
+import Header from "@/components/layout/Header/Header";
+import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -24,7 +26,11 @@ export default function RootLayout({
         <ColorSchemeScript />
       </head>
       <body className='antialiased'>
-        <MantineProvider theme={theme}>{children}</MantineProvider>
+        <MantineProvider theme={theme}>
+          <Header />
+          {children}
+          <Footer />
+        </MantineProvider>
       </body>
     </html>
   );

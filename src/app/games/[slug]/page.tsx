@@ -1,6 +1,4 @@
 import { notFound } from "next/navigation";
-import Header from "@/components/layout/Header/Header";
-import GamePageFooter from "@/components/layout/GamePageFooter";
 import GameEmbed from "@/components/GameEmbed";
 import SaveProgressBanner from "@/components/SaveProgressBanner";
 import GameToolbar from "@/components/game-page/GameToolbar";
@@ -33,8 +31,6 @@ export default async function GamePage({ params }: GamePageProps) {
       id="top"
       className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(92,100,170,0.14),_transparent_18%),linear-gradient(180deg,#23233A_0%,#1D1C28_52%,#2E335F_100%)] text-white"
     >
-      <Header />
-
       <div className="mx-auto max-w-[1180px] px-4 py-6 md:px-6">
       <section className="overflow-hidden rounded-[28px] border border-white/10 bg-[#22263F]/95 shadow-[0_18px_45px_rgba(0,0,0,0.30)]">
         <SaveProgressBanner />
@@ -72,8 +68,6 @@ export default async function GamePage({ params }: GamePageProps) {
           </a>
         </section>
       </div>
-
-      <GamePageFooter />
     </main>
   );
 }
