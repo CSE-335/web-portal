@@ -3,7 +3,7 @@ import path from 'path';
 
 const config: StorybookConfig = {
   stories: [
-    "../components/**/*.stories.@(js|jsx|mjs|ts|tsx)"
+    "../src/components/**/*.stories.@(js|jsx|mjs|ts|tsx)"
   ],
   addons: [],
   framework: "@storybook/nextjs-vite",

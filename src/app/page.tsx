@@ -1,11 +1,21 @@
-import { Button, Container, Text, Title } from "@mantine/core";
+import { Stack } from "@mantine/core";
+import WelcomeBanner from "@/components/home/WelcomeBanner";
+import GameListCard from "@/components/home/GameListCard";
+import BottomButtons from "@/components/layout/BottomButtons";
+import { games } from "@/data/games";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <Container py="xl">
-      <Title>CSE 335</Title>
-      <Text mt="md">Welcome to the CSE 335 project.</Text>
-      <Button mt="xl">Get Started</Button>
-    </Container>
+    <main>
+      <WelcomeBanner />
+
+      <Stack gap="lg" className="flex-1">
+        {games.map((game) => (
+          <GameListCard key={game.slug} {...game} />
+        ))}
+      </Stack>
+
+      <BottomButtons />
+    </main>
   );
 }
