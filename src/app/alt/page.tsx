@@ -1,18 +1,19 @@
 import { Stack } from "@mantine/core";
-import WelcomeBanner from "@/components/alt-home/WelcomeBanner";
-import GameListCard from "@/components/alt-home/GameListCard";
-import { games } from "@/data/games";
-import BottomButtons from "@/components/home/BottomButtons";
+import WelcomeBanner from "@/components/home/WelcomeBanner";
+import StemSection from "@/components/home/alt/StemSection";
+import BottomButtons from "@/components/layout/BottomButtons";
+
 
 export default function AltHomePage() {
   return (
     <main>
       <WelcomeBanner />
 
-      <Stack gap="lg" className="flex-1">
-        {games.map((game) => (
-          <GameListCard key={game.slug} {...game} />
-        ))}
+      <Stack gap={0}>
+        <StemSection subject="Science" />
+        <StemSection subject="Technology" titlePosition="right" />
+        <StemSection subject="Engineering" />
+        <StemSection subject="Mathematics" titlePosition="right" />
       </Stack>
 
       <BottomButtons />

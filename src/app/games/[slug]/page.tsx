@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
-import GamePlayer from "@/components/game-page/GamePlayer";
+import GamePlayer from "@/components/game-page/player/GamePlayer";
 import GameDetails from "@/components/game-page/GameDetails";
 import GameDescription from "@/components/game-page/GameDescription";
 import { Stack } from "@mantine/core";
 import { getGameBySlug, games } from "@/data/games";
-import BottomButtons from "@/components/home/BottomButtons";
+import BottomButtons from "@/components/layout/BottomButtons";
 
 export async function generateStaticParams() {
   return games.map((game) => ({

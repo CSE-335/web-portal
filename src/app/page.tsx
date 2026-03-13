@@ -1,18 +1,18 @@
 import { Stack } from "@mantine/core";
-import HeroBanner from "@/components/home/HeroBanner";
-import StemSection from "@/components/home/StemSection";
-import BottomButtons from "@/components/home/BottomButtons";
+import WelcomeBanner from "@/components/home/WelcomeBanner";
+import GameListCard from "@/components/home/GameListCard";
+import BottomButtons from "@/components/layout/BottomButtons";
+import { games } from "@/data/games";
 
 export default function HomePage() {
   return (
     <main>
-      <HeroBanner />
+      <WelcomeBanner />
 
-      <Stack gap={0}>
-        <StemSection subject="Science" />
-        <StemSection subject="Technology" titlePosition="right" />
-        <StemSection subject="Engineering" />
-        <StemSection subject="Mathematics" titlePosition="right" />
+      <Stack gap="lg" className="flex-1">
+        {games.map((game) => (
+          <GameListCard key={game.slug} {...game} />
+        ))}
       </Stack>
 
       <BottomButtons />

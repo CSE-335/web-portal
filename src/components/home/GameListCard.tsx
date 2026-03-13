@@ -25,7 +25,7 @@ export default function GameListCard({
             alt={`${title} cover`}
             width={900}
             height={520}
-            className="h-full min-h-[220px] w-full object-cover"
+            className="h-full min-h-55 w-full object-cover"
           />
         </div>
 

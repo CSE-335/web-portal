@@ -20,13 +20,13 @@ export default function RootLayout({
   return (
     <html lang="en" {...mantineHtmlProps}>
       <head>
-        <ColorSchemeScript />
+        <ColorSchemeScript forceColorScheme="dark" />
       </head>
       <body
-        className='antialiased min-h-screen text-white'
+        className='antialiased min-h-screen'
         style={{ background: ALT_PAGE_BACKGROUND_GRADIENT }}
       >
-        <MantineProvider theme={defaultTheme}>
+        <MantineProvider theme={defaultTheme} forceColorScheme="dark">
           <Header />
           <Container mih="100vh">
             {children}

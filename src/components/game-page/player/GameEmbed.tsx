@@ -1,3 +1,5 @@
+import { Box } from "@mantine/core";
+
 type GameEmbedProps = {
   src: string;
   title: string;
@@ -10,15 +12,14 @@ export default function GameEmbed({
   height = "800px",
 }: GameEmbedProps) {
   return (
-    <div className="overflow-hidden bg-black/20">
+    <Box style={{ overflow: "hidden", background: "rgba(0,0,0,0.2)" }}>
       <iframe
         src={src}
         title={title}
-        className="block w-full border-0"
-        style={{ height }}
+        style={{ display: "block", width: "100%", height, border: 0 }}
         allow="microphone; autoplay"
         allowFullScreen
       />
-    </div>
+    </Box>
   );
 }

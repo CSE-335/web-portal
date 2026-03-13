@@ -10,7 +10,7 @@ export default function WelcomeBanner() {
             alt="LLNL STEM Games logo"
             width={120}
             height={120}
-            className="h-auto w-[80px] md:w-[96px]"
+            className="h-auto w-20 md:w-24"
             priority
           />
           <div>

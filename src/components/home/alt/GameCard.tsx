@@ -32,7 +32,7 @@ export default function GameCard({
         className="object-cover opacity-80 transition duration-300 group-hover:scale-[1.02] group-hover:opacity-90"
       />
 
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent p-4">
+      <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/85 via-black/45 to-transparent p-4">
         <h3 className="text-lg font-extrabold text-white md:text-xl">
           {title}
         </h3>

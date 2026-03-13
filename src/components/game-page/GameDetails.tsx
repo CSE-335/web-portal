@@ -1,46 +1,28 @@
+import { Paper, Title, SimpleGrid, Text } from "@mantine/core";
+import { CARD_PANEL_STYLE } from "@/constants/layout";
+import DetailCard from "./DetailCard";
+
 type GameDetailsProps = {
   subject: string;
   description: string;
 };
 
-export default function GameDetails({
-  subject,
-  description,
-}: GameDetailsProps) {
+export default function GameDetails({ subject, description }: GameDetailsProps) {
   return (
-    <div className="rounded-[24px] border border-white/10 bg-[#273267]/92 p-5 shadow-[0_16px_36px_rgba(0,0,0,0.22)]">
-      <h2 className="text-2xl font-extrabold">Game Details</h2>
+    <Paper radius={24} p="lg" style={CARD_PANEL_STYLE}>
+      <Title order={2} fz="h3">
+        Game Details
+      </Title>
 
-      <div className="mt-4 grid gap-4 md:grid-cols-3">
-        <div className="rounded-[20px] border border-white/10 bg-white/5 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-white/50">
-            Subject
-          </p>
-          <p className="mt-2 text-base font-semibold text-white">{subject}</p>
-        </div>
+      <SimpleGrid cols={{ base: 1, md: 3 }} spacing="md" mt="md">
+        <DetailCard label="Subject" value={subject} />
+        <DetailCard label="Play Style" value="Interactive web game" />
+        <DetailCard label="Access" value="Browser-based, no download required" />
+      </SimpleGrid>
 
-        <div className="rounded-[20px] border border-white/10 bg-white/5 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-white/50">
-            Play Style
-          </p>
-          <p className="mt-2 text-base font-semibold text-white">
-            Interactive web game
-          </p>
-        </div>
-
-        <div className="rounded-[20px] border border-white/10 bg-white/5 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-white/50">
-            Access
-          </p>
-          <p className="mt-2 text-base font-semibold text-white">
-            Browser-based, no download required
-          </p>
-        </div>
-      </div>
-
-      <p className="mt-5 text-base leading-relaxed text-white/85">
+      <Text fz="md" lh={1.6} c="rgba(255,255,255,0.85)" mt="lg">
         {description}
-      </p>
-    </div>
+      </Text>
+    </Paper>
   );
 }

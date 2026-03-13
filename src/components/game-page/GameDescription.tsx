@@ -1,3 +1,6 @@
+import { Paper, Title, Stack, Text } from "@mantine/core";
+import { CARD_PANEL_STYLE } from "@/constants/layout";
+
 type GameDescriptionProps = {
   longDescription: string[];
 };
@@ -6,13 +9,18 @@ export default function GameDescription({
   longDescription,
 }: GameDescriptionProps) {
   return (
-    <div className="rounded-[24px] border border-white/10 bg-[#273267]/92 p-5 shadow-[0_16px_36px_rgba(0,0,0,0.22)]">
-      <h2 className="text-2xl font-extrabold">Game Description</h2>
-      <div className="mt-4 space-y-4 text-base leading-relaxed text-white/82">
+    <Paper radius={24} p="lg" style={CARD_PANEL_STYLE}>
+      <Title order={2} fz="h3">
+        Game Description
+      </Title>
+
+      <Stack gap="md" mt="md">
         {longDescription.map((paragraph) => (
-          <p key={paragraph}>{paragraph}</p>
+          <Text key={paragraph} fz="md" lh={1.6} c="rgba(255,255,255,0.82)">
+            {paragraph}
+          </Text>
         ))}
-      </div>
-    </div>
+      </Stack>
+    </Paper>
   );
 }
