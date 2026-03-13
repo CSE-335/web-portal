@@ -27,10 +27,7 @@ export default function StemSection({
         <Stack gap="md" w={{ lg: "42%" }}>
           <Title
             order={2}
-            c="white"
-            fw={800}
             fz={{ base: 36, md: 48 }}
-            lh={1}
           >
             {subject}
           </Title>

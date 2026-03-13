@@ -12,8 +12,6 @@ export default function BottomButtons({ random }: BottomButtonsProps) {
       {random != false &&
         <Button
           size="lg"
-          radius="xl"
-          fw={700}
           color="#525B86"
           miw={178}
         >
@@ -21,13 +19,10 @@ export default function BottomButtons({ random }: BottomButtonsProps) {
         </Button>
       }
 
-
       <Button
         component="a"
         href="#top"
         size="lg"
-        radius="xl"
-        fw={700}
         miw={185}
         style={{ background: BLUE_RADIAL_GRADIENT }}
       >

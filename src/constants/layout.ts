@@ -6,3 +6,6 @@ export const BLUE_RADIAL_GRADIENT =
 
 export const PAGE_BACKGROUND_GRADIENT =
   "linear-gradient(180deg, #1C1B26 0%, #282736 99.99%, #69658C 100%)";
+
+export const ALT_PAGE_BACKGROUND_GRADIENT =
+  "radial-gradient(circle at top, rgba(92,100,170,0.16), transparent 18%), linear-gradient(180deg, #23233A 0%, #1D1C28 52%, #2E335F 100%)";
