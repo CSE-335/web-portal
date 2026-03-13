@@ -1,0 +1,49 @@
+import { notFound } from "next/navigation";
+import GamePlayer from "@/components/game-page/player/GamePlayer";
+import GameDetails from "@/components/game-page/GameDetails";
+import GameDescription from "@/components/game-page/GameDescription";
+import { Stack } from "@mantine/core";
+import { getGameBySlug, games } from "@/data/games";
+import BottomButtons from "@/components/layout/BottomButtons";
+
+export async function generateStaticParams() {
+  return games.map((game) => ({
+    slug: game.slug,
+  }));
+}
+
+type GamePageProps = {
+  params: Promise<{
+    slug: string;
+  }>;
+};
+
+export default async function GamePage({ params }: GamePageProps) {
+  const { slug } = await params;
+  const game = getGameBySlug(slug);
+
+  if (!game) {
+    notFound();
+  }
+
+  return (
+    <main>
+      <GamePlayer
+        title={game.title}
+        subject={game.subject}
+        iframeSrc={game.iframeSrc}
+        embedHeight={game.embedHeight}
+      />
+
+      <Stack component="section" gap="lg" mt="lg">
+        <GameDetails
+          subject={game.subject}
+          description={game.description}
+        />
+        <GameDescription longDescription={game.longDescription} />
+      </Stack>
+
+      <BottomButtons random={false} />
+    </main>
+  );
+}
