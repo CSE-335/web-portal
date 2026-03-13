@@ -1,8 +1,12 @@
-import Link from "next/link";
 import { Group, ActionIcon, Button } from "@mantine/core";
 import { BLUE_RADIAL_GRADIENT } from "@/constants/layout";
 
-export default function UtilityNav() {
+interface UtilityNavProps {
+  loginModalOpened: boolean;
+  setLoginModalOpened: (opened: boolean) => void;
+}
+
+export default function UtilityNav({ loginModalOpened, setLoginModalOpened }: UtilityNavProps) {
   return (
     <Group gap="sm" wrap="nowrap" ml="auto">
       <ActionIcon
@@ -16,8 +20,7 @@ export default function UtilityNav() {
       </ActionIcon>
 
       <Button
-        component={Link}
-        href="/login"
+        onClick={() => setLoginModalOpened(true)}
         size="md"
         style={{ background: BLUE_RADIAL_GRADIENT }}
       >

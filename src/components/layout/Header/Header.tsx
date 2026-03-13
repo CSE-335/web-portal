@@ -6,9 +6,12 @@ import { Group } from "@mantine/core";
 import LogoBrand from "@/components/layout/LogoBrand";
 import SearchBar from "./SearchBar";
 import UtilityNav from "./UtilityNav/UtilityNav";
+import LoginPopup from "@/components/LoginPopup";
+
 
 export default function Header() {
   const [searchValue, setSearchValue] = useState("");
+  const [loginModalOpened, setLoginModalOpened] = useState(false);
 
   return (
     <Group
@@ -32,7 +35,15 @@ export default function Header() {
         onChange={(e) => setSearchValue(e.target.value)}
       />
 
-      <UtilityNav />
+      <UtilityNav 
+        loginModalOpened={loginModalOpened}
+        setLoginModalOpened={setLoginModalOpened}
+      />
+
+      <LoginPopup
+        opened={loginModalOpened}
+        onClose={() => setLoginModalOpened(false)}
+      />
     </Group>
   );
 }
