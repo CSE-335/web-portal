@@ -13,27 +13,37 @@ import {
   Paper,
 } from "@mantine/core";
 
+// Updated for Dark Mode
 const inputStyles = {
   label: {
     marginBottom: 8,
-    color: "#111827",
+    color: "#E9ECEF", // Light grey for readability
     fontSize: "16px",
     fontWeight: 600,
   },
   input: {
-    backgroundColor: "#FFFFFF",
-    border: "1px solid #D1D5DB",
-    color: "#111827",
+    backgroundColor: "#25262B", // Deep slate
+    border: "1px solid #373A40", // Subtle border
+    color: "#C1C2C5",
     minHeight: "48px",
     borderRadius: "10px",
+    "&:focus": {
+      borderColor: "#4C6EF5",
+    },
   },
 };
 
 const textareaStyles = {
+  label: {
+    marginBottom: 8,
+    color: "#E9ECEF",
+    fontSize: "16px",
+    fontWeight: 600,
+  },
   input: {
-    backgroundColor: "#FFFFFF",
-    border: "1px solid #D1D5DB",
-    color: "#111827",
+    backgroundColor: "#25262B",
+    border: "1px solid #373A40",
+    color: "#C1C2C5",
     borderRadius: "10px",
     lineHeight: 1.6,
   },
@@ -68,39 +78,19 @@ export default function FeedbackPage() {
     try {
       const response = await fetch("/api/feedback", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name,
-          email,
-          issues,
-          futureIdeas,
-          returnLikelihood,
-          comments,
+          name, email, issues, futureIdeas, returnLikelihood, comments,
         }),
       });
 
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to submit feedback.");
-      }
+      if (!response.ok) throw new Error(data.error || "Failed to submit feedback.");
 
       setSuccess("Thanks for your feedback!");
-
-      setName("");
-      setEmail("");
-      setIssues("");
-      setFutureIdeas("");
-      setReturnLikelihood("");
-      setComments("");
+      setName(""); setEmail(""); setIssues(""); setFutureIdeas(""); setReturnLikelihood(""); setComments("");
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Something went wrong, please try again."
-      );
+      setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
       setLoading(false);
     }
@@ -109,7 +99,7 @@ export default function FeedbackPage() {
   return (
     <div
       style={{
-        background: "linear-gradient(180deg, #2F356B 0%, #29315F 100%)",
+        background: "#141517", // Solid deep dark background
         minHeight: "100vh",
         paddingTop: "48px",
         paddingBottom: "72px",
@@ -122,7 +112,7 @@ export default function FeedbackPage() {
               <Title
                 order={1}
                 style={{
-                  color: "white",
+                  color: "#FFFFFF",
                   fontSize: "48px",
                   fontWeight: 700,
                   marginBottom: "10px",
@@ -131,36 +121,22 @@ export default function FeedbackPage() {
               >
                 Website Feedback Form
               </Title>
-
-              <div
-                style={{
-                  width: "100%",
-                  height: "1px",
-                  backgroundColor: "rgba(255,255,255,0.22)",
-                }}
-              />
+              <div style={{ width: "100%", height: "1px", backgroundColor: "#2C2E33" }} />
             </Box>
 
             <Paper
-              shadow="sm"
+              shadow="xl"
               radius="md"
               style={{
-                backgroundColor: "#F8FAFC",
-                border: "1px solid #D1D5DB",
+                backgroundColor: "#1A1B1E", // Slightly lighter than background to create elevation
+                border: "1px solid #2C2E33",
                 padding: "24px 28px",
               }}
             >
               <Stack gap="xl">
-                <Text
-                  style={{
-                    color: "#374151",
-                    fontSize: "16px",
-                    lineHeight: 1.8,
-                  }}
-                >
-                  We’d love to hear your thoughts. Your feedback helps us improve
-                  the website, refine the games, and build a better experience
-                  for future users.
+                <Text style={{ color: "#909296", fontSize: "16px", lineHeight: 1.8 }}>
+                  We’d love to hear your thoughts. Your feedback helps us improve the website, 
+                  refine the games, and build a better experience for future users.
                 </Text>
 
                 <div
@@ -173,20 +149,7 @@ export default function FeedbackPage() {
                   <TextInput
                     value={name}
                     onChange={(e) => setName(e.currentTarget.value)}
-                    label={
-                      <>
-                        Name{" "}
-                        <span
-                          style={{
-                            color: "#6B7280",
-                            fontWeight: 400,
-                            marginLeft: 6,
-                          }}
-                        >
-                          optional
-                        </span>
-                      </>
-                    }
+                    label={<Text size="sm" fw={600} c="gray.3">Name <span style={{ color: "#5C5F66", fontWeight: 400 }}>optional</span></Text>}
                     styles={inputStyles}
                   />
 
@@ -194,88 +157,34 @@ export default function FeedbackPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.currentTarget.value)}
-                    label={
-                      <>
-                        Email{" "}
-                        <span
-                          style={{
-                            color: "#6B7280",
-                            fontWeight: 400,
-                            marginLeft: 6,
-                          }}
-                        >
-                          optional
-                        </span>
-                      </>
-                    }
+                    label={<Text size="sm" fw={600} c="gray.3">Email <span style={{ color: "#5C5F66", fontWeight: 400 }}>optional</span></Text>}
                     styles={inputStyles}
                   />
                 </div>
 
                 <Stack gap="xs">
-                  <Text
-                    style={{
-                      color: "#111827",
-                      fontSize: "16px",
-                      fontWeight: 600,
-                    }}
-                  >
-                    What problems or issues did you experience while using the
-                    website or playing the games?
-                  </Text>
-
+                  <Text fw={600} c="gray.3">What problems did you experience?</Text>
                   <Textarea
                     value={issues}
                     onChange={(e) => setIssues(e.currentTarget.value)}
-                    minRows={7}
+                    minRows={5}
                     autosize
                     required
                     styles={textareaStyles}
                   />
                 </Stack>
 
-                <Stack gap="xs">
-                  <Text
-                    style={{
-                      color: "#111827",
-                      fontSize: "16px",
-                      fontWeight: 600,
-                    }}
-                  >
-                    What features or games would you like to see in the future?
-                  </Text>
-
-                  <Textarea
-                    value={futureIdeas}
-                    onChange={(e) => setFutureIdeas(e.currentTarget.value)}
-                    minRows={6}
-                    autosize
-                    styles={textareaStyles}
-                  />
-                </Stack>
-
                 <Stack gap="sm">
-                  <Text
-                    style={{
-                      color: "#111827",
-                      fontSize: "16px",
-                      fontWeight: 600,
-                    }}
-                  >
-                    What is the likelihood that you will return to this site?
-                  </Text>
-
+                  <Text fw={600} c="gray.3">Likelihood of returning?</Text>
                   <div
                     style={{
                       display: "grid",
-                      gridTemplateColumns:
-                        "repeat(auto-fit, minmax(130px, 1fr))",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
                       gap: "12px",
                     }}
                   >
                     {likelihoodOptions.map((label) => {
                       const selected = returnLikelihood === label;
-
                       return (
                         <label
                           key={label}
@@ -283,16 +192,12 @@ export default function FeedbackPage() {
                             display: "flex",
                             flexDirection: "column",
                             alignItems: "center",
-                            justifyContent: "center",
                             gap: "10px",
                             padding: "16px 12px",
                             borderRadius: "12px",
-                            border: selected
-                              ? "2px solid #4C6EF5"
-                              : "1px solid #D1D5DB",
-                            backgroundColor: selected ? "#EEF2FF" : "#FFFFFF",
+                            border: selected ? "2px solid #4C6EF5" : "1px solid #373A40",
+                            backgroundColor: selected ? "rgba(76, 110, 245, 0.1)" : "#25262B",
                             cursor: "pointer",
-                            textAlign: "center",
                             transition: "all 0.2s ease",
                           }}
                         >
@@ -301,23 +206,10 @@ export default function FeedbackPage() {
                             name="returnLikelihood"
                             value={label}
                             checked={selected}
-                            onChange={(e) =>
-                              setReturnLikelihood(e.target.value)
-                            }
-                            style={{
-                              width: "18px",
-                              height: "18px",
-                              accentColor: "#4C6EF5",
-                            }}
+                            onChange={(e) => setReturnLikelihood(e.target.value)}
+                            style={{ accentColor: "#4C6EF5" }}
                           />
-                          <span
-                            style={{
-                              color: "#111827",
-                              fontSize: "14px",
-                              fontWeight: selected ? 600 : 500,
-                              lineHeight: 1.4,
-                            }}
-                          >
+                          <span style={{ color: selected ? "#74C0FC" : "#C1C2C5", fontSize: "14px", fontWeight: selected ? 600 : 500 }}>
                             {label}
                           </span>
                         </label>
@@ -326,55 +218,14 @@ export default function FeedbackPage() {
                   </div>
                 </Stack>
 
-                <Stack gap="xs">
-                  <Text
-                    style={{
-                      color: "#111827",
-                      fontSize: "16px",
-                      fontWeight: 600,
-                    }}
-                  >
-                    Please provide additional comments or questions.{" "}
-                    <span style={{ color: "#6B7280", fontWeight: 400 }}>
-                      optional
-                    </span>
-                  </Text>
-
-                  <Textarea
-                    value={comments}
-                    onChange={(e) => setComments(e.currentTarget.value)}
-                    minRows={6}
-                    autosize
-                    styles={textareaStyles}
-                  />
-                </Stack>
-
                 {error && (
-                  <Text
-                    style={{
-                      color: "#B91C1C",
-                      backgroundColor: "#FEE2E2",
-                      border: "1px solid #FCA5A5",
-                      padding: "12px 14px",
-                      borderRadius: "10px",
-                      fontSize: "15px",
-                    }}
-                  >
+                  <Text style={{ color: "#FF8787", backgroundColor: "rgba(255, 135, 135, 0.1)", border: "1px solid #C92A2A", padding: "12px", borderRadius: "10px" }}>
                     {error}
                   </Text>
                 )}
 
                 {success && (
-                  <Text
-                    style={{
-                      color: "#166534",
-                      backgroundColor: "#DCFCE7",
-                      border: "1px solid #86EFAC",
-                      padding: "12px 14px",
-                      borderRadius: "10px",
-                      fontSize: "15px",
-                    }}
-                  >
+                  <Text style={{ color: "#8ce99a", backgroundColor: "rgba(43, 138, 62, 0.1)", border: "1px solid #2b8a3e", padding: "12px", borderRadius: "10px" }}>
                     {success}
                   </Text>
                 )}
@@ -383,15 +234,9 @@ export default function FeedbackPage() {
                   <Button
                     type="submit"
                     loading={loading}
+                    size="md"
                     radius="md"
-                    style={{
-                      backgroundColor: "#4C6EF5",
-                      color: "white",
-                      border: "none",
-                      paddingInline: "22px",
-                      height: "42px",
-                      fontWeight: 600,
-                    }}
+                    style={{ backgroundColor: "#4C6EF5", fontWeight: 600 }}
                   >
                     Submit Feedback
                   </Button>
