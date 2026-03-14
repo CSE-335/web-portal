@@ -106,7 +106,7 @@ export default function AboutPage() {
           <Stack gap="md">
             <Text
               style={{
-                color: "#111827",
+                color: "#white",
                 fontSize: "26px",
                 fontWeight: 500,
               }}
