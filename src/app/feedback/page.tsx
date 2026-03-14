@@ -1,4 +1,4 @@
-import { Container, Stack, Title, Text, TextInput, Textarea, SimpleGrid, Radio, Group, Divider, Button } from "@mantine/core";
+import { Container, Stack, Title, Text, TextInput, Textarea, Button, Box } from "@mantine/core";
 
 export default function FeedbackPage() {
   return (
@@ -13,22 +13,35 @@ export default function FeedbackPage() {
       <Container size="lg">
         <form>
           <Stack gap="xl">
-            <Stack gap="xs">
+            <Box>
               <Title
                 order={1}
                 style={{
                   color: "#111827",
                   fontSize: "56px",
                   fontWeight: 500,
+                  marginBottom: "8px",
                 }}
               >
                 Website Feedback Form
               </Title>
 
-              <Divider color="#4B5563" />
-            </Stack>
+              <div
+                style={{
+                  width: "100%",
+                  height: "1px",
+                  backgroundColor: "#4B5563",
+                }}
+              />
+            </Box>
 
-            <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "16px",
+              }}
+            >
               <TextInput
                 label={
                   <span style={{ color: "#111827", fontSize: "18px", fontWeight: 600 }}>
@@ -38,7 +51,6 @@ export default function FeedbackPage() {
                     </span>
                   </span>
                 }
-                placeholder=""
                 styles={{
                   label: {
                     marginBottom: 8,
@@ -61,7 +73,6 @@ export default function FeedbackPage() {
                     </span>
                   </span>
                 }
-                placeholder=""
                 styles={{
                   label: {
                     marginBottom: 8,
@@ -74,7 +85,7 @@ export default function FeedbackPage() {
                   },
                 }}
               />
-            </SimpleGrid>
+            </div>
 
             <Stack gap="xs">
               <Text
@@ -133,99 +144,47 @@ export default function FeedbackPage() {
                 What is the likelihood that you will return to this site?
               </Text>
 
-              <Radio.Group name="returnLikelihood">
-                <Group justify="space-between" wrap="nowrap" align="flex-start">
-                  <Stack align="center" gap={8}>
-                    <Radio
-                      value="very-unlikely"
-                      styles={{
-                        radio: {
-                          width: 28,
-                          height: 28,
-                          border: "2px solid #9CA3AF",
-                          backgroundColor: "#F3F4F6",
-                        },
-                        body: { alignItems: "center" },
-                        labelWrapper: { display: "none" },
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  gap: "16px",
+                  flexWrap: "wrap",
+                }}
+              >
+                {[
+                  "Very Unlikely",
+                  "Unlikely",
+                  "Not Sure",
+                  "Likely",
+                  "Very Likely",
+                ].map((label) => (
+                  <label
+                    key={label}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: "8px",
+                      color: "#111827",
+                      fontSize: "16px",
+                      cursor: "pointer",
+                      minWidth: "120px",
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="returnLikelihood"
+                      value={label}
+                      style={{
+                        width: "28px",
+                        height: "28px",
                       }}
                     />
-                    <Text style={{ color: "#111827", fontSize: "16px" }}>Very Unlikely</Text>
-                  </Stack>
-
-                  <Stack align="center" gap={8}>
-                    <Radio
-                      value="unlikely"
-                      styles={{
-                        radio: {
-                          width: 28,
-                          height: 28,
-                          border: "2px solid #9CA3AF",
-                          backgroundColor: "#F3F4F6",
-                        },
-                        body: { alignItems: "center" },
-                        labelWrapper: { display: "none" },
-                      }}
-                    />
-                    <Text style={{ color: "#111827", fontSize: "16px" }}>Unlikely</Text>
-                  </Stack>
-
-                  <Stack align="center" gap={8}>
-                    <Radio
-                      value="not-sure"
-                      styles={{
-                        radio: {
-                          width: 28,
-                          height: 28,
-                          border: "2px solid #9CA3AF",
-                          backgroundColor: "#F3F4F6",
-                        },
-                        body: { alignItems: "center" },
-                        labelWrapper: { display: "none" },
-                      }}
-                    />
-                    <Text style={{ color: "#111827", fontSize: "16px" }}>Not Sure</Text>
-                  </Stack>
-
-                  <Stack align="center" gap={8}>
-                    <Radio
-                      value="likely"
-                      styles={{
-                        radio: {
-                          width: 28,
-                          height: 28,
-                          border: "2px solid #9CA3AF",
-                          backgroundColor: "#F3F4F6",
-                        },
-                        body: { alignItems: "center" },
-                        labelWrapper: { display: "none" },
-                      }}
-                    />
-                    <Text style={{ color: "#111827", fontSize: "16px" }}>Likely</Text>
-                  </Stack>
-
-                  <Stack align="center" gap={8}>
-                    <Radio
-                      value="very-likely"
-                      defaultChecked
-                      styles={{
-                        radio: {
-                          width: 28,
-                          height: 28,
-                          border: "2px solid #9CA3AF",
-                          backgroundColor: "#F3F4F6",
-                        },
-                        icon: {
-                          width: 18,
-                          height: 18,
-                        },
-                        body: { alignItems: "center" },
-                        labelWrapper: { display: "none" },
-                      }}
-                    />
-                    <Text style={{ color: "#111827", fontSize: "16px" }}>Very Likely</Text>
-                  </Stack>
-                </Group>
-              </Radio.Group>
+                    <span>{label}</span>
+                  </label>
+                ))}
+              </div>
             </Stack>
 
             <Stack gap="xs">
@@ -252,7 +211,7 @@ export default function FeedbackPage() {
               />
             </Stack>
 
-            <Group justify="flex-end">
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
               <Button
                 type="submit"
                 style={{
@@ -263,7 +222,7 @@ export default function FeedbackPage() {
               >
                 Submit
               </Button>
-            </Group>
+            </div>
           </Stack>
         </form>
       </Container>
