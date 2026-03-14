@@ -131,7 +131,7 @@ export default function LoginPopup({ opened, onClose }: LoginPopupProps) {
             />
             <Group gap="xl" grow>
               <Text size="sm" c="#9CA3AF">
-                Don't have an account?{" "}
+                Don&apos;t have an account?{" "}
                 <Text
                   component="button"
                   c="#2B80FF"
