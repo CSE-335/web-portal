@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { createClient } from "../../../../utils/supabase/server";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { games } from "@/data/games";
 
 // Call to add games to database.
 
 export async function GET() {
-  const supabase = await createClient();
+  const supabase = createServerSupabaseClient();
 
   const mappedGames = games.map((game) => ({
     slug: game.slug,
