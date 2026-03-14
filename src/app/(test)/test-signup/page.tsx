@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { SignUpTestForm } from "./SignUpTestForm";
 
 export default function TestSignUpPage() {
@@ -7,7 +8,10 @@ export default function TestSignUpPage() {
       <p className="mb-6 text-white/70">
         Use this page to test sign-up and error messages.
       </p>
-      <SignUpTestForm />
+
+      <Suspense fallback={<p className="text-white/70">Loading form...</p>}>
+        <SignUpTestForm />
+      </Suspense>
     </main>
   );
 }
