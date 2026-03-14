@@ -1,6 +1,74 @@
-import { Container, Stack, Title, Text, TextInput, Textarea, Button, Box } from "@mantine/core";
+"use client";
+
+import { useState } from "react";
+import {
+  Container,
+  Stack,
+  Title,
+  Text,
+  TextInput,
+  Textarea,
+  Button,
+  Box,
+} from "@mantine/core";
 
 export default function FeedbackPage() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [issues, setIssues] = useState("");
+  const [futureIdeas, setFutureIdeas] = useState("");
+  const [returnLikelihood, setReturnLikelihood] = useState("");
+  const [comments, setComments] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+    setSuccess("");
+    setError("");
+
+    try {
+      const response = await fetch("/api/feedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          issues,
+          futureIdeas,
+          returnLikelihood,
+          comments,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to submit feedback.");
+      }
+
+      setSuccess("Feedback submitted successfully.");
+
+      setName("");
+      setEmail("");
+      setIssues("");
+      setFutureIdeas("");
+      setReturnLikelihood("");
+      setComments("");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Something went wrong."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div
       style={{
@@ -11,13 +79,13 @@ export default function FeedbackPage() {
       }}
     >
       <Container size="lg">
-        <form>
+        <form onSubmit={handleSubmit}>
           <Stack gap="xl">
             <Box>
               <Title
                 order={1}
                 style={{
-                  color: "#111827",
+                  color: "white",
                   fontSize: "56px",
                   fontWeight: 500,
                   marginBottom: "8px",
@@ -38,15 +106,25 @@ export default function FeedbackPage() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
                 gap: "16px",
               }}
             >
               <TextInput
+                value={name}
+                onChange={(e) => setName(e.currentTarget.value)}
                 label={
-                  <span style={{ color: "white", fontSize: "18px", fontWeight: 600 }}>
+                  <span
+                    style={{ color: "white", fontSize: "18px", fontWeight: 600 }}
+                  >
                     Name{" "}
-                    <span style={{ color: "#6B7280", fontWeight: 400, marginLeft: "8px" }}>
+                    <span
+                      style={{
+                        color: "#9CA3AF",
+                        fontWeight: 400,
+                        marginLeft: "8px",
+                      }}
+                    >
                       optional
                     </span>
                   </span>
@@ -65,10 +143,21 @@ export default function FeedbackPage() {
               />
 
               <TextInput
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.currentTarget.value)}
                 label={
-                  <span style={{ color: "#111827", fontSize: "18px", fontWeight: 600 }}>
+                  <span
+                    style={{ color: "white", fontSize: "18px", fontWeight: 600 }}
+                  >
                     Email{" "}
-                    <span style={{ color: "#6B7280", fontWeight: 400, marginLeft: "8px" }}>
+                    <span
+                      style={{
+                        color: "#9CA3AF",
+                        fontWeight: 400,
+                        marginLeft: "8px",
+                      }}
+                    >
                       optional
                     </span>
                   </span>
@@ -94,13 +183,16 @@ export default function FeedbackPage() {
                   fontSize: "18px",
                 }}
               >
-                What problems or issues did you experience while using the website or
-                playing the games?
+                What problems or issues did you experience while using the website
+                or playing the games?
               </Text>
 
               <Textarea
+                value={issues}
+                onChange={(e) => setIssues(e.currentTarget.value)}
                 minRows={8}
                 autosize
+                required
                 styles={{
                   input: {
                     backgroundColor: "#F3F4F6",
@@ -122,6 +214,8 @@ export default function FeedbackPage() {
               </Text>
 
               <Textarea
+                value={futureIdeas}
+                onChange={(e) => setFutureIdeas(e.currentTarget.value)}
                 minRows={8}
                 autosize
                 styles={{
@@ -176,6 +270,8 @@ export default function FeedbackPage() {
                       type="radio"
                       name="returnLikelihood"
                       value={label}
+                      checked={returnLikelihood === label}
+                      onChange={(e) => setReturnLikelihood(e.target.value)}
                       style={{
                         width: "28px",
                         height: "28px",
@@ -195,10 +291,12 @@ export default function FeedbackPage() {
                 }}
               >
                 Please provide additional comments or questions.{" "}
-                <span style={{ color: "#6B7280" }}>optional</span>
+                <span style={{ color: "#9CA3AF" }}>optional</span>
               </Text>
 
               <Textarea
+                value={comments}
+                onChange={(e) => setComments(e.currentTarget.value)}
                 minRows={8}
                 autosize
                 styles={{
@@ -211,9 +309,18 @@ export default function FeedbackPage() {
               />
             </Stack>
 
+            {error && (
+              <Text style={{ color: "#FCA5A5", fontSize: "16px" }}>{error}</Text>
+            )}
+
+            {success && (
+              <Text style={{ color: "#86EFAC", fontSize: "16px" }}>{success}</Text>
+            )}
+
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               <Button
                 type="submit"
+                loading={loading}
                 style={{
                   backgroundColor: "#6B8FB3",
                   color: "white",
