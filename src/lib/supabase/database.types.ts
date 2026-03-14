@@ -11,11 +11,46 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
+
+  //In Progress...
 export interface Database {
   public: {
     Tables: {
-      // Add your table types here, e.g.:
-      // games: { Row: { id: string; title: string; ... }; Insert: { ... }; Update: { ... } };
+      user_profiles: {
+        Row: {
+          id: string;
+          auth_user_id: string;
+          display_name: string | null;
+          avatar_url: string | null;
+          bio: string | null;
+          locale: string | null;
+          metadata: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          auth_user_id: string;
+          display_name?: string | null;
+          avatar_url?: string | null;
+          bio?: string | null;
+          locale?: string | null;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          auth_user_id?: string;
+          display_name?: string | null;
+          avatar_url?: string | null;
+          bio?: string | null;
+          locale?: string | null;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
