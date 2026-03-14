@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Group, ActionIcon } from "@mantine/core";
 
 type ToolbarButtonsProps = {
@@ -26,9 +27,15 @@ function ToolbarAction({ label, children }: { label: string; children: React.Rea
 export default function ToolbarButtons({ iframeSrc }: ToolbarButtonsProps) {
   return (
     <Group gap="xs" wrap="wrap">
-      <ToolbarAction label="Favorite game">♡</ToolbarAction>
-      <ToolbarAction label="Notes">🗒</ToolbarAction>
-      <ToolbarAction label="Mute">🔇</ToolbarAction>
+      <ToolbarAction label="Favorite game">
+        <Image src="/images/like2.svg" alt="" width={20} height={20} aria-hidden />
+      </ToolbarAction>
+      <ToolbarAction label="AI Assistant">
+        <Image src="/images/aichat.svg" alt="" width={28} height={28} aria-hidden />
+      </ToolbarAction>
+      <ToolbarAction label="Mute">
+        <Image src="/images/mute.svg" alt="" width={22} height={22} aria-hidden />
+      </ToolbarAction>
       <ActionIcon
         component="a"
         href={iframeSrc}
@@ -40,7 +47,7 @@ export default function ToolbarButtons({ iframeSrc }: ToolbarButtonsProps) {
         aria-label="Open in fullscreen tab"
         style={actionButtonStyle}
       >
-        ⛶
+        <Image src="/images/full.svg" alt="" width={17} height={17} aria-hidden />
       </ActionIcon>
     </Group>
   );
