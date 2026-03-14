@@ -13,7 +13,7 @@ export default function SearchBar({ value, onChange }: SearchBarProps) {
       onChange={onChange}
       radius="xl"
       size="lg"
-      rightSection="🔍"
+      rightSection={<img src="/images/search.svg" alt="" aria-hidden width={20} height={20} />}
       flex={1}
       maw={576}
       mx="auto"

@@ -23,9 +23,18 @@ export default function WelcomeBanner() {
         </div>
 
         <div className="flex flex-col gap-3 text-sm font-semibold text-white/90 md:flex-row md:flex-wrap md:gap-6">
-          <div className="flex items-center gap-2">🧠 Interactive learning</div>
-          <div className="flex items-center gap-2">💾 Save your progress</div>
-          <div className="flex items-center gap-2">📱 Play on any device</div>
+          <div className="flex items-center gap-2">
+            <Image src="/images/ai.svg" alt="" width={18} height={18} aria-hidden className="shrink-0 -translate-y-1" />
+            Interactive learning
+          </div>
+          <div className="flex items-center gap-2">
+            <Image src="/images/save.svg" alt="" width={21} height={21} aria-hidden className="shrink-0" />
+            Save your progress
+          </div>
+          <div className="flex items-center gap-2">
+            <Image src="/images/devices.svg" alt="" width={30} height={26} aria-hidden className="shrink-0 translate-y-1" />
+            Play on any device
+          </div>
         </div>
       </div>
     </section>
