@@ -4,22 +4,27 @@ const teamMembers = [
   {
     name: "Arielle Talania",
     roles: ["Full Stack", "DevOps", "UI/UX"],
+    image: "/teampics/arielle.png",
   },
   {
     name: "Djeinabou Bah",
     roles: ["Team Moderator", "Front-End"],
+    image: "/teampics/djeinabou.png",
   },
   {
     name: "Natalie Parker",
     roles: ["Team Lead", "Full-Stack", "Database Designer"],
+    image: "/teampics/natalie.png",
   },
   {
     name: "Sergio Gonzalez",
     roles: ["Back-end", "Database Designer"],
+    image: "/teampics/sergio.png",
   },
   {
     name: "Ethan Reed",
     roles: ["Team Coordinator", "Full-Stack"],
+    image: "/teampics/ethan.png",
   },
 ];
 
@@ -27,7 +32,7 @@ export default function AboutPage() {
   return (
     <div
       style={{
-        backgroundColor: "#A9D3EE",
+        backgroundColor: "#2A305B",
         minHeight: "100vh",
         paddingTop: "40px",
         paddingBottom: "60px",
@@ -126,15 +131,30 @@ export default function AboutPage() {
                     textAlign: "center",
                   }}
                 >
-                  <div
-                    style={{
-                      width: "110px",
-                      height: "110px",
-                      backgroundColor: "#D1D5DB",
-                      border: "2px solid #374151",
-                      marginBottom: "20px",
-                    }}
-                  />
+                  {member.image ? (
+                    <img
+                      src={member.image}
+                      alt={member.name}
+                      style={{
+                        width: "110px",
+                        height: "110px",
+                        objectFit: "cover",
+                        border: "2px solid #374151",
+                        marginBottom: "20px",
+                        backgroundColor: "#D1D5DB",
+                      }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        width: "110px",
+                        height: "110px",
+                        backgroundColor: "#D1D5DB",
+                        border: "2px solid #374151",
+                        marginBottom: "20px",
+                      }}
+                    />
+                  )}
 
                   <Text
                     style={{
