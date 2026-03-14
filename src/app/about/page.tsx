@@ -32,22 +32,23 @@ export default function AboutPage() {
   return (
     <div
       style={{
-        backgroundColor: "#2A305B",
+        background: "linear-gradient(180deg, #2F356B 0%, #29315F 100%)",
         minHeight: "100vh",
-        paddingTop: "40px",
-        paddingBottom: "60px",
+        paddingTop: "48px",
+        paddingBottom: "72px",
       }}
     >
       <Container size="lg">
-        <Stack gap="xl">
+        <Stack gap="2rem">
           <Box>
             <Title
               order={1}
               style={{
-                color: "#111827",
-                fontSize: "56px",
-                fontWeight: 500,
-                marginBottom: "8px",
+                color: "white",
+                fontSize: "48px",
+                fontWeight: 700,
+                marginBottom: "10px",
+                letterSpacing: "-0.5px",
               }}
             >
               About Us
@@ -57,18 +58,18 @@ export default function AboutPage() {
               style={{
                 width: "100%",
                 height: "1px",
-                backgroundColor: "#4B5563",
+                backgroundColor: "rgba(255,255,255,0.22)",
               }}
             />
           </Box>
 
           <Paper
-            shadow="none"
-            radius={0}
-            p="xl"
+            shadow="sm"
+            radius="md"
             style={{
-              backgroundColor: "#F3F4F6",
-              border: "2px solid #374151",
+              backgroundColor: "#F8FAFC",
+              border: "1px solid #D1D5DB",
+              padding: "24px 28px",
             }}
           >
             <Stack gap="sm">
@@ -76,7 +77,7 @@ export default function AboutPage() {
                 style={{
                   color: "#111827",
                   fontSize: "20px",
-                  fontWeight: 500,
+                  fontWeight: 700,
                 }}
               >
                 Project Overview
@@ -84,9 +85,9 @@ export default function AboutPage() {
 
               <Text
                 style={{
-                  color: "#111827",
-                  fontSize: "18px",
-                  lineHeight: 1.7,
+                  color: "#374151",
+                  fontSize: "16px",
+                  lineHeight: 1.8,
                 }}
               >
                 Welcome to Cool STEM Games! This is THE place to learn by doing.
@@ -96,7 +97,7 @@ export default function AboutPage() {
                 experimentation, problem-solving, and guided reflection. Some
                 games use real-world inputs like device sensors, and many include
                 an AI tutor that can offer Socratic hints and scaffolding when
-                you’re stuck. Our goal is to make STEM learning engaging and
+                you&apos;re stuck. Our goal is to make STEM learning engaging and
                 accessible, while staying grounded in accurate science and
                 engineering principles.
               </Text>
@@ -106,9 +107,9 @@ export default function AboutPage() {
           <Stack gap="md">
             <Text
               style={{
-                color: "#white",
-                fontSize: "26px",
-                fontWeight: 500,
+                color: "white",
+                fontSize: "28px",
+                fontWeight: 700,
               }}
             >
               Meet the Team
@@ -118,13 +119,13 @@ export default function AboutPage() {
               {teamMembers.map((member) => (
                 <Paper
                   key={member.name}
-                  shadow="none"
-                  radius={0}
-                  p="lg"
+                  shadow="sm"
+                  radius="md"
                   style={{
-                    backgroundColor: "#F9FAFB",
-                    border: "2px solid #374151",
-                    minHeight: "340px",
+                    backgroundColor: "#F8FAFC",
+                    border: "1px solid #D1D5DB",
+                    minHeight: "270px",
+                    padding: "20px 14px",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
@@ -136,22 +137,24 @@ export default function AboutPage() {
                       src={member.image}
                       alt={member.name}
                       style={{
-                        width: "110px",
-                        height: "110px",
+                        width: "90px",
+                        height: "90px",
                         objectFit: "cover",
-                        border: "2px solid #374151",
-                        marginBottom: "20px",
-                        backgroundColor: "#D1D5DB",
+                        borderRadius: "10px",
+                        border: "1px solid #9CA3AF",
+                        marginBottom: "14px",
+                        backgroundColor: "#E5E7EB",
                       }}
                     />
                   ) : (
                     <div
                       style={{
-                        width: "110px",
-                        height: "110px",
-                        backgroundColor: "#D1D5DB",
-                        border: "2px solid #374151",
-                        marginBottom: "20px",
+                        width: "90px",
+                        height: "90px",
+                        borderRadius: "10px",
+                        backgroundColor: "#E5E7EB",
+                        border: "1px solid #9CA3AF",
+                        marginBottom: "14px",
                       }}
                     />
                   )}
@@ -159,9 +162,9 @@ export default function AboutPage() {
                   <Text
                     style={{
                       color: "#111827",
-                      fontSize: "18px",
-                      fontWeight: 500,
-                      marginBottom: "14px",
+                      fontSize: "16px",
+                      fontWeight: 700,
+                      marginBottom: "8px",
                     }}
                   >
                     {member.name}
@@ -172,9 +175,9 @@ export default function AboutPage() {
                       <Text
                         key={role}
                         style={{
-                          color: "#111827",
-                          fontSize: "16px",
-                          lineHeight: 1.4,
+                          color: "#4B5563",
+                          fontSize: "14px",
+                          lineHeight: 1.5,
                         }}
                       >
                         {role}
@@ -187,12 +190,12 @@ export default function AboutPage() {
           </Stack>
 
           <Paper
-            shadow="none"
-            radius={0}
-            p="xl"
+            shadow="sm"
+            radius="md"
             style={{
-              backgroundColor: "#F3F4F6",
-              border: "2px solid #374151",
+              backgroundColor: "#F8FAFC",
+              border: "1px solid #D1D5DB",
+              padding: "24px 28px",
             }}
           >
             <Stack gap="sm">
@@ -200,7 +203,7 @@ export default function AboutPage() {
                 style={{
                   color: "#111827",
                   fontSize: "20px",
-                  fontWeight: 500,
+                  fontWeight: 700,
                 }}
               >
                 Client Company
@@ -208,9 +211,9 @@ export default function AboutPage() {
 
               <Text
                 style={{
-                  color: "#111827",
-                  fontSize: "18px",
-                  lineHeight: 1.7,
+                  color: "#374151",
+                  fontSize: "16px",
+                  lineHeight: 1.8,
                 }}
               >
                 Lawrence Livermore National Laboratory (LLNL) is a federally
