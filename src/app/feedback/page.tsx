@@ -52,7 +52,7 @@ export default function FeedbackPage() {
         throw new Error(data.error || "Failed to submit feedback.");
       }
 
-      setSuccess("Feedback submitted successfully.");
+      setSuccess("Thanks for your feedback!");
 
       setName("");
       setEmail("");
@@ -62,7 +62,7 @@ export default function FeedbackPage() {
       setComments("");
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Something went wrong."
+        err instanceof Error ? err.message : "Something went wrong, please try again."
       );
     } finally {
       setLoading(false);
