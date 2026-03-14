@@ -1,3 +1,5 @@
+import Link from "next/link";
+import Image from "next/image";
 import { Group, ActionIcon, Button } from "@mantine/core";
 import { BLUE_RADIAL_GRADIENT } from "@/constants/layout";
 
@@ -16,7 +18,7 @@ export default function UtilityNav({ loginModalOpened, setLoginModalOpened }: Ut
         size="xl"
         aria-label="Favorites"
       >
-        ♡
+        <Image src="/images/like.svg" alt="" width={20} height={20} aria-hidden />
       </ActionIcon>
 
       <Button
