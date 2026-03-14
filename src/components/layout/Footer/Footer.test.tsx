@@ -24,7 +24,7 @@ describe('Footer', () => {
       { name: 'ABOUT US', href: '/about' },
       { name: 'CONTACT US', href: '/contact' },
       { name: 'PRIVACY', href: '/privacy' },
-      { name: 'PARTNER', href: '/partner' },
+      { name: 'FEEDBACK', href: '/feedback' },
     ];
 
     expectedLinks.forEach(({ name, href }) => {

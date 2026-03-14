@@ -44,7 +44,7 @@ export default function FeedbackPage() {
             >
               <TextInput
                 label={
-                  <span style={{ color: "#111827", fontSize: "18px", fontWeight: 600 }}>
+                  <span style={{ color: "white", fontSize: "18px", fontWeight: 600 }}>
                     Name{" "}
                     <span style={{ color: "#6B7280", fontWeight: 400, marginLeft: "8px" }}>
                       optional
@@ -90,7 +90,7 @@ export default function FeedbackPage() {
             <Stack gap="xs">
               <Text
                 style={{
-                  color: "#111827",
+                  color: "white",
                   fontSize: "18px",
                 }}
               >
@@ -114,7 +114,7 @@ export default function FeedbackPage() {
             <Stack gap="xs">
               <Text
                 style={{
-                  color: "#111827",
+                  color: "white",
                   fontSize: "18px",
                 }}
               >
@@ -137,7 +137,7 @@ export default function FeedbackPage() {
             <Stack gap="md">
               <Text
                 style={{
-                  color: "#111827",
+                  color: "white",
                   fontSize: "18px",
                 }}
               >
@@ -166,7 +166,7 @@ export default function FeedbackPage() {
                       flexDirection: "column",
                       alignItems: "center",
                       gap: "8px",
-                      color: "#111827",
+                      color: "white",
                       fontSize: "16px",
                       cursor: "pointer",
                       minWidth: "120px",
@@ -190,7 +190,7 @@ export default function FeedbackPage() {
             <Stack gap="xs">
               <Text
                 style={{
-                  color: "#111827",
+                  color: "white",
                   fontSize: "18px",
                 }}
               >
