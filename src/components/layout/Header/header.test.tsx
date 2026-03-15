@@ -36,9 +36,8 @@ describe('Header', () => {
     expect(screen.getByRole('button', { name: 'Favorites' })).toBeInTheDocument();
   });
 
-  it('renders the login link', () => {
+  it('renders the login button', () => {
     renderHeader();
-    const loginLink = screen.getByRole('link', { name: 'Log in' });
-    expect(loginLink).toHaveAttribute('href', '/login');
+    expect(screen.getByRole('button', { name: 'Log in' })).toBeInTheDocument();
   });
 });

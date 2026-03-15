@@ -19,7 +19,8 @@ describe('RootLayout', () => {
     render(
       <RootLayout>
         <p>Page content</p>
-      </RootLayout>
+      </RootLayout>,
+      { container: document }
     );
     expect(screen.getByTestId('header')).toBeInTheDocument();
   });
@@ -28,7 +29,8 @@ describe('RootLayout', () => {
     render(
       <RootLayout>
         <p>Page content</p>
-      </RootLayout>
+      </RootLayout>,
+      { container: document }
     );
     expect(screen.getByTestId('footer')).toBeInTheDocument();
   });
@@ -37,7 +39,8 @@ describe('RootLayout', () => {
     render(
       <RootLayout>
         <p>Page content</p>
-      </RootLayout>
+      </RootLayout>,
+      { container: document }
     );
     expect(screen.getByText('Page content')).toBeInTheDocument();
   });
