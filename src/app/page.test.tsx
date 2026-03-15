@@ -43,7 +43,16 @@ describe('Home page', () => {
 
   it('renders the bottom buttons', async () => {
     await renderHomePage();
+    // check that the svgs are loaded correctly
+    // only checks that the src is set to the correct filename
+    expect(
+      document.querySelector('img[src="/images/shuffle.svg"]')
+    ).toBeInTheDocument();
+    expect(
+      document.querySelector('img[src="/images/arrow.svg"]')
+    ).toBeInTheDocument();
+
     expect(screen.getByText('Random Game')).toBeInTheDocument();
-    expect(screen.getByText('↑ Back to the top')).toBeInTheDocument();
+    expect(screen.getByText('Back to the top')).toBeInTheDocument();
   });
 });
