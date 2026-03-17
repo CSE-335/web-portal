@@ -8,7 +8,8 @@ export default function TestSignUpPage() {
       <p className="mb-6 text-white/70">
         Use this page to test sign-up and error messages.
       </p>
-      <Suspense>
+
+      <Suspense fallback={<p className="text-white/70">Loading form...</p>}>
         <SignUpTestForm />
       </Suspense>
     </main>

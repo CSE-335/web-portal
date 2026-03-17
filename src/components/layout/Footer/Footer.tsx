@@ -9,7 +9,7 @@ const footerLinks = [
   { label: "ABOUT US", href: "/about" },
   { label: "CONTACT US", href: "/contact" },
   { label: "PRIVACY", href: "/privacy" },
-  { label: "PARTNER", href: "/partner" },
+  { label: "FEEDBACK", href: "/feedback" },
 ];
 
 export default function Footer() {
