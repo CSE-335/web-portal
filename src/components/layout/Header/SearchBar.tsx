@@ -15,8 +15,8 @@ export default function SearchBar({ value, onChange }: SearchBarProps) {
       size="lg"
       rightSection={<img src="/images/search.svg" alt="" aria-hidden width={20} height={20} />}
       flex={1}
-      maw={576}
-      mx="auto"
+      maw={580}
+      ml="auto"
       visibleFrom="md"
       styles={{
         input: {

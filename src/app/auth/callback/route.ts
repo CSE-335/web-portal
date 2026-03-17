@@ -8,14 +8,14 @@ export async function GET(request: NextRequest) {
   const next = searchParams.get("next") ?? "/";
 
   if (!code) {
-    return NextResponse.redirect(`${origin}/test-signup?error=no_code`);
+    return NextResponse.redirect(`${origin}${next}?error=no_code`);
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    return NextResponse.redirect(`${origin}/test-signup?error=config`);
+    return NextResponse.redirect(`${origin}${next}?error=config`);
   }
 
   const response = NextResponse.redirect(`${origin}${next}`);
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
   const { error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
-    return NextResponse.redirect(`${origin}/test-signup?error=auth`);
+    return NextResponse.redirect(`${origin}${next}?error=auth`);
   }
 
   return response;
