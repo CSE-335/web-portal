@@ -17,7 +17,7 @@ export default function BottomButtons({ random }: BottomButtonsProps) {
           miw={178}
         >
           <span className="flex items-center gap-3">
-            <Image src="/images/shuffle.svg" alt="" width={28} height={28} aria-hidden className="shrink-0" />
+            <Image src="/images/shuffle.svg" alt="shuffle" width={28} height={28} aria-hidden className="shrink-0" />
             Random Game
           </span>
         </Button>
@@ -31,7 +31,7 @@ export default function BottomButtons({ random }: BottomButtonsProps) {
         style={{ background: BLUE_RADIAL_GRADIENT }}
       >
         <span className="flex items-center gap-3">
-          <Image src="/images/arrow.svg" alt="" width={18} height={18} aria-hidden className="shrink-0" />
+          <Image src="/images/arrow.svg" alt="up arrow" width={18} height={18} aria-hidden className="shrink-0" />
           Back to the top
         </span>
       </Button>
