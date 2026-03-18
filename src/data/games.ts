@@ -43,6 +43,22 @@ export const games: GameMeta[] = [
     embedHeight: "800px",
     featured: true,
   },
+    {
+    slug: "biology-virus-outbreak-simulator",
+    title: "Biology Virus Outbreak Simulator",
+    subject: "Science",
+    description:
+      "Explore virus outbreaks and learn about epidemiological concepts through interactive modeling and AI-assisted feedback.",
+    longDescription: [
+      "Biology Virus Outbreak Simulator is an interactive science game where students explore how virus outbreaks spread and evolve. By answering questions, players can observe the impact of different factors on the progression of an epidemic.",
+      "The game introduces concepts such as infection dynamics, immunity, and public health interventions through hands-on experimentation rather than passive memorization. Students can analyze the consequences of their decisions and adjust their strategies accordingly.",
+      "AI-assisted feedback gives players insights into the effectiveness of their interventions, helping them understand the complex interplay of factors that influence virus transmission and control. This interactive approach fosters critical thinking and a deeper understanding of epidemiological concepts.",
+    ],
+    iframeSrc: "https://biology-virus-ai-game-g18s.onrender.com/",
+    thumbnailSrc: "/images/biology-virus-outbreak-simulator.png",
+    embedHeight: "800px",
+    featured: true,
+  },
 ];
   export function getGameBySlug(slug: string) {
     return games.find((game) => game.slug === slug);
