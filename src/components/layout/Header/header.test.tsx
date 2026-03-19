@@ -4,6 +4,15 @@ import '@testing-library/jest-dom';
 import { MantineProvider } from '@mantine/core';
 import Header from './Header';
 
+jest.mock('@/lib/supabase/client', () => ({
+  supabase: {
+    auth: {
+      getUser: jest.fn().mockResolvedValue({ data: { user: null } }),
+      onAuthStateChange: jest.fn().mockReturnValue({ data: { subscription: { unsubscribe: jest.fn() } } }),
+    },
+  },
+}));
+
 function renderHeader() {
   return render(
     <MantineProvider>

@@ -14,6 +14,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import SignupPopup from "./SignupPopup";
+import { signInUser, signInWithGoogle } from "@/lib/supabase/auth";
 
 
 interface LoginPopupProps {
@@ -25,6 +26,7 @@ interface LoginPopupProps {
 export default function LoginPopup({ opened, onClose }: LoginPopupProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [signupModalOpened, setSignupModalOpened] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
 
   const form = useForm({
@@ -43,18 +45,26 @@ export default function LoginPopup({ opened, onClose }: LoginPopupProps) {
 
   const handleSubmit = async (values: typeof form.values) => {
     setIsLoading(true);
+    setError(null);
     try {
-      // TODO: Implement login logic here
-      console.log("Login attempt:", values);
+      const result = await signInUser(values.email, values.password);
+      if (!result.success) {
+        setError(result.error ?? "Something went wrong.");
+      } else {
+        onClose();
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
 
-  const handleGoogleLogin = () => {
-    // TODO: Implement Google login logic
-    console.log("Google login clicked");
+  const handleGoogleLogin = async () => {
+    setError(null);
+    const { error: googleError } = await signInWithGoogle();
+    if (googleError) {
+      setError(googleError);
+    }
   };
 
 
@@ -129,20 +139,20 @@ export default function LoginPopup({ opened, onClose }: LoginPopupProps) {
                 },
               }}
             />
+            {error && (
+              <Text c="red.4" fz="sm">
+                {error}
+              </Text>
+            )}
             <Group gap="xl" grow>
               <Text size="sm" c="#9CA3AF">
                 Don&apos;t have an account?{" "}
                 <Text
-                  component="button"
+                  component="span"
                   c="#2B80FF"
                   td="none"
-                  style={{ 
-                    cursor: "pointer", 
-                    background: "none", 
-                    border: "none", 
-                    padding: 0,
-                    outline: "none",
-                    boxShadow: "none",
+                  style={{
+                    cursor: "pointer",
                   }}
                   onClick={() => {
                     onClose();
