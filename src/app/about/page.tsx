@@ -89,8 +89,7 @@ export default function AboutPage() {
                   lineHeight: 1.7,
                 }}
               >
-                Welcome to Cool STEM Games! This is THE place to learn by doing.
-                Explore short, interactive mini-games that turn core STEM ideas
+                Welcome to LLNL STEM Games! Explore short, interactive mini-games that turn core STEM ideas
                 into hands-on challenges you can play right in your browser. Each
                 activity is designed to help you build real understanding through
                 experimentation, problem-solving, and guided reflection. Some
