@@ -1,0 +1,170 @@
+{
+  "nav": {
+    "searchPlaceholder": "Search STEM games...",
+    "logIn": "Log in",
+    "language": "Language"
+  },
+  "footer": {
+    "links": { "allGames": "ALL GAMES", "aboutUs": "ABOUT US", "contactUs": "CONTACT US", "privacy": "PRIVACY", "feedback": "FEEDBACK" },
+    "description": "Welcome to Lawrence Livermore National Laboratory STEM game web portal. Enjoy our library of educational STEM games which could be played on phones, tablets, and PC with no downloads necessary. If you're struggling with the concepts, ensure to use the AI features for assistance."
+  },
+  "login": {
+    "title": "Log In",
+    "email": "Email",
+    "password": "Password",
+    "noAccount": "Don't have an account?",
+    "registerHere": "Register Here",
+    "forgotPassword": "Forgot password?",
+    "recoverPassword": "Recover Password",
+    "signInGoogle": "Sign in with Google",
+    "continue": "Continue",
+    "invalidEmail": "Invalid email",
+    "passwordShort": "Password must be at least 6 characters"
+  },
+  "signup": {
+    "title": "Create Account",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "characters": "Characters",
+    "number": "Number",
+    "letter": "Letter",
+    "signUpGoogle": "Sign up with Google",
+    "continue": "Continue",
+    "invalidEmail": "Invalid email address.",
+    "passwordShort": "Password must be at least 6 characters",
+    "passwordMismatch": "Passwords do not match"
+  },
+  "profile": {
+    "editTitle": "Edit your profile",
+    "usernameLabel": "Username",
+    "usernamePlaceholder": "Enter username",
+    "locationLabel": "Location",
+    "locationPlaceholder": "Select location",
+    "saved": "Saved!",
+    "saveChanges": "Save Changes",
+    "menuProfile": "Profile",
+    "menuEditProfile": "Edit profile",
+    "menuAccountSettings": "Account settings",
+    "menuLogOut": "Log out",
+    "menuContactUs": "Contact us",
+    "menuPartner": "Partner — LLNL",
+    "menuLanguage": "Language",
+    "changeBanner": "Change Banner"
+  },
+  "profilePage": {
+    "editProfile": "Edit profile",
+    "stats": "Stats",
+    "memberFor": "Member for",
+    "today": "Today",
+    "days": "{count, plural, one {# day} other {# days}}",
+    "gamesLiked": "Games liked",
+    "playstreak": "Playstreak",
+    "recentlyPlayed": "Recently Played",
+    "tabLiked": "Liked Games",
+    "tabLeaderboards": "Leaderboards",
+    "noLikedGames": "No liked games yet. Start exploring and like your favorites!",
+    "leaderboardsSoon": "Leaderboards coming soon!",
+    "justNow": "Just now",
+    "minutesAgo": "{m}m ago",
+    "hoursAgo": "{h}h ago",
+    "daysAgo": "{d}d ago"
+  },
+  "saveBanner": {
+    "dontLose": "Don't lose your progress",
+    "signUp": "Sign up",
+    "close": "Close"
+  },
+  "accountSettings": {
+    "title": "Account Settings",
+    "updateEmail": "Update email address",
+    "secureAccount": "Secure your account",
+    "logOutAll": "Log out of all devices",
+    "deleteAccount": "Delete account",
+    "deleteButton": "Delete your account",
+    "deleteConfirm": "Are you sure? Click again to confirm",
+    "back": "Back",
+    "currentEmail": "Current email",
+    "newEmailDesc": "Enter your new email address. We'll send a confirmation link to verify it.",
+    "newEmailPlaceholder": "New email address",
+    "invalidEmail": "Please enter a valid email address.",
+    "sameEmail": "This is already your current email.",
+    "sendVerification": "Send Verification",
+    "emailSentTitle": "Check your email",
+    "emailSentDesc": "We sent a confirmation link to {email}. Click the link to update your email address.",
+    "done": "Done"
+  },
+  "feedback": {
+    "title": "Website Feedback",
+    "subtitle": "Help us improve your experience",
+    "name": "Name",
+    "email": "Email",
+    "optional": "optional",
+    "issues": "What problems or issues did you experience?",
+    "issuesPlaceholder": "Describe any problems or issues...",
+    "ideas": "What features or games would you like to see?",
+    "ideasPlaceholder": "Share your ideas...",
+    "likelihood": "How likely are you to return to this site?",
+    "veryUnlikely": "Very Unlikely",
+    "unlikely": "Unlikely",
+    "notSure": "Not Sure",
+    "likely": "Likely",
+    "veryLikely": "Very Likely",
+    "comments": "Additional comments",
+    "commentsPlaceholder": "Any additional thoughts...",
+    "submit": "Submit Feedback",
+    "success": "Thanks for your feedback!",
+    "error": "Something went wrong, please try again."
+  },
+  "common": {
+    "play": "Play",
+    "randomGame": "Random Game",
+    "backToTop": "Back to the top",
+    "educational": "Educational"
+  },
+  "home": {
+    "welcome1": "Welcome to LLNL",
+    "welcome2": "STEM Games",
+    "interactiveLearning": "Interactive learning",
+    "saveProgress": "Save your progress",
+    "playAnyDevice": "Play on any device"
+  },
+  "gameCard": {
+    "tags": "Tags",
+    "Science": "Science",
+    "Technology": "Technology",
+    "Engineering": "Engineering",
+    "Mathematics": "Mathematics"
+  },
+  "gameDetails": {
+    "title": "Game Details",
+    "subject": "Subject",
+    "playStyle": "Play Style",
+    "playStyleValue": "Interactive web game",
+    "access": "Access",
+    "accessValue": "Browser-based, no download required"
+  },
+  "gameDescription": {
+    "title": "Game Description"
+  },
+  "games": {
+    "matrix-meadow": {
+      "description": "Practice matrix multiplication through interactive monster scaling challenges and AI-assisted feedback.",
+      "long1": "Matrix Meadow Academy turns matrix multiplication into a visual monster-scaling challenge where students learn by transforming creatures directly on screen. Instead of solving problems in isolation, players apply matrices to match target shapes, making abstract linear algebra feel more concrete and intuitive.",
+      "long2": "The game focuses on core ideas like scaling transformations, matrix structure, and the relationship between numerical input and visual output. By tying each problem to an immediate visual result, students can better understand how matrix multiplication changes size and form rather than treating it as pure symbol manipulation.",
+      "long3": "AI-assisted feedback supports the learning process by helping players understand why a transformation worked or failed, reinforcing pattern recognition and encouraging correction through guided practice."
+    },
+    "sonic-fingerprint-lab": {
+      "description": "Explore audio patterns, frequencies, and voice-based analysis through an interactive sound lab.",
+      "long1": "Sonic Fingerprint Lab is an interactive science game where students explore how sound can be visualized, compared, and analyzed through frequency-based patterns. By using their own voice and recorded signals, players engage directly with the idea that every sound leaves behind a measurable acoustic signature.",
+      "long2": "The game introduces concepts such as pitch, waveform behavior, and frequency differences through hands-on experimentation rather than passive memorization. Students can observe how changes in sound input affect the resulting patterns, helping them build intuition for audio analysis in a more immediate and engaging way.",
+      "long3": "AI-assisted feedback helps interpret the player's results, point out meaningful differences in their sound data, and guide them toward a stronger understanding of how frequency patterns relate to vocal and acoustic characteristics."
+    },
+    "biology-virus-outbreak-simulator": {
+      "description": "Explore virus outbreaks and learn about epidemiological concepts through interactive modeling and AI-assisted feedback.",
+      "long1": "Biology Virus Outbreak Simulator is an interactive science game where students explore how virus outbreaks spread and evolve. By answering questions, players can observe the impact of different factors on the progression of an epidemic.",
+      "long2": "The game introduces concepts such as infection dynamics, immunity, and public health interventions through hands-on experimentation rather than passive memorization. Students can analyze the consequences of their decisions and adjust their strategies accordingly.",
+      "long3": "AI-assisted feedback gives players insights into the effectiveness of their interventions, helping them understand the complex interplay of factors that influence virus transmission and control. This interactive approach fosters critical thinking and a deeper understanding of epidemiological concepts."
+    }
+  }
+}

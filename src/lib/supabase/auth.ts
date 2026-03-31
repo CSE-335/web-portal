@@ -1,3 +1,6 @@
+// Auth helpers — sign up, sign in, sign out, password reset, Google OAuth
+// Email update is handled via supabase.auth.updateUser() in AccountSettingsPopup
+// Email change confirmation goes through /auth/callback with token_hash
 import { supabase } from "./client";
 
 export type Email = string;
@@ -78,7 +81,16 @@ export async function signOutUser(): Promise<{ error: string | null }> {
   return { error: error?.message ?? null };
 }
 
-// Sign in / Sign up with Google (client-side OAuth, Supabase manages session)
+// Password reset
+export async function resetPassword(email: Email): Promise<{ success: boolean; error: string | null }> {
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/auth/callback?next=/profile`,
+  });
+  if (error) return { success: false, error: error.message };
+  return { success: true, error: null };
+}
+
+// Google OAuth
 export async function signInWithGoogle(
   redirectTo?: string
 ): Promise<{ error: string | null }> {

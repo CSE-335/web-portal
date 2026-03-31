@@ -3,12 +3,14 @@ import ToolbarInfo from "./toolbar/ToolbarInfo";
 import ToolbarButtons from "./toolbar/ToolbarButtons";
 
 type GameToolbarProps = {
+  slug: string;
   title: string;
   subject: string;
   iframeSrc: string;
 };
 
 export default function GameToolbar({
+  slug,
   title,
   subject,
   iframeSrc,
@@ -22,12 +24,12 @@ export default function GameToolbar({
       px="md"
       py="sm"
       style={{
-        borderTop: "1px solid rgba(255,255,255,0.1)",
-        background: "rgba(67, 75, 127, 0.9)",
+        borderTop: "1px solid var(--toolbar-border)",
+        background: "var(--toolbar-bg)",
       }}
     >
       <ToolbarInfo title={title} subject={subject} />
-      <ToolbarButtons iframeSrc={iframeSrc} />
+      <ToolbarButtons slug={slug} iframeSrc={iframeSrc} />
     </Flex>
   );
 }

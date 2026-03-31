@@ -1,33 +1,74 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Group, ActionIcon } from "@mantine/core";
+import { toggleGameLike, isGameLikedByUser } from "@/lib/supabase/game-likes";
+import { supabase } from "@/lib/supabase/client";
 
 type ToolbarButtonsProps = {
+  slug: string;
   iframeSrc: string;
 };
 
 const actionButtonStyle = {
-  background: "rgba(255,255,255,0.1)",
-  border: "1px solid rgba(255,255,255,0.1)",
+  background: "var(--toolbar-btn-bg)",
+  border: "1px solid var(--toolbar-btn-border)",
 };
 
-function ToolbarAction({ label, children }: { label: string; children: React.ReactNode }) {
+function ToolbarAction({
+  label,
+  children,
+  onClick,
+  style,
+}: {
+  label: string;
+  children: React.ReactNode;
+  onClick?: () => void;
+  style?: React.CSSProperties;
+}) {
   return (
     <ActionIcon
       variant="default"
       radius="xl"
       size="lg"
       aria-label={label}
-      style={actionButtonStyle}
+      style={{ ...actionButtonStyle, ...style }}
+      onClick={onClick}
     >
       {children}
     </ActionIcon>
   );
 }
 
-export default function ToolbarButtons({ iframeSrc }: ToolbarButtonsProps) {
+export default function ToolbarButtons({ slug, iframeSrc }: ToolbarButtonsProps) {
+  const [liked, setLiked] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) {
+        setIsAuthenticated(true);
+        isGameLikedByUser(slug).then(setLiked);
+      }
+    });
+  }, [slug]);
+
+  const handleLikeToggle = async () => {
+    if (!isAuthenticated) return;
+    const result = await toggleGameLike(slug);
+    if (!result.error) {
+      setLiked(result.liked);
+    }
+  };
+
   return (
     <Group gap="xs" wrap="wrap">
-      <ToolbarAction label="Favorite game">
+      <ToolbarAction
+        label={liked ? "Unlike game" : "Favorite game"}
+        onClick={handleLikeToggle}
+        style={liked ? { background: "rgba(27, 65, 255, 0.4)", border: "1px solid rgba(27, 65, 255, 0.6)" } : undefined}
+      >
         <Image src="/images/like2.svg" alt="" width={20} height={20} aria-hidden />
       </ToolbarAction>
       <ToolbarAction label="AI Assistant">

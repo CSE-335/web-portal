@@ -10,8 +10,7 @@ export default function LogoBrand({ children, size = "sm" }: LogoBrandProps) {
   let imgClass: string;
   let textClass: string;
 
-  // hard code two different styles
-  // small and large variants, this can be adjust later to be more flexible
+  // Small and large variants
   if(size === "lg") {
     imgClass = "h-auto w-[90px] object-contain md:w-[139px]";
     textClass = "text-center text-xl font-extrabold leading-tight md:text-[24px]";
@@ -31,7 +30,7 @@ export default function LogoBrand({ children, size = "sm" }: LogoBrandProps) {
       />
       <span
         className={textClass}
-        style={{ textShadow: BRAND_TEXT_SHADOW }}
+        style={{ textShadow: BRAND_TEXT_SHADOW, color: 'white' }}
       >
         {children}
       </span>

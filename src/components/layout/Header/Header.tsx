@@ -42,11 +42,12 @@ export default function Header() {
   return (
     <Group
       component="header"
-      h={{ base: 70, md: 100 }}
+      h={{ base: 56, md: 72 }}
       px={{ base: "md", md: "xl" }}
       gap="md"
       wrap="nowrap"
-      style={{ background: "#343C61", position: "sticky", top: 0, zIndex: 50 }}
+      className="site-header"
+      style={{ background: "var(--surface-header)", position: "sticky", top: 0, zIndex: 50 }}
     >
       <Link href="/">
         <LogoBrand>

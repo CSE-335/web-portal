@@ -1,0 +1,176 @@
+{
+  "nav": {
+    "searchPlaceholder": "STEMゲームを検索...",
+    "logIn": "ログイン",
+    "language": "言語"
+  },
+  "footer": {
+    "links": {
+      "allGames": "全ゲーム",
+      "aboutUs": "私たちについて",
+      "contactUs": "お問い合わせ",
+      "privacy": "プライバシー",
+      "feedback": "フィードバック"
+    },
+    "description": "ローレンス・リバモア国立研究所STEMゲームポータルへようこそ。ダウンロード不要でスマートフォン、タブレット、PCで楽しめる教育的なSTEMゲームライブラリをお楽しみください。"
+  },
+  "login": {
+    "title": "ログイン",
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "noAccount": "アカウントをお持ちでないですか？",
+    "registerHere": "こちらで登録",
+    "forgotPassword": "パスワードをお忘れですか？",
+    "recoverPassword": "パスワードを回復",
+    "signInGoogle": "Googleでサインイン",
+    "continue": "続ける",
+    "invalidEmail": "無効なメールアドレス",
+    "passwordShort": "パスワードは6文字以上必要です"
+  },
+  "signup": {
+    "title": "アカウント作成",
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "confirmPassword": "パスワードの確認",
+    "characters": "文字",
+    "number": "数字",
+    "letter": "文字",
+    "signUpGoogle": "Googleでサインアップ",
+    "continue": "続ける",
+    "invalidEmail": "無効なメールアドレスです。",
+    "passwordShort": "パスワードは6文字以上必要です",
+    "passwordMismatch": "パスワードが一致しません"
+  },
+  "profile": {
+    "editTitle": "プロフィールを編集",
+    "usernameLabel": "ユーザー名",
+    "usernamePlaceholder": "ユーザー名を入力",
+    "locationLabel": "場所",
+    "locationPlaceholder": "場所を選択",
+    "saved": "保存しました！",
+    "saveChanges": "変更を保存",
+    "menuProfile": "プロフィール",
+    "menuEditProfile": "プロフィールを編集",
+    "menuAccountSettings": "アカウント設定",
+    "menuLogOut": "ログアウト",
+    "menuContactUs": "お問い合わせ",
+    "menuPartner": "パートナー — LLNL",
+    "menuLanguage": "言語",
+    "changeBanner": "バナーを変更"
+  },
+  "profilePage": {
+    "editProfile": "プロフィールを編集",
+    "stats": "統計",
+    "memberFor": "メンバー歴",
+    "today": "今日",
+    "days": "{count}日",
+    "gamesLiked": "お気に入りゲーム",
+    "playstreak": "連続プレイ日数",
+    "recentlyPlayed": "最近プレイ",
+    "tabLiked": "お気に入りゲーム",
+    "tabLeaderboards": "リーダーボード",
+    "noLikedGames": "お気に入りゲームはまだありません。探索して追加しましょう！",
+    "leaderboardsSoon": "リーダーボードは近日公開！",
+    "justNow": "たった今",
+    "minutesAgo": "{m}分前",
+    "hoursAgo": "{h}時間前",
+    "daysAgo": "{d}日前"
+  },
+  "saveBanner": {
+    "dontLose": "進捗を失わないで",
+    "signUp": "サインアップ",
+    "close": "閉じる"
+  },
+  "accountSettings": {
+    "title": "アカウント設定",
+    "updateEmail": "メールアドレスを更新",
+    "secureAccount": "アカウントを保護",
+    "logOutAll": "全デバイスからログアウト",
+    "deleteAccount": "アカウントを削除",
+    "deleteButton": "アカウントを削除する",
+    "deleteConfirm": "よろしいですか？再度クリックして確認",
+    "back": "戻る",
+    "currentEmail": "現在のメールアドレス",
+    "newEmailDesc": "新しいメールアドレスを入力してください。確認リンクを送信します。",
+    "newEmailPlaceholder": "新しいメールアドレス",
+    "invalidEmail": "有効なメールアドレスを入力してください。",
+    "sameEmail": "これは既に現在のメールアドレスです。",
+    "sendVerification": "確認を送信",
+    "emailSentTitle": "メールを確認してください",
+    "emailSentDesc": "{email} に確認リンクを送信しました。リンクをクリックしてメールアドレスを更新してください。",
+    "done": "完了"
+  },
+  "feedback": {
+    "title": "サイトフィードバック",
+    "subtitle": "体験の改善にご協力ください",
+    "name": "名前",
+    "email": "メールアドレス",
+    "optional": "任意",
+    "issues": "どのような問題がありましたか？",
+    "issuesPlaceholder": "問題を説明してください...",
+    "ideas": "どんな機能やゲームを見たいですか？",
+    "ideasPlaceholder": "アイデアを共有してください...",
+    "likelihood": "再訪する可能性はどのくらいですか？",
+    "veryUnlikely": "非常に低い",
+    "unlikely": "低い",
+    "notSure": "わからない",
+    "likely": "高い",
+    "veryLikely": "非常に高い",
+    "comments": "追加コメント",
+    "commentsPlaceholder": "その他のご意見...",
+    "submit": "フィードバックを送信",
+    "success": "フィードバックありがとうございます！",
+    "error": "エラーが発生しました。再試行してください。"
+  },
+  "common": {
+    "play": "プレイ",
+    "randomGame": "ランダムゲーム",
+    "backToTop": "トップへ戻る",
+    "educational": "教育的"
+  },
+  "home": {
+    "welcome1": "LLNLへようこそ",
+    "welcome2": "STEMゲーム",
+    "interactiveLearning": "インタラクティブ学習",
+    "saveProgress": "進捗を保存",
+    "playAnyDevice": "どのデバイスでもプレイ"
+  },
+  "gameCard": {
+    "tags": "タグ",
+    "Science": "科学",
+    "Technology": "テクノロジー",
+    "Engineering": "工学",
+    "Mathematics": "数学"
+  },
+  "gameDetails": {
+    "title": "ゲーム詳細",
+    "subject": "教科",
+    "playStyle": "プレイスタイル",
+    "playStyleValue": "インタラクティブウェブゲーム",
+    "access": "アクセス",
+    "accessValue": "ブラウザベース、ダウンロード不要"
+  },
+  "gameDescription": {
+    "title": "ゲーム説明"
+  },
+  "games": {
+    "matrix-meadow": {
+      "description": "インタラクティブなモンスタースケーリングチャレンジとAI支援フィードバックを通じて行列の掛け算を練習しましょう。",
+      "long1": "Matrix Meadow Academyは行列の掛け算を視覚的なモンスタースケーリングチャレンジに変え、学生が画面上で直接クリーチャーを変換して学びます。問題を個別に解くのではなく、プレイヤーは行列を適用して目標の形状に合わせ、抽象的な線形代数をより具体的で直感的にします。",
+      "long2": "ゲームはスケーリング変換、行列構造、数値入力と視覚的出力の関係などの核心的な概念に焦点を当てています。各問題を即座の視覚的結果に結びつけることで、学生は行列の掛け算がサイズと形をどのように変えるかをよりよく理解できます。",
+      "long3": "AI支援フィードバックは、変換が成功した理由や失敗した理由を理解するのを助け、パターン認識を強化し、ガイド付き練習を通じて修正を促します。"
+    },
+    "sonic-fingerprint-lab": {
+      "description": "インタラクティブなサウンドラボを通じて音声パターン、周波数、声ベースの分析を探索しましょう。",
+      "long1": "Sonic Fingerprint Labは、学生が周波数ベースのパターンを通じて音をどのように視覚化、比較、分析できるかを探索するインタラクティブな科学ゲームです。",
+      "long2": "ゲームはピッチ、波形の振る舞い、周波数の違いなどの概念を、受動的な暗記ではなく実践的な実験を通じて紹介します。",
+      "long3": "AI支援フィードバックはプレイヤーの結果を解釈し、音声データの意味のある違いを指摘し、周波数パターンと音声・音響特性の関係についてより深い理解へと導きます。"
+    },
+    "biology-virus-outbreak-simulator": {
+      "description": "インタラクティブなモデリングとAI支援フィードバックを通じてウイルスの発生を探索し、疫学の概念を学びましょう。",
+      "long1": "Biology Virus Outbreak Simulatorは、学生がウイルスの発生がどのように広がり進化するかを探索するインタラクティブな科学ゲームです。",
+      "long2": "ゲームは感染のダイナミクス、免疫、公衆衛生介入などの概念を実践的な実験を通じて紹介します。",
+      "long3": "AI支援フィードバックはプレイヤーに介入の効果についての洞察を提供し、ウイルスの伝播と制御に影響を与える要因の複雑な相互作用を理解するのに役立ちます。"
+    }
+  }
+}

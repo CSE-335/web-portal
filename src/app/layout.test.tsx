@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import RootLayout from './layout';
+import RootLayout, { metadata } from './layout';
 
 jest.mock('../components/layout/Header/Header', () => {
   return function MockHeader() {
@@ -46,7 +46,6 @@ describe('RootLayout', () => {
   });
 
   it('has the correct metadata', () => {
-    const { metadata } = require('./layout');
     expect(metadata.title).toBe('LLNL STEM Games');
     expect(metadata.description).toBe('Educational STEM games from Lawrence Livermore National Laboratory');
   });

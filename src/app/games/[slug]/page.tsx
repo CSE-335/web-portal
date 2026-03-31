@@ -29,6 +29,7 @@ export default async function GamePage({ params }: GamePageProps) {
   return (
     <main>
       <GamePlayer
+        slug={game.slug}
         title={game.title}
         subject={game.subject}
         iframeSrc={game.iframeSrc}
@@ -37,10 +38,11 @@ export default async function GamePage({ params }: GamePageProps) {
 
       <Stack component="section" gap="lg" mt="lg">
         <GameDetails
+          slug={game.slug}
           subject={game.subject}
           description={game.description}
         />
-        <GameDescription longDescription={game.longDescription} />
+        <GameDescription slug={game.slug} longDescription={game.longDescription} />
       </Stack>
 
       <BottomButtons random={false} />

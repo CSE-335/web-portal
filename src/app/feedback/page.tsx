@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useTranslations } from 'next-intl';
+import { supabase } from "@/lib/supabase/client";
 import {
   Container,
   Stack,
@@ -9,16 +11,74 @@ import {
   TextInput,
   Textarea,
   Button,
+  Group,
   Box,
+  Divider,
 } from "@mantine/core";
 
+const inputStyles = {
+  wrapper: {
+    borderRadius: "10px",
+    background:
+      "linear-gradient(#525b85, #525b85) padding-box, linear-gradient(to bottom, #7886bf, #6e91d0) border-box",
+    border: "2px solid transparent",
+  },
+  input: {
+    backgroundColor: "transparent",
+    color: "white",
+    border: "none",
+    height: "46px",
+    fontSize: "15px",
+    fontFamily: "var(--font-alexandria), sans-serif",
+    fontWeight: 400,
+    paddingLeft: "20px",
+  },
+};
+
+const textareaStyles = {
+  wrapper: {
+    borderRadius: "10px",
+    background:
+      "linear-gradient(#525b85, #525b85) padding-box, linear-gradient(to bottom, #7886bf, #6e91d0) border-box",
+    border: "2px solid transparent",
+  },
+  input: {
+    backgroundColor: "transparent",
+    color: "white",
+    border: "none",
+    fontSize: "15px",
+    fontFamily: "var(--font-alexandria), sans-serif",
+    fontWeight: 400,
+    padding: "14px 20px",
+  },
+};
+
+const labelStyle = {
+  fontFamily: "var(--font-alexandria), sans-serif",
+  fontWeight: 500,
+  fontSize: "16px",
+  color: "white",
+  marginBottom: "6px",
+};
+
+const likelihoodKeys = ['veryUnlikely', 'unlikely', 'notSure', 'likely', 'veryLikely'] as const;
+
 export default function FeedbackPage() {
+  const t = useTranslations('feedback');
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [issues, setIssues] = useState("");
   const [futureIdeas, setFutureIdeas] = useState("");
   const [returnLikelihood, setReturnLikelihood] = useState("");
   const [comments, setComments] = useState("");
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user?.email) {
+        setEmail(data.user.email);
+      }
+    });
+  }, []);
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
@@ -33,9 +93,7 @@ export default function FeedbackPage() {
     try {
       const response = await fetch("/api/feedback", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,
           email,
@@ -52,8 +110,7 @@ export default function FeedbackPage() {
         throw new Error(data.error || "Failed to submit feedback.");
       }
 
-      setSuccess("Thanks for your feedback!");
-
+      setSuccess(t('success'));
       setName("");
       setEmail("");
       setIssues("");
@@ -62,7 +119,7 @@ export default function FeedbackPage() {
       setComments("");
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Something went wrong, please try again."
+        err instanceof Error ? err.message : t('error')
       );
     } finally {
       setLoading(false);
@@ -70,269 +127,180 @@ export default function FeedbackPage() {
   }
 
   return (
-    <div
-      style={{
-        backgroundColor: "#2A305B",
-        minHeight: "100vh",
-        paddingTop: "40px",
-        paddingBottom: "60px",
-      }}
-    >
-      <Container size="lg">
+    <Container size="md" py={48}>
+      <Box
+        style={{
+          backgroundColor: "#1f2542",
+          border: "1px solid #6e90b6",
+          borderRadius: "10px",
+          padding: "40px 48px",
+        }}
+      >
         <form onSubmit={handleSubmit}>
-          <Stack gap="xl">
-            <Box>
+          <Stack gap="lg">
+            <Stack gap={4}>
               <Title
                 order={1}
                 style={{
                   color: "white",
-                  fontSize: "56px",
-                  fontWeight: 500,
-                  marginBottom: "8px",
+                  fontSize: "28px",
+                  fontWeight: 600,
+                  fontFamily: "var(--font-alexandria), sans-serif",
                 }}
               >
-                Website Feedback Form
+                {t('title')}
               </Title>
-
-              <div
+              <Text
                 style={{
-                  width: "100%",
-                  height: "1px",
-                  backgroundColor: "#4B5563",
+                  fontFamily: "var(--font-alexandria), sans-serif",
+                  fontSize: "14px",
+                  color: "#9CA3AF",
                 }}
-              />
-            </Box>
+              >
+                {t('subtitle')}
+              </Text>
+            </Stack>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-                gap: "16px",
-              }}
-            >
+            <Divider styles={{ root: { borderColor: "#344369" } }} />
+
+            <Group grow gap="md">
               <TextInput
                 value={name}
                 onChange={(e) => setName(e.currentTarget.value)}
+                placeholder={t('name')}
                 label={
-                  <span
-                    style={{ color: "white", fontSize: "18px", fontWeight: 600 }}
-                  >
-                    Name{" "}
-                    <span
-                      style={{
-                        color: "#9CA3AF",
-                        fontWeight: 400,
-                        marginLeft: "8px",
-                      }}
-                    >
-                      optional
-                    </span>
+                  <span style={labelStyle}>
+                    {t('name')} <span style={{ color: "#9CA3AF", fontWeight: 400, fontSize: "13px" }}>{t('optional')}</span>
                   </span>
                 }
-                styles={{
-                  label: {
-                    marginBottom: 8,
-                  },
-                  input: {
-                    backgroundColor: "#F3F4F6",
-                    border: "2px solid #6B7280",
-                    color: "#111827",
-                    minHeight: "48px",
-                  },
-                }}
+                styles={inputStyles}
               />
-
               <TextInput
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.currentTarget.value)}
+                placeholder={t('email')}
                 label={
-                  <span
-                    style={{ color: "white", fontSize: "18px", fontWeight: 600 }}
-                  >
-                    Email{" "}
-                    <span
-                      style={{
-                        color: "#9CA3AF",
-                        fontWeight: 400,
-                        marginLeft: "8px",
-                      }}
-                    >
-                      optional
-                    </span>
+                  <span style={labelStyle}>
+                    {t('email')} <span style={{ color: "#9CA3AF", fontWeight: 400, fontSize: "13px" }}>{t('optional')}</span>
                   </span>
                 }
-                styles={{
-                  label: {
-                    marginBottom: 8,
-                  },
-                  input: {
-                    backgroundColor: "#F3F4F6",
-                    border: "2px solid #6B7280",
-                    color: "#111827",
-                    minHeight: "48px",
-                  },
-                }}
+                styles={inputStyles}
               />
-            </div>
+            </Group>
 
-            <Stack gap="xs">
-              <Text
-                style={{
-                  color: "white",
-                  fontSize: "18px",
-                }}
-              >
-                What problems or issues did you experience while using the website
-                or playing the games?
+            <Textarea
+              value={issues}
+              onChange={(e) => setIssues(e.currentTarget.value)}
+              placeholder={t('issuesPlaceholder')}
+              minRows={5}
+              autosize
+              required
+              label={
+                <span style={labelStyle}>
+                  {t('issues')}
+                </span>
+              }
+              styles={textareaStyles}
+            />
+
+            <Textarea
+              value={futureIdeas}
+              onChange={(e) => setFutureIdeas(e.currentTarget.value)}
+              placeholder={t('ideasPlaceholder')}
+              minRows={5}
+              autosize
+              label={
+                <span style={labelStyle}>
+                  {t('ideas')} <span style={{ color: "#9CA3AF", fontWeight: 400, fontSize: "13px" }}>{t('optional')}</span>
+                </span>
+              }
+              styles={textareaStyles}
+            />
+
+            <Stack gap="sm">
+              <Text style={labelStyle}>
+                {t('likelihood')}
               </Text>
-
-              <Textarea
-                value={issues}
-                onChange={(e) => setIssues(e.currentTarget.value)}
-                minRows={8}
-                autosize
-                required
-                styles={{
-                  input: {
-                    backgroundColor: "#F3F4F6",
-                    border: "2px solid #6B7280",
-                    color: "#111827",
-                  },
-                }}
-              />
-            </Stack>
-
-            <Stack gap="xs">
-              <Text
-                style={{
-                  color: "white",
-                  fontSize: "18px",
-                }}
-              >
-                What features or games would you like to see in the future?
-              </Text>
-
-              <Textarea
-                value={futureIdeas}
-                onChange={(e) => setFutureIdeas(e.currentTarget.value)}
-                minRows={8}
-                autosize
-                styles={{
-                  input: {
-                    backgroundColor: "#F3F4F6",
-                    border: "2px solid #6B7280",
-                    color: "#111827",
-                  },
-                }}
-              />
-            </Stack>
-
-            <Stack gap="md">
-              <Text
-                style={{
-                  color: "white",
-                  fontSize: "18px",
-                }}
-              >
-                What is the likelihood that you will return to this site?
-              </Text>
-
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  gap: "16px",
-                  flexWrap: "wrap",
-                }}
-              >
-                {[
-                  "Very Unlikely",
-                  "Unlikely",
-                  "Not Sure",
-                  "Likely",
-                  "Very Likely",
-                ].map((label) => (
-                  <label
-                    key={label}
+              <Group gap={8} wrap="nowrap">
+                {likelihoodKeys.map((key) => (
+                  <Box
+                    key={key}
+                    component="button"
+                    type="button"
+                    onClick={() => setReturnLikelihood(key)}
                     style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      gap: "8px",
-                      color: "white",
-                      fontSize: "16px",
+                      flex: 1,
+                      padding: "10px 4px",
+                      borderRadius: "10px",
+                      border: "none",
                       cursor: "pointer",
-                      minWidth: "120px",
+                      textAlign: "center",
+                      fontFamily: "var(--font-alexandria), sans-serif",
+                      fontWeight: 500,
+                      fontSize: "12px",
+                      color: returnLikelihood === key ? "white" : "#9CA3AF",
+                      background:
+                        returnLikelihood === key
+                          ? "linear-gradient(135deg, #1b41ff, #0054f0)"
+                          : "#525b85",
+                      transition: "all 0.2s ease",
                     }}
                   >
-                    <input
-                      type="radio"
-                      name="returnLikelihood"
-                      value={label}
-                      checked={returnLikelihood === label}
-                      onChange={(e) => setReturnLikelihood(e.target.value)}
-                      style={{
-                        width: "28px",
-                        height: "28px",
-                      }}
-                    />
-                    <span>{label}</span>
-                  </label>
+                    {t(key)}
+                  </Box>
                 ))}
-              </div>
+              </Group>
             </Stack>
 
-            <Stack gap="xs">
-              <Text
-                style={{
-                  color: "white",
-                  fontSize: "18px",
-                }}
-              >
-                Please provide additional comments or questions.{" "}
-                <span style={{ color: "#9CA3AF" }}>optional</span>
-              </Text>
-
-              <Textarea
-                value={comments}
-                onChange={(e) => setComments(e.currentTarget.value)}
-                minRows={8}
-                autosize
-                styles={{
-                  input: {
-                    backgroundColor: "#F3F4F6",
-                    border: "2px solid #6B7280",
-                    color: "#111827",
-                  },
-                }}
-              />
-            </Stack>
+            <Textarea
+              value={comments}
+              onChange={(e) => setComments(e.currentTarget.value)}
+              placeholder={t('commentsPlaceholder')}
+              minRows={4}
+              autosize
+              label={
+                <span style={labelStyle}>
+                  {t('comments')} <span style={{ color: "#9CA3AF", fontWeight: 400, fontSize: "13px" }}>{t('optional')}</span>
+                </span>
+              }
+              styles={textareaStyles}
+            />
 
             {error && (
-              <Text style={{ color: "#FCA5A5", fontSize: "16px" }}>{error}</Text>
+              <Text c="red.4" fz="sm" style={{ fontFamily: "var(--font-alexandria), sans-serif" }}>
+                {error}
+              </Text>
             )}
 
             {success && (
-              <Text style={{ color: "#86EFAC", fontSize: "16px" }}>{success}</Text>
+              <Text c="green.4" fz="sm" style={{ fontFamily: "var(--font-alexandria), sans-serif" }}>
+                {success}
+              </Text>
             )}
 
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <Group justify="flex-end">
               <Button
                 type="submit"
                 loading={loading}
+                w={200}
+                h={42}
                 style={{
-                  backgroundColor: "#6B8FB3",
-                  color: "white",
-                  border: "1px solid #4B5563",
+                  background: "linear-gradient(to bottom, #1b41ff 0%, #0054f0 100%)",
+                  borderRadius: "20px",
+                  color: "#fbe6e6",
+                  fontFamily: "var(--font-alexandria), sans-serif",
+                  fontWeight: 700,
+                  fontSize: "15px",
+                  border: "none",
                 }}
               >
-                Submit
+                {t('submit')}
               </Button>
-            </div>
+            </Group>
           </Stack>
         </form>
-      </Container>
-    </div>
+      </Box>
+    </Container>
   );
 }

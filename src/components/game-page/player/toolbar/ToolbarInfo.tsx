@@ -17,10 +17,10 @@ export default function ToolbarInfo({ title, subject }: ToolbarInfoProps) {
         className="h-auto w-9"
       />
       <Box>
-        <Title order={1} fz={{ base: "xl", md: "h3" }}>
+        <Title order={1} fz={{ base: "xl", md: "h3" }} c="white">
           {title}
         </Title>
-        <Text fz="sm" c="rgba(255,255,255,0.7)">
+        <Text fz="sm" c="var(--toolbar-subject)">
           {subject}
         </Text>
       </Box>

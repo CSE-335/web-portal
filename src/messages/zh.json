@@ -1,0 +1,176 @@
+{
+  "nav": {
+    "searchPlaceholder": "搜索STEM游戏...",
+    "logIn": "登录",
+    "language": "语言"
+  },
+  "footer": {
+    "links": {
+      "allGames": "所有游戏",
+      "aboutUs": "关于我们",
+      "contactUs": "联系我们",
+      "privacy": "隐私政策",
+      "feedback": "反馈"
+    },
+    "description": "欢迎来到劳伦斯利弗莫尔国家实验室STEM游戏门户。享受我们的教育性STEM游戏库，可在手机、平板和PC上游玩，无需下载。"
+  },
+  "login": {
+    "title": "登录",
+    "email": "电子邮件",
+    "password": "密码",
+    "noAccount": "没有账户？",
+    "registerHere": "在此注册",
+    "forgotPassword": "忘记密码？",
+    "recoverPassword": "找回密码",
+    "signInGoogle": "使用Google登录",
+    "continue": "继续",
+    "invalidEmail": "无效的电子邮件",
+    "passwordShort": "密码至少需要6个字符"
+  },
+  "signup": {
+    "title": "创建账户",
+    "email": "电子邮件",
+    "password": "密码",
+    "confirmPassword": "确认密码",
+    "characters": "字符",
+    "number": "数字",
+    "letter": "字母",
+    "signUpGoogle": "使用Google注册",
+    "continue": "继续",
+    "invalidEmail": "无效的电子邮件地址。",
+    "passwordShort": "密码至少需要6个字符",
+    "passwordMismatch": "密码不匹配"
+  },
+  "profile": {
+    "editTitle": "编辑个人资料",
+    "usernameLabel": "用户名",
+    "usernamePlaceholder": "输入用户名",
+    "locationLabel": "位置",
+    "locationPlaceholder": "选择位置",
+    "saved": "已保存！",
+    "saveChanges": "保存更改",
+    "menuProfile": "个人资料",
+    "menuEditProfile": "编辑资料",
+    "menuAccountSettings": "账户设置",
+    "menuLogOut": "退出登录",
+    "menuContactUs": "联系我们",
+    "menuPartner": "合作伙伴 — LLNL",
+    "menuLanguage": "语言",
+    "changeBanner": "更改横幅"
+  },
+  "profilePage": {
+    "editProfile": "编辑资料",
+    "stats": "统计",
+    "memberFor": "加入时间",
+    "today": "今天",
+    "days": "{count}天",
+    "gamesLiked": "喜欢的游戏",
+    "playstreak": "游戏连续天数",
+    "recentlyPlayed": "最近游玩",
+    "tabLiked": "喜欢的游戏",
+    "tabLeaderboards": "排行榜",
+    "noLikedGames": "还没有喜欢的游戏，快去探索吧！",
+    "leaderboardsSoon": "排行榜即将推出！",
+    "justNow": "刚刚",
+    "minutesAgo": "{m}分钟前",
+    "hoursAgo": "{h}小时前",
+    "daysAgo": "{d}天前"
+  },
+  "saveBanner": {
+    "dontLose": "不要丢失您的进度",
+    "signUp": "注册",
+    "close": "关闭"
+  },
+  "accountSettings": {
+    "title": "账户设置",
+    "updateEmail": "更新电子邮件",
+    "secureAccount": "保护您的账户",
+    "logOutAll": "从所有设备退出",
+    "deleteAccount": "删除账户",
+    "deleteButton": "删除您的账户",
+    "deleteConfirm": "您确定吗？再次点击以确认",
+    "back": "返回",
+    "currentEmail": "当前邮箱",
+    "newEmailDesc": "输入您的新邮箱地址。我们将发送确认链接进行验证。",
+    "newEmailPlaceholder": "新邮箱地址",
+    "invalidEmail": "请输入有效的邮箱地址。",
+    "sameEmail": "这已经是您当前的邮箱。",
+    "sendVerification": "发送验证",
+    "emailSentTitle": "请查收邮件",
+    "emailSentDesc": "我们已向 {email} 发送了确认链接。点击链接更新您的邮箱地址。",
+    "done": "完成"
+  },
+  "feedback": {
+    "title": "网站反馈",
+    "subtitle": "帮助我们改善您的体验",
+    "name": "姓名",
+    "email": "电子邮件",
+    "optional": "可选",
+    "issues": "您遇到了哪些问题？",
+    "issuesPlaceholder": "描述问题...",
+    "ideas": "您想看到哪些功能或游戏？",
+    "ideasPlaceholder": "分享您的想法...",
+    "likelihood": "您回来的可能性有多大？",
+    "veryUnlikely": "非常不可能",
+    "unlikely": "不太可能",
+    "notSure": "不确定",
+    "likely": "可能",
+    "veryLikely": "非常可能",
+    "comments": "其他评论",
+    "commentsPlaceholder": "其他想法...",
+    "submit": "提交反馈",
+    "success": "感谢您的反馈！",
+    "error": "出了点问题，请重试。"
+  },
+  "common": {
+    "play": "游玩",
+    "randomGame": "随机游戏",
+    "backToTop": "返回顶部",
+    "educational": "教育性"
+  },
+  "home": {
+    "welcome1": "欢迎来到LLNL",
+    "welcome2": "STEM游戏",
+    "interactiveLearning": "互动学习",
+    "saveProgress": "保存你的进度",
+    "playAnyDevice": "在任何设备上游玩"
+  },
+  "gameCard": {
+    "tags": "标签",
+    "Science": "科学",
+    "Technology": "技术",
+    "Engineering": "工程",
+    "Mathematics": "数学"
+  },
+  "gameDetails": {
+    "title": "游戏详情",
+    "subject": "学科",
+    "playStyle": "游玩方式",
+    "playStyleValue": "互动网页游戏",
+    "access": "访问方式",
+    "accessValue": "基于浏览器，无需下载"
+  },
+  "gameDescription": {
+    "title": "游戏描述"
+  },
+  "games": {
+    "matrix-meadow": {
+      "description": "通过互动怪物缩放挑战和AI辅助反馈来练习矩阵乘法。",
+      "long1": "Matrix Meadow Academy将矩阵乘法变成了一个视觉怪物缩放挑战，学生通过直接在屏幕上变换生物来学习。玩家应用矩阵来匹配目标形状，使抽象的线性代数变得更加具体和直观。",
+      "long2": "游戏专注于缩放变换、矩阵结构以及数值输入与视觉输出之间关系等核心概念。通过将每个问题与即时的视觉结果联系起来，学生可以更好地理解矩阵乘法如何改变大小和形状。",
+      "long3": "AI辅助反馈通过帮助玩家理解变换成功或失败的原因来支持学习过程，强化模式识别并通过引导练习鼓励纠正。"
+    },
+    "sonic-fingerprint-lab": {
+      "description": "通过互动声音实验室探索音频模式、频率和基于语音的分析。",
+      "long1": "Sonic Fingerprint Lab是一款互动科学游戏，学生可以探索如何通过基于频率的模式来可视化、比较和分析声音。通过使用自己的声音和录制的信号，玩家直接了解每种声音都会留下可测量的声学特征。",
+      "long2": "游戏通过动手实验而非被动记忆来介绍音高、波形行为和频率差异等概念。学生可以观察声音输入的变化如何影响结果模式，帮助他们以更直接和引人入胜的方式建立音频分析的直觉。",
+      "long3": "AI辅助反馈帮助解释玩家的结果，指出声音数据中的有意义差异，并引导他们更深入地理解频率模式与声音和声学特征之间的关系。"
+    },
+    "biology-virus-outbreak-simulator": {
+      "description": "通过互动建模和AI辅助反馈探索病毒爆发并学习流行病学概念。",
+      "long1": "Biology Virus Outbreak Simulator是一款互动科学游戏，学生可以探索病毒爆发如何传播和演变。通过回答问题，玩家可以观察不同因素对流行病进程的影响。",
+      "long2": "游戏通过动手实验介绍感染动态、免疫力和公共卫生干预等概念。学生可以分析其决策的后果并相应调整策略。",
+      "long3": "AI辅助反馈为玩家提供关于其干预措施有效性的见解，帮助他们理解影响病毒传播和控制的因素之间的复杂相互作用。"
+    }
+  }
+}
