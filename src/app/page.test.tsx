@@ -3,6 +3,32 @@ import '@testing-library/jest-dom';
 import { MantineProvider } from '@mantine/core';
 import HomePage from './page';
 
+jest.mock('../data/games', () => ({
+  games: [
+    {
+      slug: 'test-game-1',
+      title: 'Test Game One',
+      subject: 'Science',
+      description: 'A test game',
+      longDescription: [],
+      iframeSrc: '/games/test-game-1/index.html',
+      thumbnailSrc: '/images/test-game-1-thumb.png',
+      featured: true,
+    },
+    {
+      slug: 'test-game-2',
+      title: 'Test Game Two',
+      subject: 'Technology',
+      description: 'Another test game',
+      longDescription: [],
+      iframeSrc: '/games/test-game-2/index.html',
+      thumbnailSrc: '/images/test-game-2-thumb.png',
+      featured: true,
+    },
+  ],
+  getGameBySlug: (slug: string) => undefined,
+}));
+
 jest.mock('../lib/supabase/server', () => ({
   createServerSupabaseClient: () => ({
     from: () => ({
@@ -31,8 +57,8 @@ describe('Home page', () => {
 
   it('renders a game card for each game', async () => {
     await renderHomePage();
-    expect(screen.getByText('Matrix Meadow Academy')).toBeInTheDocument();
-    expect(screen.getByText('Sonic Fingerprint Lab')).toBeInTheDocument();
+    expect(screen.getByText('Test Game One')).toBeInTheDocument();
+    expect(screen.getByText('Test Game Two')).toBeInTheDocument();
   });
 
   it('renders play links for each game', async () => {
