@@ -1,0 +1,3 @@
+[submodule "games/pythongame"]
+	path = games/pythongame
+	url = https://github.com/etchre/python-programming-game.git
