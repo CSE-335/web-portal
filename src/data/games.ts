@@ -26,7 +26,7 @@ export const games: GameMeta[] = [
       "Advanced levels feature a virtual robot navigating procedurally generated mazes. Students write Python modules that control the robot's movement and sensor readings, bridging the gap between writing code and seeing it interact with a simulated environment."
     ],
     "iframeSrc": "/staticGames/pythongame/index.html",
-    "thumbnailSrc": "/images/pythongame-thumb.png",
+    "thumbnailSrc": "/gameThumbnails/pythongame.png",
     "embedHeight": "100vh",
     "featured": true,
     "tags": [

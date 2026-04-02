@@ -1,3 +1,6 @@
 [submodule "games/pythongame"]
 	path = games/pythongame
 	url = https://github.com/etchre/python-programming-game.git
+[submodule "games/human-motion"]
+	path = games/human-motion
+	url = https://github.com/NatalieParker/human-motion-simulator.git

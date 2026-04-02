@@ -16,16 +16,18 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 GAMES_DIR="$ROOT_DIR/games"
 PUBLIC_GAMES_DIR="$ROOT_DIR/public/staticGames"
-PUBLIC_IMAGES_DIR="$ROOT_DIR/public/images"
+PUBLIC_THUMBS_DIR="$ROOT_DIR/public/gameThumbnails"
 
 # Ensure submodules are checked out
 echo "Updating submodules..."
 cd "$ROOT_DIR"
 git submodule update --init --recursive
 
-# Clean previous game builds from public
+# Clean previous game builds and thumbnails from public
 rm -rf "$PUBLIC_GAMES_DIR"
+rm -rf "$PUBLIC_THUMBS_DIR"
 mkdir -p "$PUBLIC_GAMES_DIR"
+mkdir -p "$PUBLIC_THUMBS_DIR"
 
 for dir in "$GAMES_DIR"/*/; do
   [ -d "$dir" ] || continue
@@ -54,10 +56,7 @@ for dir in "$GAMES_DIR"/*/; do
 
     # Copy thumbnail if present
     if [ -f "$dir/data/thumbnail.png" ]; then
-      cp "$dir/data/thumbnail.png" "$PUBLIC_IMAGES_DIR/${game_id}-thumb.png"
-      echo "Copied thumbnail for $game_id"
-    elif [ -f "$dir/thumbnail.png" ]; then
-      cp "$dir/thumbnail.png" "$PUBLIC_IMAGES_DIR/${game_id}-thumb.png"
+      cp "$dir/data/thumbnail.png" "$PUBLIC_THUMBS_DIR/${game_id}.png"
       echo "Copied thumbnail for $game_id"
     fi
   fi

@@ -45,7 +45,7 @@ if (fs.existsSync(gamesDir)) {
       description: meta.description ?? '',
       longDescription: meta.longDescription ?? [],
       iframeSrc,
-      thumbnailSrc: `/images/${gameId}-thumb.png`,
+      thumbnailSrc: `/gameThumbnails/${gameId}.png`,
       embedHeight: meta.embedHeight ?? '800px',
       featured: meta.featured ?? false,
       tags: meta.tags ?? [],
