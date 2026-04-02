@@ -25,7 +25,7 @@ export const games: GameMeta[] = [
       "Each level introduces new programming concepts through hands-on challenges. A built-in code editor with line-by-line playback lets students see exactly how their code runs, making abstract concepts like loops, functions, and conditionals tangible and immediate.",
       "Advanced levels feature a virtual robot navigating procedurally generated mazes. Students write Python modules that control the robot's movement and sensor readings, bridging the gap between writing code and seeing it interact with a simulated environment."
     ],
-    "iframeSrc": "/games/pythongame/index.html",
+    "iframeSrc": "/staticGames/pythongame/index.html",
     "thumbnailSrc": "/images/pythongame-thumb.png",
     "embedHeight": "100vh",
     "featured": true,

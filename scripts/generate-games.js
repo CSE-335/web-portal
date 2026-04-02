@@ -36,7 +36,7 @@ if (fs.existsSync(gamesDir)) {
       continue;
     }
 
-    const iframeSrc = `/games/${gameId}/index.html`;
+    const iframeSrc = `/staticGames/${gameId}/index.html`;
 
     games.push({
       slug: gameId,

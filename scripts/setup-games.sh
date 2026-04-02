@@ -4,7 +4,7 @@
 # This script:
 #   1. Ensures submodules are checked out
 #   2. Builds each game in games/
-#   3. Copies built files to public/games/<game-id>/
+#   3. Copies built files to public/staticGames/<game-id>/
 #   4. Copies thumbnails to public/images/<game-id>-thumb.png
 #   5. Generates src/data/games.ts from each game's data/game.json
 #
@@ -15,7 +15,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 GAMES_DIR="$ROOT_DIR/games"
-PUBLIC_GAMES_DIR="$ROOT_DIR/public/games"
+PUBLIC_GAMES_DIR="$ROOT_DIR/public/staticGames"
 PUBLIC_IMAGES_DIR="$ROOT_DIR/public/images"
 
 # Ensure submodules are checked out
@@ -45,7 +45,7 @@ for dir in "$GAMES_DIR"/*/; do
 
     # Copy dist output
     if [ -d "$dir/dist" ]; then
-      echo "Staging $game -> public/games/$game_id/"
+      echo "Staging $game -> public/staticGames/$game_id/"
       mkdir -p "$PUBLIC_GAMES_DIR/$game_id"
       cp -r "$dir/dist/"* "$PUBLIC_GAMES_DIR/$game_id/"
     else
