@@ -33,6 +33,7 @@ describe('Home page', () => {
     await renderHomePage();
     expect(screen.getByText('Matrix Meadow Academy')).toBeInTheDocument();
     expect(screen.getByText('Sonic Fingerprint Lab')).toBeInTheDocument();
+    expect(screen.getByText('Biology Virus Outbreak Simulator')).toBeInTheDocument();
   });
 
   it('renders play links for each game', async () => {
