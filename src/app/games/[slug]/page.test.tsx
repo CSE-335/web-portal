@@ -9,6 +9,14 @@ jest.mock('next/navigation', () => ({
   notFound: jest.fn(),
 }));
 
+jest.mock('@/features/assistant', () => ({
+  GameIframeBridge: () => null,
+  useAssistant: () => ({
+    state: { isOpen: false },
+    dispatch: jest.fn(),
+  }),
+}));
+
 describe('Game page', () => {
   it('renders a valid game', async () => {
     const params = Promise.resolve({ slug: 'matrix-meadow' });
