@@ -6,7 +6,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: arc-runner-cse120
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -18,14 +18,17 @@ jobs:
 
   deploy:
     needs: test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: ubuntu-latest
+    # TODO: restore to main-only after testing: if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: arc-runner-cse120
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
+      - run: ./scripts/setup-games.sh
       - run: npm ci
       - run: npx opennextjs-cloudflare build
         env:
