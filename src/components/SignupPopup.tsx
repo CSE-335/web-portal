@@ -10,10 +10,10 @@ import {
   Group,
   Text,
   Divider,
-  Box,
   Badge,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { signUpNewUser, signInWithGoogle } from "@/lib/supabase/auth";
 
 interface SignupPopupProps {
   opened: boolean;
@@ -22,6 +22,8 @@ interface SignupPopupProps {
 
 export default function SignupPopup({ opened, onClose }: SignupPopupProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const form = useForm({
     initialValues: {
@@ -31,9 +33,9 @@ export default function SignupPopup({ opened, onClose }: SignupPopupProps) {
     },
     validate: {
       email: (value) =>
-        /^\S+@\S+$/.test(value) ? null : "Invalid email",
+        /^\S+@\S+$/.test(value) ? null : "Invalid email address.",
       password: (value) =>
-        value.length >= 8 ? null : "Password must be at least 8 characters",
+        value.length >= 6 ? null : "Password must be at least 6 characters",
       confirmPassword: (value, values) =>
         value === values.password ? null : "Passwords do not match",
     },
@@ -42,7 +44,7 @@ export default function SignupPopup({ opened, onClose }: SignupPopupProps) {
   const passwordStrength = useMemo(() => {
     const password = form.values.password;
     return {
-      hasMinLength: password.length >= 8,
+      hasMinLength: password.length >= 6,
       hasNumber: /\d/.test(password),
       hasLetter: /[a-zA-Z]/.test(password),
     };
@@ -50,17 +52,28 @@ export default function SignupPopup({ opened, onClose }: SignupPopupProps) {
 
   const handleSubmit = async (values: typeof form.values) => {
     setIsLoading(true);
+    setError(null);
+    setSuccess(null);
     try {
-      // TODO: Implement signup logic here
-      console.log("Signup attempt:", values);
+      const result = await signUpNewUser(values.email, values.password);
+
+      if (result.success) {
+        setSuccess("Account created successfully.");
+        form.reset();
+      } else {
+        setError(result.error ?? "Something went wrong.");
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleGoogleSignup = () => {
-    // TODO: Implement Google signup logic
-    console.log("Google signup clicked");
+  const handleGoogleSignup = async () => {
+    setError(null);
+    const { error: googleError } = await signInWithGoogle();
+    if (googleError) {
+      setError(googleError);
+    }
   };
 
   return (
@@ -146,7 +159,7 @@ export default function SignupPopup({ opened, onClose }: SignupPopupProps) {
                   },
                 }}
               >
-                {passwordStrength.hasMinLength ? "✓" : "○"} At least 8 characters
+                {passwordStrength.hasMinLength ? "✓" : "○"} At least 6 characters
               </Badge>
               <Badge
                 size="sm"
@@ -197,6 +210,18 @@ export default function SignupPopup({ opened, onClose }: SignupPopupProps) {
                 },
               }}
             />
+
+            {error && (
+              <Text c="red.4" fz="sm">
+                {error}
+              </Text>
+            )}
+
+            {success && (
+              <Text c="green.4" fz="sm">
+                {success}
+              </Text>
+            )}
 
             <Button
               fullWidth

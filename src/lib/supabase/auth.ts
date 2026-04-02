@@ -78,12 +78,12 @@ export async function signOutUser(): Promise<{ error: string | null }> {
   return { error: error?.message ?? null };
 }
 
-// Sign in / Sign up with Google (redirects to Google, then to auth callback)
+// Sign in / Sign up with Google (client-side OAuth, Supabase manages session)
 export async function signInWithGoogle(
   redirectTo?: string
 ): Promise<{ error: string | null }> {
   const origin = typeof window !== "undefined" ? window.location.origin : "";
-  const callbackUrl = redirectTo ? `${origin}${redirectTo}` : `${origin}/auth/callback`;
+  const callbackUrl = redirectTo ? `${origin}${redirectTo}` : origin;
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: { redirectTo: callbackUrl },

@@ -1,17 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Group } from "@mantine/core";
 import LogoBrand from "@/components/layout/LogoBrand";
 import SearchBar from "./SearchBar";
 import UtilityNav from "./UtilityNav/UtilityNav";
 import LoginPopup from "@/components/LoginPopup";
+import { supabase } from "@/lib/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
 
 export default function Header() {
   const [searchValue, setSearchValue] = useState("");
   const [loginModalOpened, setLoginModalOpened] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    supabase.auth.getUser().then(({ data }) => {
+      if (isMounted) {
+        setUser(data.user ?? null);
+      }
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (isMounted) {
+        setUser(session?.user ?? null);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   return (
     <Group
@@ -35,9 +61,10 @@ export default function Header() {
         onChange={(e) => setSearchValue(e.target.value)}
       />
 
-      <UtilityNav 
+      <UtilityNav
         loginModalOpened={loginModalOpened}
         setLoginModalOpened={setLoginModalOpened}
+        user={user}
       />
 
       <LoginPopup
