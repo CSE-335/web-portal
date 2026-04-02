@@ -1,5 +1,6 @@
 // Auth callback — handles OAuth login and email change confirmation
 // Uses @supabase/ssr for cookie-based session on the server
+// For Google OAuth: creates user_profiles row with generated username on first login
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";

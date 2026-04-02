@@ -192,11 +192,71 @@ html[lang="ar"] button {
   color: #4a5568 !important;
 }
 
+/* Tutor chat input */
+.tutor-chat-input .mantine-Textarea-input::placeholder {
+  color: rgba(160, 200, 255, 0.6) !important;
+}
+[data-mantine-color-scheme="light"] .tutor-chat-input .mantine-Textarea-input::placeholder {
+  color: #888 !important;
+}
+
+/* Tutor panel hint text in light mode */
+[data-mantine-color-scheme="light"] .tutor-hint-text {
+  color: #777 !important;
+}
+
 /* Email shimmer */
 @keyframes shimmer {
   0% { background-position: 0% center; }
   100% { background-position: 200% center; }
 }
+
+/* Game embed fullscreen — fill the entire screen */
+:fullscreen,
+:-webkit-full-screen {
+  display: flex !important;
+  flex-direction: column !important;
+  background: #000 !important;
+  border-radius: 0 !important;
+}
+:fullscreen > *,
+:-webkit-full-screen > * {
+  flex: 1 !important;
+  min-height: 0 !important;
+  border-radius: 0 !important;
+}
+:fullscreen iframe,
+:-webkit-full-screen iframe {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 0 !important;
+}
+
+/* Save progress banner buttons */
+button.banner-login-btn:hover,
+button.banner-login-btn:hover[data-variant] {
+  background-color: rgba(255, 255, 255, 0.18) !important;
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-color: white !important;
+  color: white !important;
+}
+button.banner-close-btn:hover,
+button.banner-close-btn:hover[data-variant] {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  color: #1F4DCC !important;
+}
+
+/* Save progress banner */
+@keyframes bannerSlideIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+@keyframes bannerSlideOut {
+  from { opacity: 1; transform: translateX(-50%) translateY(0); }
+  to   { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+}
+
 
 /* Play button */
 .play-btn {

@@ -104,3 +104,25 @@ export async function signInWithGoogle(
   if (data?.url) window.location.href = data.url;
   return { error: null };
 }
+
+// Ensure profile exists for the current user (called after OAuth login)
+export async function ensureUserProfile(): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+
+  const { data: existing } = await supabase
+    .from("user_profiles")
+    .select("id")
+    .eq("auth_user_id", user.id)
+    .maybeSingle();
+
+  if (!existing) {
+    const { generateUsername } = await import("@/lib/utils/generateUsername");
+    const displayName = generateUsername(user.id);
+    await supabase.from("user_profiles").insert({
+      auth_user_id: user.id,
+      display_name: displayName,
+      avatar_url: user.user_metadata?.avatar_url ?? null,
+    } as never);
+  }
+}

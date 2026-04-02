@@ -12,7 +12,7 @@ export default function GameEmbed({
   height = "800px",
 }: GameEmbedProps) {
   return (
-    <Box style={{ overflow: "hidden", background: "rgba(0,0,0,0.2)" }}>
+    <Box style={{ overflow: "hidden", borderRadius: 20, background: "rgba(0,0,0,0.2)" }}>
       <iframe
         src={src}
         title={title}

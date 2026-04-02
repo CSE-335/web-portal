@@ -73,6 +73,7 @@
   "saveBanner": {
     "dontLose": "Don't lose your progress",
     "signUp": "Sign up",
+    "logIn": "Log in",
     "close": "Close"
   },
   "accountSettings": {

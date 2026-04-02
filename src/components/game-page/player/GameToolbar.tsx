@@ -1,3 +1,4 @@
+import { type RefObject } from "react";
 import { Flex } from "@mantine/core";
 import ToolbarInfo from "./toolbar/ToolbarInfo";
 import ToolbarButtons from "./toolbar/ToolbarButtons";
@@ -7,6 +8,7 @@ type GameToolbarProps = {
   title: string;
   subject: string;
   iframeSrc: string;
+  embedRef: RefObject<HTMLDivElement | null>;
 };
 
 export default function GameToolbar({
@@ -14,6 +16,7 @@ export default function GameToolbar({
   title,
   subject,
   iframeSrc,
+  embedRef,
 }: GameToolbarProps) {
   return (
     <Flex
@@ -29,7 +32,7 @@ export default function GameToolbar({
       }}
     >
       <ToolbarInfo title={title} subject={subject} />
-      <ToolbarButtons slug={slug} iframeSrc={iframeSrc} />
+      <ToolbarButtons slug={slug} iframeSrc={iframeSrc} embedRef={embedRef} />
     </Flex>
   );
 }

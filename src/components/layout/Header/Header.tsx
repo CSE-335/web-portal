@@ -8,6 +8,7 @@ import SearchBar from "./SearchBar";
 import UtilityNav from "./UtilityNav/UtilityNav";
 import LoginPopup from "@/components/LoginPopup";
 import { supabase } from "@/lib/supabase/client";
+import { ensureUserProfile } from "@/lib/supabase/auth";
 import type { User } from "@supabase/supabase-js";
 
 
@@ -30,6 +31,9 @@ export default function Header() {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (isMounted) {
         setUser(session?.user ?? null);
+        if (session?.user) {
+          ensureUserProfile();
+        }
       }
     });
 
