@@ -4,3 +4,6 @@
 [submodule "games/human-motion"]
 	path = games/human-motion
 	url = https://github.com/NatalieParker/human-motion-simulator.git
+[submodule "games/BVoutbreak"]
+	path = games/BVoutbreak
+	url = https://github.com/jeinjein60/Biology-Virus-AI-Game.git
