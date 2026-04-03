@@ -7,3 +7,6 @@
 [submodule "games/BVoutbreak"]
 	path = games/BVoutbreak
 	url = https://github.com/jeinjein60/Biology-Virus-AI-Game.git
+[submodule "games/matrix-meadow"]
+	path = games/matrix-meadow
+	url = https://github.com/atalania/Matrix-Meadow-Academy.git
