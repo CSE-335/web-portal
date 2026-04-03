@@ -30,9 +30,7 @@ export async function POST(req: Request) {
         : undefined,
     });
 
-    return NextResponse.json(transcription, {
-      headers: { 'X-RateLimit-Remaining': String(remaining) },
-    });
+    return NextResponse.json(transcription);
   } catch (err: any) {
     console.error('OpenAI Whisper error:', err.message);
     return NextResponse.json(
