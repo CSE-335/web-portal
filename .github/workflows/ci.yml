@@ -29,7 +29,16 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      - run: ./scripts/setup-games.sh
+      - uses: actions/cache@v4
+        with:
+          path: |
+            .game-build-cache.json
+            public/staticGames
+            public/gameThumbnails
+          key: game-builds-${{ hashFiles('.gitmodules', 'games/*/data/game.json') }}
+          restore-keys: |
+            game-builds-
+      - run: node scripts/setup-games.js
       - run: npm ci
       - run: npx opennextjs-cloudflare build
         env:

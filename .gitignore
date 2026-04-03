@@ -53,3 +53,5 @@ storybook-static
 /public/gameThumbnails/
 # Game registry auto-generated from game.json files in submodules
 /src/data/games.ts
+# Build cache for setup-games script (tracks submodule commit hashes)
+.game-build-cache.json
