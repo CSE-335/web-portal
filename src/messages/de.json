@@ -1,0 +1,176 @@
+{
+  "nav": {
+    "searchPlaceholder": "STEM-Spiele suchen...",
+    "logIn": "Anmelden",
+    "language": "Sprache"
+  },
+  "footer": {
+    "links": {
+      "allGames": "ALLE SPIELE",
+      "aboutUs": "ÜBER UNS",
+      "contactUs": "KONTAKT",
+      "privacy": "DATENSCHUTZ",
+      "feedback": "FEEDBACK"
+    },
+    "description": "Willkommen im STEM-Spielportal des Lawrence Livermore National Laboratory. Entdecken Sie unsere Bibliothek mit Lernspielen für Telefone, Tablets und PCs – ohne Downloads."
+  },
+  "login": {
+    "title": "Anmelden",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "noAccount": "Noch kein Konto?",
+    "registerHere": "Hier registrieren",
+    "forgotPassword": "Passwort vergessen?",
+    "recoverPassword": "Passwort wiederherstellen",
+    "signInGoogle": "Mit Google anmelden",
+    "continue": "Weiter",
+    "invalidEmail": "Ungültige E-Mail",
+    "passwordShort": "Das Passwort muss mindestens 6 Zeichen haben"
+  },
+  "signup": {
+    "title": "Konto erstellen",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "characters": "Zeichen",
+    "number": "Zahl",
+    "letter": "Buchstabe",
+    "signUpGoogle": "Mit Google registrieren",
+    "continue": "Weiter",
+    "invalidEmail": "Ungültige E-Mail-Adresse.",
+    "passwordShort": "Das Passwort muss mindestens 6 Zeichen haben",
+    "passwordMismatch": "Passwörter stimmen nicht überein"
+  },
+  "profile": {
+    "editTitle": "Profil bearbeiten",
+    "usernameLabel": "Benutzername",
+    "usernamePlaceholder": "Benutzername eingeben",
+    "locationLabel": "Standort",
+    "locationPlaceholder": "Standort auswählen",
+    "saved": "Gespeichert!",
+    "saveChanges": "Änderungen speichern",
+    "menuProfile": "Profil",
+    "menuEditProfile": "Profil bearbeiten",
+    "menuAccountSettings": "Kontoeinstellungen",
+    "menuLogOut": "Abmelden",
+    "menuContactUs": "Kontakt",
+    "menuPartner": "Partner — LLNL",
+    "menuLanguage": "Sprache",
+    "changeBanner": "Banner ändern"
+  },
+  "profilePage": {
+    "editProfile": "Profil bearbeiten",
+    "stats": "Statistiken",
+    "memberFor": "Mitglied seit",
+    "today": "Heute",
+    "days": "{count, plural, one {# Tag} other {# Tage}}",
+    "gamesLiked": "Beliebte Spiele",
+    "playstreak": "Spielserie",
+    "recentlyPlayed": "Zuletzt gespielt",
+    "tabLiked": "Beliebte Spiele",
+    "tabLeaderboards": "Bestenlisten",
+    "noLikedGames": "Noch keine beliebten Spiele. Erkunden Sie unsere Spiele!",
+    "leaderboardsSoon": "Bestenlisten demnächst!",
+    "justNow": "Gerade eben",
+    "minutesAgo": "Vor {m}m",
+    "hoursAgo": "Vor {h}h",
+    "daysAgo": "Vor {d}d"
+  },
+  "saveBanner": {
+    "dontLose": "Verlieren Sie Ihren Fortschritt nicht",
+    "signUp": "Registrieren",
+    "close": "Schließen"
+  },
+  "accountSettings": {
+    "title": "Kontoeinstellungen",
+    "updateEmail": "E-Mail aktualisieren",
+    "secureAccount": "Konto sichern",
+    "logOutAll": "Von allen Geräten abmelden",
+    "deleteAccount": "Konto löschen",
+    "deleteButton": "Ihr Konto löschen",
+    "deleteConfirm": "Sind Sie sicher? Klicken Sie erneut, um zu bestätigen",
+    "back": "Zurück",
+    "currentEmail": "Aktuelle E-Mail-Adresse",
+    "newEmailDesc": "Geben Sie Ihre neue E-Mail-Adresse ein. Wir senden Ihnen einen Bestätigungslink.",
+    "newEmailPlaceholder": "Neue E-Mail-Adresse",
+    "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+    "sameEmail": "Dies ist bereits Ihre aktuelle E-Mail-Adresse.",
+    "sendVerification": "Bestätigung senden",
+    "emailSentTitle": "Überprüfen Sie Ihre E-Mail",
+    "emailSentDesc": "Wir haben einen Bestätigungslink an {email} gesendet. Klicken Sie auf den Link, um Ihre E-Mail zu aktualisieren.",
+    "done": "Fertig"
+  },
+  "feedback": {
+    "title": "Website-Feedback",
+    "subtitle": "Helfen Sie uns, Ihre Erfahrung zu verbessern",
+    "name": "Name",
+    "email": "E-Mail",
+    "optional": "optional",
+    "issues": "Welche Probleme hatten Sie?",
+    "issuesPlaceholder": "Beschreiben Sie die Probleme...",
+    "ideas": "Welche Funktionen möchten Sie sehen?",
+    "ideasPlaceholder": "Teilen Sie Ihre Ideen...",
+    "likelihood": "Wie wahrscheinlich ist es, dass Sie zurückkehren?",
+    "veryUnlikely": "Sehr unwahrscheinlich",
+    "unlikely": "Unwahrscheinlich",
+    "notSure": "Nicht sicher",
+    "likely": "Wahrscheinlich",
+    "veryLikely": "Sehr wahrscheinlich",
+    "comments": "Zusätzliche Kommentare",
+    "commentsPlaceholder": "Zusätzliche Gedanken...",
+    "submit": "Feedback senden",
+    "success": "Danke für Ihr Feedback!",
+    "error": "Etwas ist schiefgelaufen, bitte versuchen Sie es erneut."
+  },
+  "common": {
+    "play": "Spielen",
+    "randomGame": "Zufälliges Spiel",
+    "backToTop": "Nach oben",
+    "educational": "Lehrreich"
+  },
+  "home": {
+    "welcome1": "Willkommen bei LLNL",
+    "welcome2": "STEM-Spiele",
+    "interactiveLearning": "Interaktives Lernen",
+    "saveProgress": "Speichere deinen Fortschritt",
+    "playAnyDevice": "Spiele auf jedem Gerät"
+  },
+  "gameCard": {
+    "tags": "Tags",
+    "Science": "Wissenschaft",
+    "Technology": "Technologie",
+    "Engineering": "Ingenieurwesen",
+    "Mathematics": "Mathematik"
+  },
+  "gameDetails": {
+    "title": "Spieldetails",
+    "subject": "Fach",
+    "playStyle": "Spielstil",
+    "playStyleValue": "Interaktives Webspiel",
+    "access": "Zugang",
+    "accessValue": "Browserbasiert, kein Download nötig"
+  },
+  "gameDescription": {
+    "title": "Spielbeschreibung"
+  },
+  "games": {
+    "matrix-meadow": {
+      "description": "Übe Matrixmultiplikation durch interaktive Monster-Skalierungsherausforderungen und KI-gestütztes Feedback.",
+      "long1": "Matrix Meadow Academy verwandelt Matrixmultiplikation in eine visuelle Monster-Skalierungsherausforderung, bei der Schüler durch das direkte Transformieren von Kreaturen auf dem Bildschirm lernen. Anstatt Aufgaben isoliert zu lösen, wenden Spieler Matrizen an, um Zielformen zu erreichen, wodurch abstrakte lineare Algebra konkreter und intuitiver wird.",
+      "long2": "Das Spiel konzentriert sich auf Kernkonzepte wie Skalierungstransformationen, Matrixstruktur und die Beziehung zwischen numerischer Eingabe und visueller Ausgabe. Durch die Verknüpfung jedes Problems mit einem sofortigen visuellen Ergebnis können Schüler besser verstehen, wie Matrixmultiplikation Größe und Form verändert.",
+      "long3": "KI-gestütztes Feedback unterstützt den Lernprozess, indem es den Spielern hilft zu verstehen, warum eine Transformation funktioniert hat oder fehlgeschlagen ist, Mustererkennung stärkt und Korrektur durch angeleitete Übung fördert."
+    },
+    "sonic-fingerprint-lab": {
+      "description": "Erkunde Audiomuster, Frequenzen und stimmbasierte Analyse durch ein interaktives Klanglab.",
+      "long1": "Sonic Fingerprint Lab ist ein interaktives Wissenschaftsspiel, in dem Schüler erkunden, wie Klang durch frequenzbasierte Muster visualisiert, verglichen und analysiert werden kann. Durch die Verwendung ihrer eigenen Stimme und aufgezeichneter Signale beschäftigen sich Spieler direkt mit der Idee, dass jeder Klang eine messbare akustische Signatur hinterlässt.",
+      "long2": "Das Spiel führt Konzepte wie Tonhöhe, Wellenformverhalten und Frequenzunterschiede durch praktisches Experimentieren statt passives Auswendiglernen ein. Schüler können beobachten, wie Änderungen der Klangeingabe die resultierenden Muster beeinflussen.",
+      "long3": "KI-gestütztes Feedback hilft bei der Interpretation der Spielerergebnisse, weist auf bedeutsame Unterschiede in ihren Klangdaten hin und führt sie zu einem besseren Verständnis der Beziehung zwischen Frequenzmustern und stimmlichen sowie akustischen Eigenschaften."
+    },
+    "biology-virus-outbreak-simulator": {
+      "description": "Erkunde Virusausbrüche und lerne epidemiologische Konzepte durch interaktive Modellierung und KI-gestütztes Feedback.",
+      "long1": "Biology Virus Outbreak Simulator ist ein interaktives Wissenschaftsspiel, in dem Schüler erkunden, wie sich Virusausbrüche ausbreiten und entwickeln. Durch das Beantworten von Fragen können Spieler die Auswirkungen verschiedener Faktoren auf den Verlauf einer Epidemie beobachten.",
+      "long2": "Das Spiel führt Konzepte wie Infektionsdynamik, Immunität und öffentliche Gesundheitsinterventionen durch praktisches Experimentieren ein. Schüler können die Folgen ihrer Entscheidungen analysieren und ihre Strategien entsprechend anpassen.",
+      "long3": "KI-gestütztes Feedback gibt Spielern Einblicke in die Wirksamkeit ihrer Interventionen und hilft ihnen, das komplexe Zusammenspiel der Faktoren zu verstehen, die die Virusübertragung und -kontrolle beeinflussen."
+    }
+  }
+}

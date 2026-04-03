@@ -3,8 +3,18 @@ import '@testing-library/jest-dom';
 import { MantineProvider } from '@mantine/core';
 import GamePage from './page';
 
+import { notFound } from 'next/navigation';
+
 jest.mock('next/navigation', () => ({
   notFound: jest.fn(),
+}));
+
+jest.mock('@/features/assistant', () => ({
+  GameIframeBridge: () => null,
+  useAssistant: () => ({
+    state: { isOpen: false },
+    dispatch: jest.fn(),
+  }),
 }));
 
 describe('Game page', () => {
@@ -22,7 +32,6 @@ describe('Game page', () => {
   });
 
   it('calls notFound for an invalid slug', async () => {
-    const { notFound } = require('next/navigation');
     const params = Promise.resolve({ slug: 'nonexistent-game' });
 
     await GamePage({ params }).catch(() => {});

@@ -1,0 +1,24 @@
+/* Active tab */
+.tab[data-active] {
+  color: white !important;
+  background: #3a4170 !important;
+  border-radius: 8px 8px 0 0 !important;
+  border-bottom: none !important;
+}
+
+.tab[data-active]:hover {
+  background: #3a4170 !important;
+}
+
+/* Light mode active tab */
+:global([data-mantine-color-scheme="light"]) .tab[data-active],
+:global([data-mantine-color-scheme="light"]) .tab[data-active]:hover {
+  background: linear-gradient(135deg, #2B5FFF 0%, #1B41FF 40%, #0054F0 100%) !important;
+}
+
+/* Inactive hover */
+.tab:hover:not([data-active]) {
+  background: var(--overlay-bg) !important;
+  border-radius: 8px 8px 0 0 !important;
+  color: var(--text-primary) !important;
+}

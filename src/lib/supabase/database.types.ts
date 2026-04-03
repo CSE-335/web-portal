@@ -1,7 +1,7 @@
 /**
- * Supabase database types.
- * Generate with: npx supabase gen types typescript --project-id <project-ref> > src/lib/supabase/database.types.ts
- * Or define your tables here for type-safe queries.
+ * Supabase database types — manually maintained.
+ * Tables: games, user_profiles, game_likes, play_sessions
+ * See supabase-migration.sql for the full schema DDL.
  */
 export type Json =
   | string
@@ -11,8 +11,6 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
-
-  //In Progress...
 export interface Database {
   public: {
     Tables: {
@@ -26,6 +24,7 @@ export interface Database {
           long_description: string[];
           link: string;
           thumbnail: string;
+          is_published: boolean;
           metadata: Json;
           created_at: string;
           updated_at: string;
@@ -39,6 +38,7 @@ export interface Database {
           long_description: string[];
           link: string;
           thumbnail: string;
+          is_published?: boolean;
           metadata?: Json;
           created_at?: string;
           updated_at?: string;
@@ -52,6 +52,7 @@ export interface Database {
           long_description?: string[];
           link?: string;
           thumbnail?: string;
+          is_published?: boolean;
           metadata?: Json;
           created_at?: string;
           updated_at?: string;
@@ -64,6 +65,7 @@ export interface Database {
           auth_user_id: string;
           display_name: string | null;
           avatar_url: string | null;
+          banner_url: string | null;
           bio: string | null;
           locale: string | null;
           metadata: Json;
@@ -75,6 +77,7 @@ export interface Database {
           auth_user_id: string;
           display_name?: string | null;
           avatar_url?: string | null;
+          banner_url?: string | null;
           bio?: string | null;
           locale?: string | null;
           metadata?: Json;
@@ -86,11 +89,60 @@ export interface Database {
           auth_user_id?: string;
           display_name?: string | null;
           avatar_url?: string | null;
+          banner_url?: string | null;
           bio?: string | null;
           locale?: string | null;
           metadata?: Json;
           created_at?: string;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      game_likes: {
+        Row: {
+          id: number;
+          user_id: string;
+          game_slug: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          user_id: string;
+          game_slug: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: number;
+          user_id?: string;
+          game_slug?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      play_sessions: {
+        Row: {
+          id: number;
+          user_id: string;
+          game_slug: string;
+          started_at: string;
+          ended_at: string | null;
+          duration_seconds: number | null;
+        };
+        Insert: {
+          id?: number;
+          user_id: string;
+          game_slug: string;
+          started_at?: string;
+          ended_at?: string | null;
+          duration_seconds?: number | null;
+        };
+        Update: {
+          id?: number;
+          user_id?: string;
+          game_slug?: string;
+          started_at?: string;
+          ended_at?: string | null;
+          duration_seconds?: number | null;
         };
         Relationships: [];
       };

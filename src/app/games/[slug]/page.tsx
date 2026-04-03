@@ -5,6 +5,7 @@ import GameDescription from "@/components/game-page/GameDescription";
 import { Stack } from "@mantine/core";
 import { getGameBySlug, games } from "@/data/games";
 import BottomButtons from "@/components/layout/BottomButtons";
+import TutorToggle from "@/components/game-page/TutorToggle";
 
 export async function generateStaticParams() {
   return games.map((game) => ({
@@ -28,7 +29,10 @@ export default async function GamePage({ params }: GamePageProps) {
 
   return (
     <main>
+      {/* Bridge listens for postMessage events from the game iframe */}
+      <TutorToggle gameSlug={game.slug} />
       <GamePlayer
+        slug={game.slug}
         title={game.title}
         subject={game.subject}
         iframeSrc={game.iframeSrc}
@@ -37,10 +41,11 @@ export default async function GamePage({ params }: GamePageProps) {
 
       <Stack component="section" gap="lg" mt="lg">
         <GameDetails
+          slug={game.slug}
           subject={game.subject}
           description={game.description}
         />
-        <GameDescription longDescription={game.longDescription} />
+        <GameDescription slug={game.slug} longDescription={game.longDescription} />
       </Stack>
 
       <BottomButtons random={false} />

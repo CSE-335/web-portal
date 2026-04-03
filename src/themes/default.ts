@@ -1,11 +1,8 @@
-import { createTheme, colorsTuple } from '@mantine/core';
+import { createTheme } from '@mantine/core';
 
 export const defaultTheme = createTheme({
-  colors: {
-    dark: colorsTuple('#ffffff'),
-  },
-  fontFamily: 'Geist, sans-serif',
-  fontFamilyMonospace: 'Geist Mono, monospace',
+  fontFamily: 'var(--font-alexandria), Alexandria, sans-serif',
+  fontFamilyMonospace: 'monospace',
   components: {
     Button: {
       defaultProps: {
@@ -22,7 +19,7 @@ export const defaultTheme = createTheme({
     },
     Title: {
       defaultProps: {
-        c: 'white',
+        c: 'var(--text-primary)',
         fw: 800,
         lh: 1,
       },

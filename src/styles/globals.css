@@ -1,26 +1,299 @@
 @import "tailwindcss";
 
-/*:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Arabic RTL */
+html[lang="ar"] p,
+html[lang="ar"] h1,
+html[lang="ar"] h2,
+html[lang="ar"] h3,
+html[lang="ar"] span,
+html[lang="ar"] a,
+html[lang="ar"] label,
+html[lang="ar"] button {
+  direction: rtl;
+  unicode-bidi: isolate;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root,
+[data-mantine-color-scheme="dark"] {
+  --app-bg-gradient: radial-gradient(circle at top, rgba(92,100,170,0.16), transparent 18%), linear-gradient(180deg, #23233A 0%, #1D1C28 52%, #2E335F 100%);
+  --surface-primary: #1f2542;
+  --surface-secondary: #2e3660;
+  --surface-header: #343C61;
+  --text-primary: #ffffff;
+  --text-secondary: #9CA3AF;
+  --text-muted: #6e90b6;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --shadow-card: 0 16px 36px rgba(0, 0, 0, 0.22);
+  --input-bg: #2e3660;
+  --overlay-bg: rgba(255, 255, 255, 0.08);
+  --overlay-border: rgba(255, 255, 255, 0.12);
+  --card-panel-bg: rgba(39, 50, 103, 0.92);
+  --modal-shadow: 0 0 40px rgba(27,65,255,0.25), 0 8px 32px rgba(0,0,0,0.5);
+  --surface-banner: rgba(54, 64, 122, 0.9);
+  --surface-card-game: rgba(60, 69, 121, 0.9);
+  --text-body: rgba(255, 255, 255, 0.85);
+  --text-label: rgba(255, 255, 255, 0.45);
+  --text-tag: rgba(255, 255, 255, 0.75);
+  --text-footer-link: #FBE7E7;
+  --tag-bg: rgba(255, 255, 255, 0.05);
+  --tag-border: rgba(255, 255, 255, 0.15);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --card-img-bg: rgba(255, 255, 255, 0.1);
+  --icon-filter: none;
+  --brand-text-shadow: 0 2px 2px rgba(37, 61, 107, 0.72);
+  --btn-subtle: #585D92;
+  --btn-accent: #525B86;
+  --title-color: #ffffff;
+  --title-glow: none;
+  --app-divider-color: rgba(255, 255, 255, 0.25);
+  --locale-active-bg: rgba(110,144,182,0.15);
+  --locale-hover-bg: rgba(255,255,255,0.05);
+  --locale-dropdown-bg: #1f2542;
+  --locale-dropdown-border: rgba(255,255,255,0.1);
+  --locale-dropdown-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  --player-bg: rgba(34, 38, 63, 0.95);
+  --player-border: rgba(255,255,255,0.1);
+  --player-embed-bg: linear-gradient(180deg, #2A2F56 0%, #202542 100%);
+  --toolbar-bg: rgba(67, 75, 127, 0.9);
+  --toolbar-border: rgba(255,255,255,0.1);
+  --toolbar-btn-bg: rgba(255,255,255,0.1);
+  --toolbar-btn-border: rgba(255,255,255,0.1);
+  --toolbar-subject: rgba(255,255,255,0.7);
+  --detail-card-bg: rgba(255,255,255,0.05);
+  --detail-card-border: rgba(255,255,255,0.1);
+  --detail-label: rgba(255,255,255,0.5);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+[data-mantine-color-scheme="light"] {
+  --app-bg-gradient: #eef0f5;
+  --surface-primary: #ffffff;
+  --surface-secondary: #f0f2f6;
+  --surface-header: #003087;
+  --text-primary: #1a1d2e;
+  --text-secondary: #4a5568;
+  --text-muted: #0057a8;
+  --border-color: rgba(0, 0, 0, 0.1);
+  --border-subtle: rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 48, 135, 0.1);
+  --input-bg: #f0f2f6;
+  --overlay-bg: rgba(0, 0, 0, 0.05);
+  --overlay-border: rgba(0, 0, 0, 0.15);
+  --card-panel-bg: #ffffff;
+  --modal-shadow: 0 0 40px rgba(0,48,135,0.12), 0 8px 32px rgba(0,0,0,0.12);
+  --surface-banner: #003087;
+  --surface-card-game: #ffffff;
+  --text-body: #2d3748;
+  --text-label: #718096;
+  --text-tag: #2b4a8a;
+  --text-footer-link: rgba(255,255,255,0.9);
+  --tag-bg: rgba(0, 48, 135, 0.06);
+  --tag-border: rgba(0, 48, 135, 0.2);
+  --card-border: rgba(0, 48, 135, 0.12);
+  --card-img-bg: rgba(0, 0, 0, 0.03);
+  --icon-filter: brightness(0) saturate(100%) invert(15%) sepia(20%) saturate(800%) hue-rotate(195deg);
+  --brand-text-shadow: none;
+  --btn-subtle: #003087;
+  --btn-accent: #003087;
+  --title-color: #0057a8;
+  --title-glow: 0 0 16px rgba(0, 87, 168, 0.2);
+  --input-wrapper-bg: #f0f2f8;
+  --input-wrapper-border: 1.5px solid rgba(0, 48, 135, 0.35);
+  --app-divider-color: rgba(0, 48, 135, 0.2);
+  --locale-active-bg: rgba(255, 255, 255, 0.15);
+  --locale-hover-bg: rgba(255, 255, 255, 0.08);
+  --locale-dropdown-bg: #002570;
+  --locale-dropdown-border: rgba(255, 255, 255, 0.15);
+  --locale-dropdown-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --player-bg: #ffffff;
+  --player-border: rgba(0, 48, 135, 0.12);
+  --player-embed-bg: #f0f2f6;
+  --toolbar-bg: #003087;
+  --toolbar-border: rgba(255,255,255,0.15);
+  --toolbar-btn-bg: rgba(255,255,255,0.15);
+  --toolbar-btn-border: rgba(255,255,255,0.2);
+  --toolbar-subject: rgba(255,255,255,0.8);
+  --detail-card-bg: rgba(0, 48, 135, 0.05);
+  --detail-card-border: rgba(0, 48, 135, 0.12);
+  --detail-label: #718096;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}*/
+/* Light mode banner */
+[data-mantine-color-scheme="light"] .llnl-banner {
+  color: white !important;
+}
+[data-mantine-color-scheme="light"] .llnl-banner * {
+  color: white !important;
+}
+[data-mantine-color-scheme="light"] .llnl-banner img {
+  filter: none !important;
+}
+
+/* Light mode header/footer */
+[data-mantine-color-scheme="light"] .site-header,
+[data-mantine-color-scheme="light"] .site-header *,
+[data-mantine-color-scheme="light"] .site-footer,
+[data-mantine-color-scheme="light"] .site-footer * {
+  color: white !important;
+}
+[data-mantine-color-scheme="light"] .site-header input {
+  color: white !important;
+  background: rgba(255,255,255,0.15) !important;
+  border-color: rgba(255,255,255,0.3) !important;
+}
+[data-mantine-color-scheme="light"] .site-header input::placeholder {
+  color: rgba(255,255,255,0.6) !important;
+}
+
+/* Dark mode search */
+[data-mantine-color-scheme="dark"] .site-header input::placeholder {
+  color: rgba(180, 200, 230, 0.6) !important;
+}
+[data-mantine-color-scheme="light"] .site-header .mantine-Input-section img {
+  filter: none !important;
+}
+
+/* Modal dividers */
+[data-mantine-color-scheme="dark"] .mantine-Modal-body [data-orientation="horizontal"] {
+  border-top-color: rgba(255, 255, 255, 0.25) !important;
+}
+[data-mantine-color-scheme="dark"] .mantine-Modal-body [data-orientation="horizontal"] *::before,
+[data-mantine-color-scheme="dark"] .mantine-Modal-body [data-orientation="horizontal"] *::after {
+  border-top-color: rgba(255, 255, 255, 0.25) !important;
+}
+[data-mantine-color-scheme="light"] .mantine-Modal-body [data-orientation="horizontal"] {
+  border-top-color: rgba(0, 48, 135, 0.2) !important;
+}
+[data-mantine-color-scheme="light"] .mantine-Modal-body [data-orientation="horizontal"] *::before,
+[data-mantine-color-scheme="light"] .mantine-Modal-body [data-orientation="horizontal"] *::after {
+  border-top-color: rgba(0, 48, 135, 0.2) !important;
+}
+
+/* Modal placeholders */
+[data-mantine-color-scheme="light"] .mantine-Modal-body input::placeholder,
+[data-mantine-color-scheme="light"] .mantine-Modal-body .mantine-PasswordInput-innerInput::placeholder {
+  color: #6b7280 !important;
+}
+[data-mantine-color-scheme="light"] .mantine-Modal-body,
+[data-mantine-color-scheme="light"] .mantine-Drawer-body {
+  --mantine-color-placeholder: #6b7280;
+  --input-placeholder-color: #6b7280;
+}
+[data-mantine-color-scheme="dark"] .mantine-Modal-body input::placeholder,
+[data-mantine-color-scheme="dark"] .mantine-Modal-body .mantine-PasswordInput-innerInput::placeholder {
+  color: rgba(160, 180, 220, 0.6) !important;
+}
+[data-mantine-color-scheme="dark"] .mantine-Modal-body,
+[data-mantine-color-scheme="dark"] .mantine-Drawer-body {
+  --mantine-color-placeholder: rgba(160, 180, 220, 0.6);
+  --input-placeholder-color: rgba(160, 180, 220, 0.6);
+}
+
+/* Modal eye icon */
+[data-mantine-color-scheme="light"] .mantine-Modal-body .mantine-PasswordInput-visibilityToggle {
+  color: #4a5568 !important;
+}
+
+/* Modal title/close */
+[data-mantine-color-scheme="light"] .mantine-Modal-title {
+  color: #2d3748 !important;
+}
+[data-mantine-color-scheme="light"] .mantine-Modal-close {
+  color: #4a5568 !important;
+}
+
+/* Tutor chat input */
+.tutor-chat-input .mantine-Textarea-input::placeholder {
+  color: rgba(160, 200, 255, 0.6) !important;
+}
+[data-mantine-color-scheme="light"] .tutor-chat-input .mantine-Textarea-input::placeholder {
+  color: #888 !important;
+}
+
+/* Tutor panel hint text in light mode */
+[data-mantine-color-scheme="light"] .tutor-hint-text {
+  color: #777 !important;
+}
+
+/* Email shimmer */
+@keyframes shimmer {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Game embed fullscreen — fill the entire screen */
+:fullscreen,
+:-webkit-full-screen {
+  display: flex !important;
+  flex-direction: column !important;
+  background: #000 !important;
+  border-radius: 0 !important;
+}
+:fullscreen > *,
+:-webkit-full-screen > * {
+  flex: 1 !important;
+  min-height: 0 !important;
+  border-radius: 0 !important;
+}
+:fullscreen iframe,
+:-webkit-full-screen iframe {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 0 !important;
+}
+
+/* Save progress banner buttons */
+button.banner-login-btn:hover,
+button.banner-login-btn:hover[data-variant] {
+  background-color: rgba(255, 255, 255, 0.18) !important;
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-color: white !important;
+  color: white !important;
+}
+button.banner-close-btn:hover,
+button.banner-close-btn:hover[data-variant] {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  color: #1F4DCC !important;
+}
+
+/* Save progress banner */
+@keyframes bannerSlideIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+@keyframes bannerSlideOut {
+  from { opacity: 1; transform: translateX(-50%) translateY(0); }
+  to   { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+}
+
+
+/* Play button */
+.play-btn {
+  box-shadow: 0 3px 10px rgba(23, 107, 255, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease !important;
+}
+.play-btn:hover {
+  box-shadow: 0 5px 16px rgba(23, 107, 255, 0.45);
+}
+.play-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 1px 4px rgba(23, 107, 255, 0.3);
+}
+
+[data-mantine-color-scheme="light"] .btn-theme {
+  background: #0a40a8 !important;
+  background-color: #0a40a8 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+  --button-bg: #0a40a8 !important;
+  --ai-bg: #0a40a8 !important;
+}
+
+[data-mantine-color-scheme="light"] .btn-theme:hover {
+  background: #0d4dbe !important;
+  background-color: #0d4dbe !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+  --button-hover: #0d4dbe !important;
+  --ai-hover: #0d4dbe !important;
+}
+
