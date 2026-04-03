@@ -1,18 +1,7 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import { rateLimit } from '@/lib/rateLimit';
 
 export async function POST(req: Request) {
-  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
-  const { allowed, remaining } = rateLimit(ip, { maxRequests: 15, windowMs: 60_000 });
-
-  if (!allowed) {
-    return NextResponse.json(
-      { error: 'Rate limit exceeded. Please wait before making more requests.' },
-      { status: 429, headers: { 'X-RateLimit-Remaining': '0' } }
-    );
-  }
-
   const formData = await req.formData();
 
   const file = formData.get('file');

@@ -10,3 +10,6 @@
 [submodule "games/matrix-meadow"]
 	path = games/matrix-meadow
 	url = https://github.com/atalania/Matrix-Meadow-Academy.git
+[submodule "games/sonic-lab"]
+	path = games/sonic-lab
+	url = https://github.com/atalania/SonicLab.git

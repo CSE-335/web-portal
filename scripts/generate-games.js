@@ -78,5 +78,6 @@ export function getGameBySlug(slug: string) {
 }
 `;
 
+fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 fs.writeFileSync(outputPath, output);
 console.log(`Generated ${outputPath} with ${games.length} game(s).`);
