@@ -105,7 +105,9 @@ export async function signInWithGoogle(
   return { error: null };
 }
 
-// Ensure profile exists for the current user (called after OAuth login)
+// Ensure profile exists for the current user (called on every sign-in)
+// Uses display_name from auth metadata if available (set during email signup),
+// otherwise generates a random username (Google OAuth users).
 export async function ensureUserProfile(): Promise<void> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
@@ -117,8 +119,12 @@ export async function ensureUserProfile(): Promise<void> {
     .maybeSingle();
 
   if (!existing) {
-    const { generateUsername } = await import("@/lib/utils/generateUsername");
-    const displayName = generateUsername(user.id);
+    // Use the username from signup metadata if available, otherwise generate one
+    let displayName = user.user_metadata?.display_name;
+    if (!displayName) {
+      const { generateUsername } = await import("@/lib/utils/generateUsername");
+      displayName = generateUsername(user.id);
+    }
     await supabase.from("user_profiles").insert({
       auth_user_id: user.id,
       display_name: displayName,

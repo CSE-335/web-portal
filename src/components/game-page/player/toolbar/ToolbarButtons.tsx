@@ -47,6 +47,7 @@ export default function ToolbarButtons({ slug, iframeSrc, embedRef }: ToolbarBut
   const [liked, setLiked] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   const { state, dispatch } = useAssistant();
 
   useEffect(() => {
@@ -96,8 +97,12 @@ export default function ToolbarButtons({ slug, iframeSrc, embedRef }: ToolbarBut
       >
         <Image src="/images/aichat.svg" alt="" width={28} height={28} aria-hidden />
       </ToolbarAction>
-      <ToolbarAction label="Mute">
-        <Image src="/images/mute.svg" alt="" width={22} height={22} aria-hidden />
+      <ToolbarAction
+        label={isMuted ? "Unmute" : "Mute"}
+        onClick={() => setIsMuted(!isMuted)}
+        style={isMuted ? { background: "rgba(27, 65, 255, 0.4)", border: "1px solid rgba(27, 65, 255, 0.6)" } : undefined}
+      >
+        <Image src={isMuted ? "/images/mute.svg" : "/images/unmute.svg"} alt="" width={22} height={22} aria-hidden />
       </ToolbarAction>
       <ToolbarAction
         label={isFullscreen ? "Exit fullscreen" : "Fullscreen"}

@@ -174,9 +174,19 @@ html[lang="ar"] button {
 [data-mantine-color-scheme="light"] .mantine-Modal-body .mantine-PasswordInput-innerInput::placeholder {
   color: #6b7280 !important;
 }
+[data-mantine-color-scheme="light"] .mantine-Modal-body,
+[data-mantine-color-scheme="light"] .mantine-Drawer-body {
+  --mantine-color-placeholder: #6b7280;
+  --input-placeholder-color: #6b7280;
+}
 [data-mantine-color-scheme="dark"] .mantine-Modal-body input::placeholder,
 [data-mantine-color-scheme="dark"] .mantine-Modal-body .mantine-PasswordInput-innerInput::placeholder {
   color: rgba(160, 180, 220, 0.6) !important;
+}
+[data-mantine-color-scheme="dark"] .mantine-Modal-body,
+[data-mantine-color-scheme="dark"] .mantine-Drawer-body {
+  --mantine-color-placeholder: rgba(160, 180, 220, 0.6);
+  --input-placeholder-color: rgba(160, 180, 220, 0.6);
 }
 
 /* Modal eye icon */

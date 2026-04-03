@@ -73,21 +73,27 @@ export async function isUsernameTaken(
 export async function createUserProfile(
   supabase: SupabaseClient<Database>,
   options: {
+    userId?: string;
     displayName?: string | null;
     avatarUrl?: string | null;
   } = {}
 ): Promise<{ success: boolean; error: string | null }> {
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+  let userId = options.userId;
 
-  if (userError || !user) {
-    return { success: false, error: userError?.message ?? "Not authenticated" };
+  if (!userId) {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      return { success: false, error: userError?.message ?? "Not authenticated" };
+    }
+    userId = user.id;
   }
 
   const profile: UserProfileInsert = {
-    auth_user_id: user.id,
+    auth_user_id: userId,
     display_name: options.displayName ?? null,
     avatar_url: options.avatarUrl ?? null,
   };

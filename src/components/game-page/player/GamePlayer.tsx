@@ -19,7 +19,7 @@ export default function GamePlayer({
   title,
   subject,
   iframeSrc,
-  embedHeight = "760px",
+  embedHeight = "575px",
 }: GamePlayerProps) {
   const embedRef = useRef<HTMLDivElement>(null);
 

@@ -24,7 +24,7 @@ export const games: GameMeta[] = [
     ],
     iframeSrc: "https://atalania.github.io/Matrix-Meadow-Academy/",
     thumbnailSrc: "/images/matrix-meadow-thumb.png",
-    embedHeight: "800px",
+    embedHeight: "575px",
     featured: true,
   },
   {
@@ -40,7 +40,7 @@ export const games: GameMeta[] = [
     ],
     iframeSrc: "https://atalania.github.io/SonicLab/",
     thumbnailSrc: "/images/sonic-fingerprint-thumb.png",
-    embedHeight: "800px",
+    embedHeight: "575px",
     featured: true,
   },
     {
@@ -56,7 +56,7 @@ export const games: GameMeta[] = [
     ],
     iframeSrc: "https://biology-virus-ai-game-g18s.onrender.com/",
     thumbnailSrc: "/images/biology-virus-outbreak-simulator.png",
-    embedHeight: "800px",
+    embedHeight: "575px",
     featured: true,
   },
 ];

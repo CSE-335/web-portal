@@ -9,7 +9,7 @@ type GameEmbedProps = {
 export default function GameEmbed({
   src,
   title,
-  height = "800px",
+  height = "575px",
 }: GameEmbedProps) {
   return (
     <Box style={{ overflow: "hidden", borderRadius: 20, background: "rgba(0,0,0,0.2)" }}>

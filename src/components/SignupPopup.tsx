@@ -15,8 +15,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { signUpNewUser, signInWithGoogle } from "@/lib/supabase/auth";
-import { validateUsername, isUsernameTaken, createUserProfile, getUsernameChecks } from "@/lib/supabase/user-profile";
-import { supabase } from "@/lib/supabase/client";
+import { validateUsername, isUsernameTaken, getUsernameChecks } from "@/lib/supabase/user-profile";
 
 interface SignupPopupProps {
   opened: boolean;
@@ -119,8 +118,8 @@ export default function SignupPopup({ opened, onClose }: SignupPopupProps) {
       });
 
       if (result.success) {
-        // Create user profile with the chosen username
-        await createUserProfile(supabase, { displayName: values.username });
+        // Profile is created automatically on first sign-in by ensureUserProfile(),
+        // which reads the display_name from auth user metadata set by signUpNewUser.
         setSuccess("Account created successfully.");
         form.reset();
       } else {
