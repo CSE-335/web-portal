@@ -19,7 +19,7 @@ jobs:
 
   deploy:
     needs: test
-    # TODO: restore to main-only after testing: if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: arc-runner-cse120
     steps:
       - uses: actions/checkout@v4
