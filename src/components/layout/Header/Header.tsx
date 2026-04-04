@@ -64,6 +64,7 @@ export default function Header() {
       <SearchBar
         value={searchValue}
         onChange={(e) => setSearchValue(e.target.value)}
+        onSelect={() => setSearchValue("")}
       />
 
       <UtilityNav
