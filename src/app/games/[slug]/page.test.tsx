@@ -23,7 +23,22 @@ jest.mock('@/data/games', () => {
 import { notFound } from 'next/navigation';
 
 jest.mock('next/navigation', () => ({
+  useRouter: () => ({ push: jest.fn(), replace: jest.fn(), back: jest.fn() }),
   notFound: jest.fn(),
+}));
+
+jest.mock('@/lib/supabase/client', () => ({
+  supabase: {
+    from: () => ({
+      select: () => ({
+        eq: () => ({ data: [], error: null }),
+        limit: () => Promise.resolve({ data: [], error: null }),
+      }),
+    }),
+    auth: {
+      getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+    },
+  },
 }));
 
 jest.mock('@/features/assistant', () => ({

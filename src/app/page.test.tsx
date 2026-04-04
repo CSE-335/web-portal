@@ -30,6 +30,11 @@ jest.mock('../data/games', () => ({
   getGameBySlug: (slug: string) => undefined,
 }));
 
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ push: jest.fn(), replace: jest.fn(), back: jest.fn() }),
+  notFound: jest.fn(),
+}));
+
 jest.mock('../lib/supabase/server', () => ({
   createServerSupabaseClient: () => ({
     from: () => ({
