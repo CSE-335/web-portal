@@ -8,6 +8,7 @@ import SearchBar from "./SearchBar";
 import UtilityNav from "./UtilityNav/UtilityNav";
 import LoginPopup from "@/components/LoginPopup";
 import { supabase } from "@/lib/supabase/client";
+import { ensureUserProfile } from "@/lib/supabase/auth";
 import type { User } from "@supabase/supabase-js";
 
 
@@ -30,6 +31,9 @@ export default function Header() {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (isMounted) {
         setUser(session?.user ?? null);
+        if (session?.user) {
+          ensureUserProfile();
+        }
       }
     });
 
@@ -42,11 +46,12 @@ export default function Header() {
   return (
     <Group
       component="header"
-      h={{ base: 70, md: 100 }}
+      h={{ base: 56, md: 72 }}
       px={{ base: "md", md: "xl" }}
       gap="md"
       wrap="nowrap"
-      style={{ background: "#343C61", position: "sticky", top: 0, zIndex: 50 }}
+      className="site-header"
+      style={{ background: "var(--surface-header)", position: "sticky", top: 0, zIndex: 50 }}
     >
       <Link href="/">
         <LogoBrand>
@@ -59,6 +64,7 @@ export default function Header() {
       <SearchBar
         value={searchValue}
         onChange={(e) => setSearchValue(e.target.value)}
+        onSelect={() => setSearchValue("")}
       />
 
       <UtilityNav

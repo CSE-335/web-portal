@@ -1,0 +1,176 @@
+{
+  "nav": {
+    "searchPlaceholder": "Pesquisar jogos STEM...",
+    "logIn": "Entrar",
+    "language": "Idioma"
+  },
+  "footer": {
+    "links": {
+      "allGames": "TODOS OS JOGOS",
+      "aboutUs": "SOBRE NÓS",
+      "contactUs": "FALE CONOSCO",
+      "privacy": "PRIVACIDADE",
+      "feedback": "FEEDBACK"
+    },
+    "description": "Bem-vindo ao portal de jogos STEM do Laboratório Nacional Lawrence Livermore. Aproveite nossa biblioteca de jogos STEM educativos jogáveis em celulares, tablets e PCs sem downloads."
+  },
+  "login": {
+    "title": "Entrar",
+    "email": "E-mail",
+    "password": "Senha",
+    "noAccount": "Não tem conta?",
+    "registerHere": "Cadastre-se aqui",
+    "forgotPassword": "Esqueceu a senha?",
+    "recoverPassword": "Recuperar senha",
+    "signInGoogle": "Entrar com Google",
+    "continue": "Continuar",
+    "invalidEmail": "E-mail inválido",
+    "passwordShort": "A senha deve ter pelo menos 6 caracteres"
+  },
+  "signup": {
+    "title": "Criar conta",
+    "email": "E-mail",
+    "password": "Senha",
+    "confirmPassword": "Confirmar senha",
+    "characters": "Caracteres",
+    "number": "Número",
+    "letter": "Letra",
+    "signUpGoogle": "Cadastrar com Google",
+    "continue": "Continuar",
+    "invalidEmail": "E-mail inválido.",
+    "passwordShort": "A senha deve ter pelo menos 6 caracteres",
+    "passwordMismatch": "As senhas não coincidem"
+  },
+  "profile": {
+    "editTitle": "Editar perfil",
+    "usernameLabel": "Nome de usuário",
+    "usernamePlaceholder": "Digite um nome de usuário",
+    "locationLabel": "Localização",
+    "locationPlaceholder": "Selecionar localização",
+    "saved": "Salvo!",
+    "saveChanges": "Salvar alterações",
+    "menuProfile": "Perfil",
+    "menuEditProfile": "Editar perfil",
+    "menuAccountSettings": "Configurações da conta",
+    "menuLogOut": "Sair",
+    "menuContactUs": "Fale conosco",
+    "menuPartner": "Parceiro — LLNL",
+    "menuLanguage": "Idioma",
+    "changeBanner": "Alterar banner"
+  },
+  "profilePage": {
+    "editProfile": "Editar perfil",
+    "stats": "Estatísticas",
+    "memberFor": "Membro há",
+    "today": "Hoje",
+    "days": "{count, plural, one {# dia} other {# dias}}",
+    "gamesLiked": "Jogos favoritos",
+    "playstreak": "Sequência de jogo",
+    "recentlyPlayed": "Jogado recentemente",
+    "tabLiked": "Jogos favoritos",
+    "tabLeaderboards": "Classificações",
+    "noLikedGames": "Nenhum jogo favorito ainda. Explore e adicione os seus!",
+    "leaderboardsSoon": "Classificações em breve!",
+    "justNow": "Agora mesmo",
+    "minutesAgo": "{m}m atrás",
+    "hoursAgo": "{h}h atrás",
+    "daysAgo": "{d}d atrás"
+  },
+  "saveBanner": {
+    "dontLose": "Não perca seu progresso",
+    "signUp": "Cadastrar",
+    "close": "Fechar"
+  },
+  "accountSettings": {
+    "title": "Configurações da conta",
+    "updateEmail": "Atualizar e-mail",
+    "secureAccount": "Proteger sua conta",
+    "logOutAll": "Sair de todos os dispositivos",
+    "deleteAccount": "Excluir conta",
+    "deleteButton": "Excluir sua conta",
+    "deleteConfirm": "Tem certeza? Clique novamente para confirmar",
+    "back": "Voltar",
+    "currentEmail": "E-mail atual",
+    "newEmailDesc": "Digite seu novo endereço de e-mail. Enviaremos um link de confirmação para verificá-lo.",
+    "newEmailPlaceholder": "Novo endereço de e-mail",
+    "invalidEmail": "Por favor, insira um endereço de e-mail válido.",
+    "sameEmail": "Este já é seu e-mail atual.",
+    "sendVerification": "Enviar verificação",
+    "emailSentTitle": "Verifique seu e-mail",
+    "emailSentDesc": "Enviamos um link de confirmação para {email}. Clique no link para atualizar seu endereço de e-mail.",
+    "done": "Concluído"
+  },
+  "feedback": {
+    "title": "Feedback do site",
+    "subtitle": "Ajude-nos a melhorar sua experiência",
+    "name": "Nome",
+    "email": "E-mail",
+    "optional": "opcional",
+    "issues": "Que problemas você encontrou?",
+    "issuesPlaceholder": "Descreva os problemas...",
+    "ideas": "Que recursos ou jogos gostaria de ver?",
+    "ideasPlaceholder": "Compartilhe suas ideias...",
+    "likelihood": "Qual a probabilidade de você voltar?",
+    "veryUnlikely": "Muito improvável",
+    "unlikely": "Improvável",
+    "notSure": "Não tenho certeza",
+    "likely": "Provável",
+    "veryLikely": "Muito provável",
+    "comments": "Comentários adicionais",
+    "commentsPlaceholder": "Pensamentos adicionais...",
+    "submit": "Enviar feedback",
+    "success": "Obrigado pelo seu feedback!",
+    "error": "Algo deu errado, tente novamente."
+  },
+  "common": {
+    "play": "Jogar",
+    "randomGame": "Jogo aleatório",
+    "backToTop": "Voltar ao topo",
+    "educational": "Educativo"
+  },
+  "home": {
+    "welcome1": "Bem-vindo ao LLNL",
+    "welcome2": "Jogos STEM",
+    "interactiveLearning": "Aprendizado interativo",
+    "saveProgress": "Salve seu progresso",
+    "playAnyDevice": "Jogue em qualquer dispositivo"
+  },
+  "gameCard": {
+    "tags": "Tags",
+    "Science": "Ciência",
+    "Technology": "Tecnologia",
+    "Engineering": "Engenharia",
+    "Mathematics": "Matemática"
+  },
+  "gameDetails": {
+    "title": "Detalhes do jogo",
+    "subject": "Disciplina",
+    "playStyle": "Estilo de jogo",
+    "playStyleValue": "Jogo web interativo",
+    "access": "Acesso",
+    "accessValue": "Baseado em navegador, sem download necessário"
+  },
+  "gameDescription": {
+    "title": "Descrição do jogo"
+  },
+  "games": {
+    "matrix-meadow": {
+      "description": "Pratique multiplicação de matrizes através de desafios interativos de escalonamento de monstros e feedback assistido por IA.",
+      "long1": "Matrix Meadow Academy transforma a multiplicação de matrizes em um desafio visual de escalonamento de monstros onde os alunos aprendem transformando criaturas diretamente na tela. Em vez de resolver problemas isoladamente, os jogadores aplicam matrizes para corresponder às formas alvo, tornando a álgebra linear abstrata mais concreta e intuitiva.",
+      "long2": "O jogo foca em ideias fundamentais como transformações de escala, estrutura matricial e a relação entre entrada numérica e saída visual. Ao vincular cada problema a um resultado visual imediato, os alunos podem entender melhor como a multiplicação de matrizes altera tamanho e forma.",
+      "long3": "O feedback assistido por IA apoia o processo de aprendizagem ajudando os jogadores a entender por que uma transformação funcionou ou falhou, reforçando o reconhecimento de padrões e incentivando a correção através da prática guiada."
+    },
+    "sonic-fingerprint-lab": {
+      "description": "Explore padrões de áudio, frequências e análise baseada em voz através de um laboratório de som interativo.",
+      "long1": "Sonic Fingerprint Lab é um jogo de ciências interativo onde os alunos exploram como o som pode ser visualizado, comparado e analisado através de padrões baseados em frequência. Ao usar sua própria voz e sinais gravados, os jogadores se envolvem diretamente com a ideia de que cada som deixa uma assinatura acústica mensurável.",
+      "long2": "O jogo introduz conceitos como tom, comportamento de forma de onda e diferenças de frequência através de experimentação prática em vez de memorização passiva. Os alunos podem observar como mudanças na entrada de som afetam os padrões resultantes.",
+      "long3": "O feedback assistido por IA ajuda a interpretar os resultados do jogador, apontar diferenças significativas em seus dados de som e guiá-los para uma compreensão mais sólida de como os padrões de frequência se relacionam com características vocais e acústicas."
+    },
+    "biology-virus-outbreak-simulator": {
+      "description": "Explore surtos de vírus e aprenda sobre conceitos epidemiológicos através de modelagem interativa e feedback assistido por IA.",
+      "long1": "Biology Virus Outbreak Simulator é um jogo de ciências interativo onde os alunos exploram como os surtos de vírus se espalham e evoluem. Ao responder perguntas, os jogadores podem observar o impacto de diferentes fatores na progressão de uma epidemia.",
+      "long2": "O jogo introduz conceitos como dinâmica de infecção, imunidade e intervenções de saúde pública através de experimentação prática. Os alunos podem analisar as consequências de suas decisões e ajustar suas estratégias de acordo.",
+      "long3": "O feedback assistido por IA dá aos jogadores insights sobre a eficácia de suas intervenções, ajudando-os a entender a complexa interação de fatores que influenciam a transmissão e o controle de vírus."
+    }
+  }
+}

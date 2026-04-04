@@ -1,52 +1,65 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import RootLayout from './layout';
+import { isValidElement, type ReactElement, type ReactNode } from 'react';
+import RootLayout, { metadata } from './layout';
 
-jest.mock('../components/layout/Header/Header', () => {
+jest.mock('@/components/layout/Header/Header', () => {
   return function MockHeader() {
     return <div data-testid="header">Header</div>;
   };
 });
 
-jest.mock('../components/layout/Footer/Footer', () => {
+jest.mock('@/components/layout/Footer/Footer', () => {
   return function MockFooter() {
     return <div data-testid="footer">Footer</div>;
   };
 });
 
 describe('RootLayout', () => {
-  it('renders the header', () => {
-    render(
-      <RootLayout>
-        <p>Page content</p>
-      </RootLayout>,
-      { container: document }
+  function extractBody(layout: ReactNode): ReactElement {
+    if (!isValidElement<{ children?: ReactNode }>(layout)) {
+      throw new Error('RootLayout did not return a valid React element');
+    }
+
+    const children = Array.isArray(layout.props.children)
+      ? layout.props.children
+      : [layout.props.children];
+
+    const body = children.find(
+      (child) => isValidElement(child) && child.type === 'body'
     );
+
+    if (!isValidElement(body)) {
+      throw new Error('RootLayout output did not contain a <body> element');
+    }
+
+    return body as ReactElement;
+  }
+
+  async function renderLayout() {
+    const layout = await RootLayout({
+      children: <p>Page content</p>,
+    });
+
+    render(extractBody(layout));
+  }
+
+  it('renders the header', async () => {
+    await renderLayout();
     expect(screen.getByTestId('header')).toBeInTheDocument();
   });
 
-  it('renders the footer', () => {
-    render(
-      <RootLayout>
-        <p>Page content</p>
-      </RootLayout>,
-      { container: document }
-    );
+  it('renders the footer', async () => {
+    await renderLayout();
     expect(screen.getByTestId('footer')).toBeInTheDocument();
   });
 
-  it('renders children content', () => {
-    render(
-      <RootLayout>
-        <p>Page content</p>
-      </RootLayout>,
-      { container: document }
-    );
+  it('renders children content', async () => {
+    await renderLayout();
     expect(screen.getByText('Page content')).toBeInTheDocument();
   });
 
   it('has the correct metadata', () => {
-    const { metadata } = require('./layout');
     expect(metadata.title).toBe('LLNL STEM Games');
     expect(metadata.description).toBe('Educational STEM games from Lawrence Livermore National Laboratory');
   });
