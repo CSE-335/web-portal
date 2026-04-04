@@ -94,6 +94,33 @@ export interface Database {
         };
         Relationships: [];
       };
+      game_data: {
+        Row: {
+          id: number;
+          user_id: string;
+          game_id: number;
+          data_json: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          user_id: string;
+          game_id: number;
+          data_json?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: number;
+          user_id?: string;
+          game_id?: number;
+          data_json?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

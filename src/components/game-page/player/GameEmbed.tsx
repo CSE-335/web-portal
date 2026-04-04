@@ -1,19 +1,132 @@
 import { Box } from "@mantine/core";
+import { useEffect, useRef, useMemo } from "react";
+import { supabase } from "@/lib/supabase";
 
 type GameEmbedProps = {
   src: string;
   title: string;
   height?: string;
+  slug: string;
 };
 
 export default function GameEmbed({
   src,
   title,
   height = "800px",
+  slug,
 }: GameEmbedProps) {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const gameOrigin = useMemo(() => {
+    try {
+      return new URL(src, typeof window !== "undefined" ? window.location.href : "http://localhost").origin;
+    } catch {
+      return "*";
+    }
+  }, [src]);
+
+  useEffect(() => {
+    let latestGameData: unknown = {};
+
+    async function getAuthHeaders() {
+      const { data } = await supabase.auth.getSession();
+      const accessToken = data.session?.access_token;
+      if (!accessToken) {
+        return null;
+      }
+      return { Authorization: `Bearer ${accessToken}` };
+    }
+
+    async function loadGameData() {
+      const authHeaders = await getAuthHeaders();
+      if (!authHeaders) {
+        return;
+      }
+
+      const loadResponse = await fetch(`/api/game-data/${slug}`, {
+        method: "GET",
+        credentials: "include",
+        headers: authHeaders,
+      });
+      const loadJson = (await loadResponse.json().catch(() => null)) as
+        | { ok?: boolean; gameData?: unknown; fallbackUsed?: boolean }
+        | null;
+
+      if (!loadResponse.ok || !loadJson?.ok) {
+        return;
+      }
+
+      latestGameData = loadJson.gameData ?? {};
+
+      iframeRef.current?.contentWindow?.postMessage(
+        {
+          type: "PORTAL_GAME_DATA_LOADED",
+          payload: latestGameData,
+        },
+        gameOrigin
+      );
+
+      // Ensure first-time users get a row tied to this user+game.
+      if (loadJson.fallbackUsed) {
+        const authHeaders = await getAuthHeaders();
+        if (!authHeaders) {
+          return;
+        }
+
+        await fetch(`/api/game-data/${slug}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", ...authHeaders },
+          credentials: "include",
+          body: JSON.stringify({ data: latestGameData }),
+        });
+      }
+    }
+
+    function handleGameMessage(event: MessageEvent) {
+      if (event.source !== iframeRef.current?.contentWindow) return;
+
+      const data = event.data as
+        | { type?: string; payload?: unknown }
+        | undefined;
+
+      if (!data?.type) return;
+
+      if (data.type === "PORTAL_GAME_DATA_SAVE") {
+        latestGameData = data.payload ?? {};
+        void (async () => {
+          const authHeaders = await getAuthHeaders();
+          if (!authHeaders) {
+            return;
+          }
+
+          await fetch(`/api/game-data/${slug}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json", ...authHeaders },
+            credentials: "include",
+            body: JSON.stringify({ data: latestGameData }),
+          });
+        })();
+      }
+
+      if (data.type === "PORTAL_GAME_DATA_LOAD_REQUEST") {
+        iframeRef.current?.contentWindow?.postMessage(
+          {
+            type: "PORTAL_GAME_DATA_LOADED",
+            payload: latestGameData,
+          },
+          gameOrigin
+        );
+      }
+    }
+
+    void loadGameData();
+    window.addEventListener("message", handleGameMessage);
+    return () => window.removeEventListener("message", handleGameMessage);
+  }, [slug, gameOrigin]);
+  
   return (
     <Box style={{ overflow: "hidden", background: "rgba(0,0,0,0.2)" }}>
       <iframe
+        ref={iframeRef}
         src={src}
         title={title}
         style={{ display: "block", width: "100%", height, border: 0 }}

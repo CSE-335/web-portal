@@ -29,6 +29,7 @@ export default async function GamePage({ params }: GamePageProps) {
   return (
     <main>
       <GamePlayer
+        slug={game.slug}
         title={game.title}
         subject={game.subject}
         iframeSrc={game.iframeSrc}

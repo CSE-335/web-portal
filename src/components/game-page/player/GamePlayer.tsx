@@ -1,13 +1,17 @@
+"use client";
+
 import { Box, Paper } from "@mantine/core";
 import SaveProgressBanner from "./SaveProgressBanner";
 import GameEmbed from "./GameEmbed";
 import GameToolbar from "./GameToolbar";
+import { useRef } from "react";
 
 type GamePlayerProps = {
   title: string;
   subject: string;
   iframeSrc: string;
   embedHeight?: string;
+  slug: string;
 };
 
 export default function GamePlayer({
@@ -15,7 +19,10 @@ export default function GamePlayer({
   subject,
   iframeSrc,
   embedHeight = "760px",
+  slug,
 }: GamePlayerProps) {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
   return (
     <Paper
       component="section"
@@ -36,7 +43,7 @@ export default function GamePlayer({
             background: "linear-gradient(180deg, #2A2F56 0%, #202542 100%)",
           }}
         >
-          <GameEmbed src={iframeSrc} title={title} height={embedHeight} />
+          <GameEmbed src={iframeSrc} title={title} height={embedHeight} slug={slug} />
         </Box>
       </Box>
 

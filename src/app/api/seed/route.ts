@@ -1,11 +1,30 @@
 import { NextResponse } from "next/server";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createClient } from "@supabase/supabase-js";
 import { games } from "@/data/games";
+import type { Database } from "@/lib/supabase/database.types";
 
 // Call to add games to database.
 
 export async function GET() {
-  const supabase = createServerSupabaseClient();
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    return NextResponse.json(
+      {
+        error:
+          "Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY for seed route.",
+      },
+      { status: 500 }
+    );
+  }
+
+  const supabase = createClient<Database>(supabaseUrl, serviceRoleKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
 
   const mappedGames = games.map((game) => ({
     slug: game.slug,
@@ -18,7 +37,10 @@ export async function GET() {
     metadata: {},
   }));
 
-  const { error: deleteError } = await supabase.from("games").delete().neq("id", 0);
+  const { error: deleteError } = await supabase
+    .from("games")
+    .delete()
+    .not("id", "is", null);
   if (deleteError) {
     return NextResponse.json({ error: deleteError.message }, { status: 500 });
   }
