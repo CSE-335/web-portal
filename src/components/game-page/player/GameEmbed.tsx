@@ -85,7 +85,7 @@ export default function GameEmbed({
       if (event.source !== iframeRef.current?.contentWindow) return;
 
       const data = event.data as
-        | { type?: string; payload?: unknown }
+        | { source?: string; type?: string; payload?: unknown; requestId?: number | string }
         | undefined;
 
       if (!data?.type) return;
@@ -115,6 +115,69 @@ export default function GameEmbed({
           },
           gameOrigin
         );
+      }
+
+      // Human Motion Simulator bridge compatibility (request/response).
+      if (data.source === "hms" && data.type === "getGameData" && data.requestId != null) {
+        iframeRef.current?.contentWindow?.postMessage(
+          {
+            source: "hms",
+            requestId: data.requestId,
+            payload: latestGameData,
+          },
+          gameOrigin
+        );
+      }
+
+      if (data.source === "hms" && data.type === "saveGameData" && data.requestId != null) {
+        const payloadData = (data.payload as { data?: unknown } | undefined)?.data ?? data.payload ?? {};
+        latestGameData = payloadData;
+
+        void (async () => {
+          const authHeaders = await getAuthHeaders();
+          if (!authHeaders) {
+            iframeRef.current?.contentWindow?.postMessage(
+              {
+                source: "hms",
+                requestId: data.requestId,
+                error: "Not authenticated",
+              },
+              gameOrigin
+            );
+            return;
+          }
+
+          const saveResponse = await fetch(`/api/game-data/${slug}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json", ...authHeaders },
+            credentials: "include",
+            body: JSON.stringify({ data: payloadData }),
+          });
+
+          if (!saveResponse.ok) {
+            const saveBody = (await saveResponse.json().catch(() => null)) as
+              | { details?: string; error?: string }
+              | null;
+            iframeRef.current?.contentWindow?.postMessage(
+              {
+                source: "hms",
+                requestId: data.requestId,
+                error: saveBody?.details ?? saveBody?.error ?? "Failed to save game data",
+              },
+              gameOrigin
+            );
+            return;
+          }
+
+          iframeRef.current?.contentWindow?.postMessage(
+            {
+              source: "hms",
+              requestId: data.requestId,
+              payload: { ok: true },
+            },
+            gameOrigin
+          );
+        })();
       }
     }
 
