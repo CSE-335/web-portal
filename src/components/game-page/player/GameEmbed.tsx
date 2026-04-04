@@ -117,11 +117,11 @@ export default function GameEmbed({
         );
       }
 
-      // Human Motion Simulator bridge compatibility (request/response).
-      if (data.source === "hms" && data.type === "getGameData" && data.requestId != null) {
+      // Generic request/response bridge for any game-specific `source`.
+      if (typeof data.source === "string" && data.type === "getGameData" && data.requestId != null) {
         iframeRef.current?.contentWindow?.postMessage(
           {
-            source: "hms",
+            source: data.source,
             requestId: data.requestId,
             payload: latestGameData,
           },
@@ -129,7 +129,7 @@ export default function GameEmbed({
         );
       }
 
-      if (data.source === "hms" && data.type === "saveGameData" && data.requestId != null) {
+      if (typeof data.source === "string" && data.type === "saveGameData" && data.requestId != null) {
         const payloadData = (data.payload as { data?: unknown } | undefined)?.data ?? data.payload ?? {};
         latestGameData = payloadData;
 
@@ -138,7 +138,7 @@ export default function GameEmbed({
           if (!authHeaders) {
             iframeRef.current?.contentWindow?.postMessage(
               {
-                source: "hms",
+                source: data.source,
                 requestId: data.requestId,
                 error: "Not authenticated",
               },
@@ -160,7 +160,7 @@ export default function GameEmbed({
               | null;
             iframeRef.current?.contentWindow?.postMessage(
               {
-                source: "hms",
+                source: data.source,
                 requestId: data.requestId,
                 error: saveBody?.details ?? saveBody?.error ?? "Failed to save game data",
               },
@@ -171,7 +171,7 @@ export default function GameEmbed({
 
           iframeRef.current?.contentWindow?.postMessage(
             {
-              source: "hms",
+              source: data.source,
               requestId: data.requestId,
               payload: { ok: true },
             },
@@ -185,7 +185,7 @@ export default function GameEmbed({
     window.addEventListener("message", handleGameMessage);
     return () => window.removeEventListener("message", handleGameMessage);
   }, [slug, gameOrigin]);
-  
+
   return (
     <Box style={{ overflow: "hidden", background: "rgba(0,0,0,0.2)" }}>
       <iframe
