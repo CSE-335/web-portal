@@ -26,6 +26,7 @@
 *.pem
 .claude
 .swc
+*.code-workspace
 
 # debug
 npm-debug.log*
