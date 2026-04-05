@@ -6,7 +6,7 @@
  * that the portal imports.
  *
  * Run via: node scripts/generate-games.js
- * Or via:  ./scripts/setup-games.sh (which calls this automatically)
+ * Or via:  node scripts/setup-games.js (which calls this automatically)
  */
 
 const fs = require('fs');
@@ -56,7 +56,7 @@ if (fs.existsSync(gamesDir)) {
 }
 
 const output = `// Auto-generated from game submodules — do not edit manually.
-// Run ./scripts/setup-games.sh or node scripts/generate-games.js to regenerate.
+// Run node scripts/setup-games.js or node scripts/generate-games.js to regenerate.
 
 export type GameMeta = {
   slug: string;

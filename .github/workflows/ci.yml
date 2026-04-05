@@ -3,6 +3,7 @@ name: CI
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
@@ -22,7 +23,7 @@ jobs:
 
   deploy:
     needs: test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: arc-runner-cse120
     steps:
       - uses: actions/checkout@v4
@@ -32,13 +33,21 @@ jobs:
         with:
           node-version: 20
           cache: npm
+      - name: Get latest game commits
+        id: game-commits
+        run: |
+          hash=""
+          for url in $(git config --file .gitmodules --get-regexp url | awk '{print $2}'); do
+            hash+=$(git ls-remote "$url" refs/heads/main | cut -f1)
+          done
+          echo "hash=$(echo "$hash" | sha256sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@v4
         with:
           path: |
             .game-build-cache.json
             public/staticGames
             public/gameThumbnails
-          key: game-builds-${{ hashFiles('.gitmodules', 'games/*/data/game.json') }}
+          key: game-builds-${{ steps.game-commits.outputs.hash }}
           restore-keys: |
             game-builds-
       - run: node scripts/setup-games.js

@@ -2,7 +2,7 @@
  * Build all game submodules and stage their output for the portal.
  *
  * This script:
- *   1. Ensures submodules are checked out
+ *   1. Fetches and checks out the latest main branch for each game submodule
  *   2. Builds each game in games/ (skips if unchanged since last build)
  *   3. Copies built files to public/staticGames/<game-id>/
  *   4. Copies thumbnails to public/gameThumbnails/<game-id>.png
@@ -75,9 +75,21 @@ function saveCache(cache) {
   fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2));
 }
 
-// 1. Ensure submodules are checked out
-console.log('Updating submodules...');
-run('git submodule update --init --recursive');
+// 1. Ensure submodules are initialised and checked out to latest main
+console.log('Initialising submodules...');
+run('git submodule init');
+run('git submodule update --recursive');
+
+if (fs.existsSync(GAMES_DIR)) {
+  for (const dir of fs.readdirSync(GAMES_DIR)) {
+    const gameDir = path.join(GAMES_DIR, dir);
+    if (!fs.statSync(gameDir).isDirectory()) continue;
+    if (!fs.existsSync(path.join(gameDir, 'package.json'))) continue;
+    console.log(`Fetching latest main for ${dir}...`);
+    run('git fetch origin', gameDir);
+    run('git checkout origin/main', gameDir);
+  }
+}
 
 // 2. Ensure output directories exist
 mkdirp(PUBLIC_GAMES_DIR);
