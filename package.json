@@ -10,7 +10,7 @@
     "test": "jest",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "setup-games": "node scripts/setup-games.js"
+    "setup-games": "node scripts/setup-games.mjs"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.64",

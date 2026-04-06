@@ -5,16 +5,19 @@
  * This script reads all of them and produces a typed TypeScript array
  * that the portal imports.
  *
- * Run via: node scripts/generate-games.js
- * Or via:  node scripts/setup-games.js (which calls this automatically)
+ * Run via: node scripts/generate-games.mjs
+ * Or via:  node scripts/setup-games.mjs (which calls this automatically)
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const gamesDir = path.join(__dirname, '..', 'games');
 const outputPath = path.join(__dirname, '..', 'src', 'data', 'games.ts');
 const games = [];
+const validSubjects = ['Science', 'Technology', 'Engineering', 'Mathematics'];
 
 if (fs.existsSync(gamesDir)) {
   for (const dir of fs.readdirSync(gamesDir)) {
@@ -28,11 +31,23 @@ if (fs.existsSync(gamesDir)) {
       continue;
     }
 
-    const meta = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
+    let meta;
+    try {
+      meta = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
+    } catch (err) {
+      console.warn(`Skipping ${dir} — failed to parse game.json: ${err}`);
+      continue;
+    }
 
     const gameId = meta['game-id'];
     if (!gameId) {
       console.warn(`Skipping ${dir} — game.json missing "game-id" field`);
+      continue;
+    }
+
+    const subject = meta.subject ?? 'Technology';
+    if (!validSubjects.includes(subject)) {
+      console.warn(`Skipping ${dir} — invalid subject "${subject}", must be one of: ${validSubjects.join(', ')}`);
       continue;
     }
 
@@ -41,7 +56,7 @@ if (fs.existsSync(gamesDir)) {
     games.push({
       slug: gameId,
       title: meta.title ?? gameId,
-      subject: meta.subject ?? 'Technology',
+      subject,
       description: meta.description ?? '',
       longDescription: meta.longDescription ?? [],
       iframeSrc,
@@ -56,7 +71,7 @@ if (fs.existsSync(gamesDir)) {
 }
 
 const output = `// Auto-generated from game submodules — do not edit manually.
-// Run node scripts/setup-games.js or node scripts/generate-games.js to regenerate.
+// Run node scripts/setup-games.mjs or node scripts/generate-games.mjs to regenerate.
 
 export type GameMeta = {
   slug: string;

@@ -15,7 +15,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: node scripts/generate-games.js
+      - run: node scripts/generate-games.mjs
       - run: npm test
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
@@ -50,8 +50,8 @@ jobs:
           key: game-builds-${{ steps.game-commits.outputs.hash }}
           restore-keys: |
             game-builds-
-      - run: node scripts/setup-games.js
       - run: npm ci
+      - run: node scripts/setup-games.mjs
       - run: npx opennextjs-cloudflare build
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
