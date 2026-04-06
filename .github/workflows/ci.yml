@@ -61,3 +61,44 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
+
+  deploy-dev:
+    needs: test
+    if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+    runs-on: arc-runner-cse120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Get latest game commits
+        id: game-commits
+        run: |
+          hash=""
+          for url in $(git config --file .gitmodules --get-regexp url | awk '{print $2}'); do
+            hash+=$(git ls-remote "$url" refs/heads/main | cut -f1)
+          done
+          echo "hash=$(echo "$hash" | sha256sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: |
+            .game-build-cache.json
+            public/staticGames
+            public/gameThumbnails
+          key: game-builds-dev-${{ steps.game-commits.outputs.hash }}
+          restore-keys: |
+            game-builds-dev-
+      - run: npm ci
+      - run: node scripts/setup-games.mjs
+      - run: npx opennextjs-cloudflare build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --env dev
