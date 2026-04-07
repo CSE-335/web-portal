@@ -14,8 +14,22 @@ jobs:
         with:
           node-version: 20
           cache: npm
+      - name: Get latest game commits
+        id: game-commits
+        run: echo "hash=$(node scripts/hash-game-commits.mjs)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: |
+            .game-sources
+            .game-build-cache.json
+            public/staticGames
+            public/gameThumbnails
+          key: game-builds-test-${{ hashFiles('games.config.mjs') }}-${{ steps.game-commits.outputs.hash }}
+          restore-keys: |
+            game-builds-test-${{ hashFiles('games.config.mjs') }}-
+            game-builds-test-
       - run: npm ci
-      - run: node scripts/generate-games.mjs
+      - run: node scripts/setup-games.mjs
       - run: npm test
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
@@ -27,28 +41,23 @@ jobs:
     runs-on: arc-runner-cse120
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: recursive
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
       - name: Get latest game commits
         id: game-commits
-        run: |
-          hash=""
-          for url in $(git config --file .gitmodules --get-regexp url | awk '{print $2}'); do
-            hash+=$(git ls-remote "$url" refs/heads/main | cut -f1)
-          done
-          echo "hash=$(echo "$hash" | sha256sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+        run: echo "hash=$(node scripts/hash-game-commits.mjs)" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@v4
         with:
           path: |
+            .game-sources
             .game-build-cache.json
             public/staticGames
             public/gameThumbnails
-          key: game-builds-${{ steps.game-commits.outputs.hash }}
+          key: game-builds-${{ hashFiles('games.config.mjs') }}-${{ steps.game-commits.outputs.hash }}
           restore-keys: |
+            game-builds-${{ hashFiles('games.config.mjs') }}-
             game-builds-
       - run: npm ci
       - run: node scripts/setup-games.mjs
@@ -68,28 +77,23 @@ jobs:
     runs-on: arc-runner-cse120
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: recursive
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
       - name: Get latest game commits
         id: game-commits
-        run: |
-          hash=""
-          for url in $(git config --file .gitmodules --get-regexp url | awk '{print $2}'); do
-            hash+=$(git ls-remote "$url" refs/heads/main | cut -f1)
-          done
-          echo "hash=$(echo "$hash" | sha256sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+        run: echo "hash=$(node scripts/hash-game-commits.mjs)" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@v4
         with:
           path: |
+            .game-sources
             .game-build-cache.json
             public/staticGames
             public/gameThumbnails
-          key: game-builds-dev-${{ steps.game-commits.outputs.hash }}
+          key: game-builds-dev-${{ hashFiles('games.config.mjs') }}-${{ steps.game-commits.outputs.hash }}
           restore-keys: |
+            game-builds-dev-${{ hashFiles('games.config.mjs') }}-
             game-builds-dev-
       - run: npm ci
       - run: node scripts/setup-games.mjs

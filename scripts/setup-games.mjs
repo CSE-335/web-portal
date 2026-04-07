@@ -1,14 +1,16 @@
 /**
- * Build all game submodules and stage their output for the portal.
+ * Sync game repos from the manifest, build them, and stage their output.
  *
  * This script:
- *   1. Fetches and checks out the latest main branch for each game submodule
- *   2. Builds each game in games/ (skips if unchanged since last build)
+ *   1. Clones or syncs each configured game repo into .game-sources/
+ *   2. Builds each game (skips if unchanged since last build)
  *   3. Copies built files to public/staticGames/<game-id>/
  *   4. Copies thumbnails to public/gameThumbnails/<game-id>.png
- *   5. Generates src/data/games.ts from each game's data/game.json
+ *   5. Generates src/data/games.ts from each repo's data/game.json
  *
- * Run this after cloning, after updating submodules, or whenever a game changes.
+ * Run this after cloning, whenever games.config.mjs changes, or whenever a
+ * game repo changes upstream.
+ *
  * Usage: node scripts/setup-games.mjs
  *
  * Flags:
@@ -17,108 +19,90 @@
 
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
-import { run, mkdirp } from './osHelper.mjs';
-import { getSubmoduleCommit, loadCache, saveCache } from './utils.mjs';
+import { mkdirp } from './osHelper.mjs';
 import { buildAndCopy, canSkipGame } from './setupGamesHelper.mjs';
+import { getGitCommit, loadCache, readJson, saveCache } from './utils.mjs';
+import {
+  ROOT_DIR,
+  getConfiguredGameEntries,
+  getRepoCacheDir,
+  syncGameRepo,
+} from './gameSources.mjs';
+import { generateGamesData } from './generate-games.mjs';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const ROOT_DIR = path.join(__dirname, '..');
-const GAMES_DIR = path.join(ROOT_DIR, 'games');
 const PUBLIC_GAMES_DIR = path.join(ROOT_DIR, 'public', 'staticGames');
 const PUBLIC_THUMBS_DIR = path.join(ROOT_DIR, 'public', 'gameThumbnails');
 const CACHE_FILE = path.join(ROOT_DIR, '.game-build-cache.json');
 
 const forceRebuild = process.argv.includes('--force');
-
-// verify the games directory exists
-if (!fs.existsSync(GAMES_DIR)) {
-  console.log('No games directory found, nothing to build.');
-  process.exit(0);
-}
-
-// initialize the submodules
-console.log('Initialising submodules...');
-run('git submodule init', ROOT_DIR);
-
-// check out the main branch of every submodule
-for (const entry of fs.readdirSync(GAMES_DIR, { withFileTypes: true })) {
-  // skip if the current entry is not a folder
-  if (!entry.isDirectory()) {
-    continue;
-  }
-
-  const gameDir = path.join(GAMES_DIR, entry.name);
-
-  // skip if there is no package.json within the folder
-  if (!fs.existsSync(path.join(gameDir, 'package.json'))) {
-    continue;
-  }
-
-  // check the submodule out to the latest main branch
-  try {
-    console.log(`Fetching latest main for ${entry.name}...`);
-    run('git fetch origin', gameDir);
-    run('git checkout origin/main', gameDir);
-  } catch (err) {
-    console.warn(`Failed to update ${entry.name}, keeping cached version; err: ${err}`);
-  }
-}
-
-// 2. Ensure output directories exist
-mkdirp(PUBLIC_GAMES_DIR);
-mkdirp(PUBLIC_THUMBS_DIR);
-
 const cache = forceRebuild ? {} : loadCache(CACHE_FILE);
 const newCache = {};
+
 let gamesBuilt = 0;
 let gamesSkipped = 0;
 let gamesFailed = 0;
 
-// build each game
-for (const dir of fs.readdirSync(GAMES_DIR)) {
-  const gameDir = path.join(GAMES_DIR, dir);
-  if (!fs.statSync(gameDir).isDirectory()) continue;
+mkdirp(PUBLIC_GAMES_DIR);
+mkdirp(PUBLIC_THUMBS_DIR);
 
-  const packagePath = path.join(gameDir, 'package.json');
-  if (!fs.existsSync(packagePath)) continue;
+for (const { repoUrl, repoName } of getConfiguredGameEntries()) {
+  const repoDir = getRepoCacheDir(repoUrl);
 
-  // skip if the submodule has no valid commit
-  const commit = getSubmoduleCommit(gameDir);
+  try {
+    syncGameRepo(repoUrl);
+  } catch (err) {
+    if (!fs.existsSync(repoDir)) {
+      console.warn(`Failed to sync ${repoName}; no cached repo available. err: ${err}`);
+      gamesFailed++;
+      continue;
+    }
+
+    console.warn(`Failed to sync ${repoName}, using cached repo. err: ${err}`);
+  }
+
+  const commit = getGitCommit(repoDir);
   if (!commit) {
-    console.warn(`Skipping ${dir} — no valid git commit found`);
+    console.warn(`Skipping ${repoName} — no valid git commit found`);
+    gamesFailed++;
     continue;
   }
 
-  // Read game-id from game.json, fall back to folder name
-  let gameId = dir;
-  const metaPath = path.join(gameDir, 'data', 'game.json');
-  if (fs.existsSync(metaPath)) {
-    const meta = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
-    if (meta['game-id']) gameId = meta['game-id'];
+  const metaPath = path.join(repoDir, 'data', 'game.json');
+  if (!fs.existsSync(metaPath)) {
+    console.warn(`Skipping ${repoName} — no data/game.json found`);
+    gamesFailed++;
+    continue;
   }
 
-  // Check if we can skip this game
+  let gameId = repoName;
+  try {
+    const meta = readJson(metaPath);
+    if (meta['game-id']) {
+      gameId = meta['game-id'];
+    }
+  } catch (err) {
+    console.warn(`Skipping ${repoName} — failed to parse data/game.json: ${err}`);
+    gamesFailed++;
+    continue;
+  }
+
   const outputDir = path.join(PUBLIC_GAMES_DIR, gameId);
   const cached = cache[gameId];
 
   if (canSkipGame(forceRebuild, commit, cached, outputDir)) {
-    console.log(`\nSkipping ${dir} (unchanged at ${commit.slice(0, 8)})`);
+    console.log(`\nSkipping ${repoName} (unchanged at ${commit.slice(0, 8)})`);
     newCache[gameId] = commit;
     gamesSkipped++;
     continue;
   }
 
-  // get the game's dependencies and build it
   try {
-    buildAndCopy(dir, gameDir, gameId, outputDir, PUBLIC_THUMBS_DIR);
-
+    buildAndCopy(repoName, repoDir, gameId, outputDir, PUBLIC_THUMBS_DIR);
     newCache[gameId] = commit;
     gamesBuilt++;
   } catch (err) {
-    console.warn(`Failed to build ${dir}, keeping cached version. err: ${err}`);
+    console.warn(`Failed to build ${repoName}, keeping cached version. err: ${err}`);
 
-    // preserve the old cache hash
     if (cache[gameId]) {
       newCache[gameId] = cache[gameId];
     }
@@ -129,8 +113,7 @@ for (const dir of fs.readdirSync(GAMES_DIR)) {
 
 saveCache(CACHE_FILE, newCache);
 
-// 4. Generate games.ts
 console.log('\nGenerating src/data/games.ts...');
-await import('./generate-games.mjs');
+generateGamesData();
 
 console.log(`\nDone — ${gamesBuilt} built, ${gamesSkipped} skipped (cached), ${gamesFailed} failed.`);

@@ -1,12 +1,16 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
 
-export function getSubmoduleCommit(gameDir) {
+export function getGitCommit(repoDir) {
   try {
-    return execSync('git rev-parse HEAD', { cwd: gameDir, encoding: 'utf-8' }).trim();
+    return execSync('git rev-parse HEAD', { cwd: repoDir, encoding: 'utf-8' }).trim();
   } catch {
     return null;
   }
+}
+
+export function readJson(filePath) {
+  return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 }
 
 export function loadCache(cacheFile) {

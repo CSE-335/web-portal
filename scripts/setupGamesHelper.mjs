@@ -6,8 +6,8 @@ export function canSkipGame(forceRebuild, commit, cached, outputDir) {
   return !forceRebuild && commit && cached === commit && fs.existsSync(outputDir);
 }
 
-export function buildAndCopy(dir, gameDir, gameId, outputDir, thumbsDir) {
-  console.log(`\nBuilding ${dir}...`);
+export function buildAndCopy(label, gameDir, gameId, outputDir, thumbsDir) {
+  console.log(`\nBuilding ${label}...`);
   run('npm ci', gameDir);
   run('npm run build', gameDir);
 
@@ -15,10 +15,10 @@ export function buildAndCopy(dir, gameDir, gameId, outputDir, thumbsDir) {
   const distDir = path.join(gameDir, 'dist');
   if (fs.existsSync(distDir)) {
     rmrf(outputDir);
-    console.log(`Staging ${dir} -> public/staticGames/${gameId}/`);
+    console.log(`Staging ${label} -> public/staticGames/${gameId}/`);
     copyDir(distDir, outputDir);
   } else {
-    console.warn(`Warning: ${dir} built but no dist/ folder found, skipping.`);
+    console.warn(`Warning: ${label} built but no dist/ folder found, skipping.`);
   }
 
   // Copy thumbnail if present
