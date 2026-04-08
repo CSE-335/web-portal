@@ -1,5 +1,10 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import type { AudioResponseFormat } from 'openai/resources/audio';
+
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export async function POST(req: Request) {
   const formData = await req.formData();
@@ -14,28 +19,26 @@ export async function POST(req: Request) {
     );
   }
 
-  const client = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
-
   try {
     const transcription = await client.audio.transcriptions.create({
       file: file as File,
       model: model as string,
       language: (formData.get('language') as string) || undefined,
       prompt: (formData.get('prompt') as string) || undefined,
-      response_format: (formData.get('response_format') as any) || undefined,
+      response_format: (formData.get('response_format') as AudioResponseFormat) || undefined,
       temperature: formData.has('temperature')
         ? parseFloat(formData.get('temperature') as string)
         : undefined,
     });
 
     return NextResponse.json(transcription);
-  } catch (err: any) {
-    console.error('OpenAI Whisper error:', err.message);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Whisper transcription failed';
+    const status = err instanceof OpenAI.APIError ? err.status : 500;
+    console.error('OpenAI Whisper error:', message);
     return NextResponse.json(
-      { error: err.message || 'Whisper transcription failed' },
-      { status: err.status || 500 }
+      { error: message },
+      { status }
     );
   }
 }

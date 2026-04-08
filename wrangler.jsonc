@@ -2,6 +2,7 @@
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"main": ".open-next/worker.js",
 	"name": "s26-cse-335",
+	"workers_dev": false,
 	"compatibility_date": "2026-03-13",
 	"compatibility_flags": [
 		"nodejs_compat",
@@ -23,5 +24,22 @@
 		// Enable image optimization
 		// see https://opennext.js.org/cloudflare/howtos/image
 		"binding": "IMAGES"
+	},
+	"env": {
+		"dev": {
+			"name": "s26-cse-335-dev",
+			"routes": [
+				{
+					"pattern": "dev.stemgames.online",
+					"custom_domain": true
+				}
+			],
+			"services": [
+				{
+					"binding": "WORKER_SELF_REFERENCE",
+					"service": "s26-cse-335-dev"
+				}
+			]
+		}
 	}
 }
