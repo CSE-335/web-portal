@@ -14,7 +14,8 @@
  * Usage: node scripts/setup-games.mjs
  *
  * Flags:
- *   --force    Skip cache and rebuild all games
+ *   --force          Skip cache and rebuild all games
+ *   --metadata-only  Sync repos and generate games.ts without building
  */
 
 import fs from 'fs';
@@ -35,6 +36,7 @@ const PUBLIC_THUMBS_DIR = path.join(ROOT_DIR, 'public', 'gameThumbnails');
 const CACHE_FILE = path.join(ROOT_DIR, '.game-build-cache.json');
 
 const forceRebuild = process.argv.includes('--force');
+const metadataOnly = process.argv.includes('--metadata-only');
 const cache = forceRebuild ? {} : loadCache(CACHE_FILE);
 const newCache = {};
 
@@ -42,9 +44,7 @@ let gamesBuilt = 0;
 let gamesSkipped = 0;
 let gamesFailed = 0;
 
-mkdirp(PUBLIC_GAMES_DIR);
-mkdirp(PUBLIC_THUMBS_DIR);
-
+// Sync all repos first
 for (const { repoUrl, repoName } of getConfiguredGameEntries()) {
   const repoDir = getRepoCacheDir(repoUrl);
 
@@ -58,6 +58,26 @@ for (const { repoUrl, repoName } of getConfiguredGameEntries()) {
     }
 
     console.warn(`Failed to sync ${repoName}, using cached repo. err: ${err}`);
+  }
+}
+
+// In metadata-only mode, just generate games.ts and exit
+if (metadataOnly) {
+  console.log('\nGenerating src/data/games.ts (metadata-only mode)...');
+  generateGamesData();
+  console.log('Done.');
+  process.exit(0);
+}
+
+// Build each game
+mkdirp(PUBLIC_GAMES_DIR);
+mkdirp(PUBLIC_THUMBS_DIR);
+
+for (const { repoUrl, repoName } of getConfiguredGameEntries()) {
+  const repoDir = getRepoCacheDir(repoUrl);
+
+  if (!fs.existsSync(repoDir)) {
+    continue; // already warned during sync
   }
 
   const commit = getGitCommit(repoDir);

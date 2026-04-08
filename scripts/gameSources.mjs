@@ -75,13 +75,13 @@ export function syncGameRepo(repoUrl) {
 
   if (!fs.existsSync(repoDir)) {
     console.log(`Cloning ${repoName}...`);
-    run(`git clone --branch ${DEFAULT_GAME_BRANCH} --single-branch ${repoUrl} ${repoDir}`, ROOT_DIR);
+    run(`git clone --branch ${DEFAULT_GAME_BRANCH} --single-branch ${repoUrl} ${repoDir}`, ROOT_DIR, 30000);
   }
 
   console.log(`Syncing ${repoName}...`);
-  run(`git fetch origin ${DEFAULT_GAME_BRANCH} --prune`, repoDir);
+  run(`git fetch origin ${DEFAULT_GAME_BRANCH} --prune`, repoDir, 30000);
   run(`git checkout --force origin/${DEFAULT_GAME_BRANCH}`, repoDir);
-  run('git clean -fdx', repoDir);
+  run('git clean -fd', repoDir);
 
   return repoDir;
 }

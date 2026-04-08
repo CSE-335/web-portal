@@ -2,9 +2,9 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-export function run(cmd, cwd) {
+export function run(cmd, cwd, timeout) {
   console.log(`> ${cmd}`);
-  execSync(cmd, { cwd, stdio: 'inherit' });
+  execSync(cmd, { cwd, stdio: 'inherit', timeout });
 }
 
 export function rmrf(dir) {
