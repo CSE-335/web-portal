@@ -43,6 +43,7 @@ jest.mock('@/lib/supabase/client', () => ({
 
 jest.mock('@/features/assistant', () => ({
   GameIframeBridge: () => null,
+  GameSessionRegistration: () => null,
   useAssistant: () => ({
     state: { isOpen: false },
     dispatch: jest.fn(),

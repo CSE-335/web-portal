@@ -1,13 +1,63 @@
-// AI tutor API — uses Anthropic claude-sonnet-4-6, falls back to static responses if no key
+// AI tutor API — prefers OpenAI (ASSISTANT_OPENAI_MODEL / gpt-4o-mini), then Anthropic; static fallback if all fail
 import { NextRequest, NextResponse } from "next/server";
-import { streamObject } from "ai";
+import { generateObject } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
+import { openai } from "@ai-sdk/openai";
 import type { AssistantAPIRequest, AssistantAPIResponse } from "@/features/assistant/types";
 import { buildSystemPrompt, buildUserPrompt } from "./lib/prompts";
 import { AssistantResponseSchema } from "./lib/schema";
 import { getStaticFallback } from "./lib/fallbacks";
+import { getAssistantGameIntegration } from "@/features/assistant/gameIntegration";
 
 const DEFAULT_MAX_LINES = 6;
+
+async function generateAssistantReply(systemPrompt: string, userPrompt: string) {
+  const hasAnthropic = Boolean(process.env.ANTHROPIC_API_KEY);
+  const hasOpenAI = Boolean(process.env.OPENAI_API_KEY);
+  const openaiModel = process.env.ASSISTANT_OPENAI_MODEL || "gpt-4o-mini";
+
+  const withAnthropic = () =>
+    generateObject({
+      model: anthropic("claude-sonnet-4-6"),
+      schema: AssistantResponseSchema,
+      system: systemPrompt,
+      prompt: userPrompt,
+    }).then((r) => r.object);
+
+  const withOpenAI = () =>
+    generateObject({
+      model: openai(openaiModel),
+      schema: AssistantResponseSchema,
+      system: systemPrompt,
+      prompt: userPrompt,
+    }).then((r) => r.object);
+
+  const errors: unknown[] = [];
+
+  if (hasOpenAI) {
+    try {
+      return await withOpenAI();
+    } catch (e) {
+      errors.push(e);
+      console.error("[Assistant] OpenAI request failed:", e);
+    }
+  }
+
+  if (hasAnthropic) {
+    try {
+      return await withAnthropic();
+    } catch (e) {
+      errors.push(e);
+      console.error("[Assistant] Anthropic request failed:", e);
+    }
+  }
+
+  if (errors.length > 0) {
+    throw new AggregateError(errors, "All configured LLM providers failed");
+  }
+
+  throw new Error("No LLM provider configured");
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,8 +71,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!process.env.ANTHROPIC_API_KEY) {
-      console.warn("[Assistant] ANTHROPIC_API_KEY not configured. Using static fallback.");
+    const hasAnthropic = Boolean(process.env.ANTHROPIC_API_KEY);
+    const hasOpenAI = Boolean(process.env.OPENAI_API_KEY);
+
+    if (!hasAnthropic && !hasOpenAI) {
+      console.warn(
+        "[Assistant] No provider key configured (OPENAI_API_KEY or ANTHROPIC_API_KEY). Using static fallback.",
+      );
       return NextResponse.json({
         success: true,
         data: getStaticFallback(event),
@@ -30,18 +85,16 @@ export async function POST(request: NextRequest) {
     }
 
     const lineLimit = Math.min(maxLines || DEFAULT_MAX_LINES, 8);
-    const systemPrompt = buildSystemPrompt(lineLimit);
-    const userPrompt = buildUserPrompt(event, conversationHistory);
+    const gameProfile = getAssistantGameIntegration(event.gameId);
+    const systemPrompt = buildSystemPrompt(lineLimit, gameProfile);
+    const userPrompt = buildUserPrompt(event, conversationHistory, gameProfile);
 
     try {
-      const result = streamObject({
-        model: anthropic("claude-sonnet-4-6"),
-        schema: AssistantResponseSchema,
-        system: systemPrompt,
-        prompt: userPrompt,
-      });
-
-      return result.toTextStreamResponse();
+      const data = await generateAssistantReply(systemPrompt, userPrompt);
+      return NextResponse.json({
+        success: true,
+        data,
+      } satisfies AssistantAPIResponse);
     } catch (llmError) {
       console.error("[Assistant] LLM call failed, using fallback:", llmError);
       return NextResponse.json({

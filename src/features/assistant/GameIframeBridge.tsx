@@ -34,8 +34,13 @@ export default function GameIframeBridge({
   );
 
   useEffect(() => {
+    function isTrustedOrigin(origin: string): boolean {
+      if (origin === window.location.origin) return true;
+      return origins.includes(origin);
+    }
+
     function handleMessage(event: MessageEvent) {
-      if (!origins.includes(event.origin)) return;
+      if (!isTrustedOrigin(event.origin)) return;
 
       const data = event.data as GamePostMessage;
       if (data?.type !== "ASSISTANT_GAME_EVENT" || !data.payload) return;

@@ -29,10 +29,18 @@ import { loadConversation, saveConversation } from "./services/sessionStore";
 // Context shape
 // ---------------------------------------------------------------------------
 
+export interface GameSessionDefaults {
+  gameId: string;
+  levelId: string;
+  targetConcept: string;
+}
+
 interface AssistantContextValue {
   state: AssistantState;
   dispatch: React.Dispatch<AssistantAction>;
   config: AssistantConfig;
+  registerGameSession: (defaults: GameSessionDefaults) => void;
+  unregisterGameSession: () => void;
   sendGameEvent: (event: GameEvent) => void;
   sendUserMessage: (text: string) => void;
   requestFollowUp: (actionType: string) => void;
@@ -64,7 +72,16 @@ export function AssistantProvider({
 
   const conversationRef = useRef<DialogueLine[]>([]);
   const lastEventRef = useRef<GameEvent | null>(null);
+  const sessionGameRef = useRef<GameSessionDefaults | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const registerGameSession = useCallback((defaults: GameSessionDefaults) => {
+    sessionGameRef.current = defaults;
+  }, []);
+
+  const unregisterGameSession = useCallback(() => {
+    sessionGameRef.current = null;
+  }, []);
 
   const restoredRef = useRef(false);
   if (!restoredRef.current && typeof window !== "undefined") {
@@ -120,11 +137,12 @@ export function AssistantProvider({
       dispatch({ type: "ADD_USER_MESSAGE", payload: userLine });
 
       const lastEvt = lastEventRef.current;
+      const session = sessionGameRef.current;
       const event: GameEvent = {
-        gameId: lastEvt?.gameId ?? "general",
-        levelId: lastEvt?.levelId ?? "chat",
+        gameId: lastEvt?.gameId ?? session?.gameId ?? "general",
+        levelId: lastEvt?.levelId ?? session?.levelId ?? "chat",
         eventType: "user_message",
-        targetConcept: lastEvt?.targetConcept ?? "general",
+        targetConcept: lastEvt?.targetConcept ?? session?.targetConcept ?? "general",
         hintCount: 0,
         timeSpentSeconds: 0,
         additionalContext: { userMessage: text },
@@ -151,7 +169,7 @@ export function AssistantProvider({
   const advanceLine = useCallback(() => dispatch({ type: "ADVANCE_LINE" }), []);
   const dismissDialogue = useCallback(() => {
     dispatch({ type: "RESET_DIALOGUE" });
-    dispatch({ type: "CLOSE_PANEL" });
+    dispatch({ type: "MINIMIZE" });
   }, []);
 
   const value = useMemo<AssistantContextValue>(
@@ -159,13 +177,25 @@ export function AssistantProvider({
       state,
       dispatch,
       config,
+      registerGameSession,
+      unregisterGameSession,
       sendGameEvent,
       sendUserMessage,
       requestFollowUp,
       advanceLine,
       dismissDialogue,
     }),
-    [state, config, sendGameEvent, sendUserMessage, requestFollowUp, advanceLine, dismissDialogue],
+    [
+      state,
+      config,
+      registerGameSession,
+      unregisterGameSession,
+      sendGameEvent,
+      sendUserMessage,
+      requestFollowUp,
+      advanceLine,
+      dismissDialogue,
+    ],
   );
 
   return (
