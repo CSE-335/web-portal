@@ -35,10 +35,12 @@ export async function streamEvent(
   conversationHistory: DialogueLine[],
   maxLines: number,
   callbacks: StreamCallbacks,
+  signal?: AbortSignal,
 ): Promise<void> {
   const res = await fetch(apiEndpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    signal,
     body: JSON.stringify({
       event,
       conversationHistory: conversationHistory.slice(-12),

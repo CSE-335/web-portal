@@ -185,7 +185,6 @@ The bridge understands the following `eventType` values (you generally use helpe
 - `level_complete`
 - `hint_request`
 - `timeout`
-- `idle_nudge`
 - `recap_request`
 
 The portal’s `GameIframeBridge` listens for:

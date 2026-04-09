@@ -10,7 +10,6 @@ export type AssistantEventType =
   | "level_start"
   | "timeout"
   | "recap_request"
-  | "idle_nudge"
   | "user_message";
 
 export interface GameEvent {
@@ -80,6 +79,7 @@ export type AssistantAction =
   | { type: "CLOSE_PANEL" }
   | { type: "MINIMIZE" }
   | { type: "MAXIMIZE" }
+  | { type: "RESET_CONVERSATION" }
   | { type: "SET_GENERATING"; payload: boolean }
   | { type: "SET_DIALOGUE"; payload: AssistantResponse }
   | { type: "START_STREAMING" }

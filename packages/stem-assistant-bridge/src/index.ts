@@ -11,7 +11,6 @@ export type AssistantEventType =
   | "level_start"
   | "timeout"
   | "recap_request"
-  | "idle_nudge"
   | "user_message";
 
 export interface GameEvent {
@@ -214,9 +213,5 @@ export const stemAssistant = {
 
   recapRequest(extra?: Partial<GameEvent>): void {
     sendStemAssistantEvent({ eventType: "recap_request", ...extra });
-  },
-
-  idleNudge(extra?: Partial<GameEvent>): void {
-    sendStemAssistantEvent({ eventType: "idle_nudge", ...extra });
   },
 };
