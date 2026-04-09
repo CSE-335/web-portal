@@ -18,7 +18,7 @@ const teamMembers = [
   },
   {
     name: "Sergio Gonzalez",
-    roles: ["Back-end", "Database Designer"],
+    roles: ["Back-end", "Database Designer", "UI/UX"],
     image: "/teampics/sergio.png",
   },
   {
