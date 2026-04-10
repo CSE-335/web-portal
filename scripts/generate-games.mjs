@@ -52,7 +52,7 @@ export function generateGamesData() {
       continue;
     }
 
-    games.push({
+    const entry = {
       slug: gameId,
       title: meta.title ?? gameId,
       subject,
@@ -63,7 +63,21 @@ export function generateGamesData() {
       embedHeight: meta.embedHeight ?? '800px',
       featured: meta.featured ?? false,
       tags: meta.tags ?? [],
-    });
+    };
+
+    const assistantTutorBrief = meta['assistant-tutor-brief'];
+    if (typeof assistantTutorBrief === 'string' && assistantTutorBrief.trim() !== '') {
+      entry.assistantTutorBrief = assistantTutorBrief.trim();
+    }
+    const assistantTargetConcept = meta['assistant-target-concept'];
+    if (
+      typeof assistantTargetConcept === 'string' &&
+      assistantTargetConcept.trim() !== ''
+    ) {
+      entry.assistantDefaultTargetConcept = assistantTargetConcept.trim();
+    }
+
+    games.push(entry);
 
     console.log(`Added ${gameId}`);
   }
@@ -88,6 +102,10 @@ export type GameMeta = {
   embedHeight?: string;
   featured?: boolean;
   tags?: string[];
+  /** Optional: richer tutor context for the web assistant (see gameIntegration). */
+  assistantTutorBrief?: string;
+  /** Optional: default learning-topic label for assistant chat session. */
+  assistantDefaultTargetConcept?: string;
 };
 
 export const games: GameMeta[] = ${JSON.stringify(games, null, 2)};

@@ -3,7 +3,7 @@ import { Container, Stack, Title, Text, Paper, SimpleGrid, Box } from "@mantine/
 const teamMembers = [
   {
     name: "Arielle Talania",
-    roles: ["Full Stack", "DevOps", "UI/UX"],
+    roles: ["Creator of Laurie-chan & Livvy-chan", "Full Stack", "DevOps", "UI/UX"],
     image: "/teampics/arielle.png",
   },
   {
@@ -18,7 +18,7 @@ const teamMembers = [
   },
   {
     name: "Sergio Gonzalez",
-    roles: ["Back-end", "Database Designer"],
+    roles: ["Back-end", "Database Designer", "UI/UX"],
     image: "/teampics/sergio.png",
   },
   {

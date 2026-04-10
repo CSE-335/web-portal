@@ -51,6 +51,17 @@ export function assistantReducer(
     case "MAXIMIZE":
       return { ...state, isMinimized: false };
 
+    case "RESET_CONVERSATION":
+      return {
+        ...state,
+        isGenerating: false,
+        currentDialogue: null,
+        currentLineIndex: 0,
+        history: [],
+        historyOpen: false,
+        error: null,
+      };
+
     case "SET_GENERATING":
       return { ...state, isGenerating: action.payload, error: null };
 

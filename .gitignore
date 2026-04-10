@@ -44,6 +44,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# workspace packages (built before publish / on npm install)
+/packages/*/dist/
+
 *storybook.log
 storybook-static
 
