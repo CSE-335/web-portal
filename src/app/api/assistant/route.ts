@@ -8,8 +8,20 @@ import { buildSystemPrompt, buildUserPrompt } from "./lib/prompts";
 import { AssistantResponseSchema } from "./lib/schema";
 import { getStaticFallback } from "./lib/fallbacks";
 import { getAssistantGameIntegration } from "@/features/assistant/gameIntegration";
+import { enforceRateLimit } from "@/lib/upstashRateLimit";
 
 const DEFAULT_MAX_LINES = 6;
+const ASSISTANT_RATE_LIMIT = 30;
+const ASSISTANT_RATE_LIMIT_WINDOW = "1 m";
+
+function getRateLimitIdentifier(body: AssistantAPIRequest): string {
+  const gameId = body.event?.gameId || "unknown-game";
+  const userId = typeof body.event?.additionalContext?.userId === "string"
+    ? body.event.additionalContext.userId
+    : "anonymous";
+
+  return `${userId}:${gameId}`;
+}
 
 async function generateAssistantReply(systemPrompt: string, userPrompt: string) {
   const hasAnthropic = Boolean(process.env.ANTHROPIC_API_KEY);
@@ -63,6 +75,26 @@ export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as AssistantAPIRequest;
     const { event, conversationHistory, maxLines } = body;
+
+    const rateLimitResult = await enforceRateLimit({
+      request,
+      prefix: "assistant-api",
+      limit: ASSISTANT_RATE_LIMIT,
+      window: ASSISTANT_RATE_LIMIT_WINDOW,
+      identifierSuffix: getRateLimitIdentifier(body),
+    });
+    if (rateLimitResult) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Too many assistant requests. Please wait and try again.",
+        } satisfies AssistantAPIResponse,
+        {
+          status: rateLimitResult.status,
+          headers: rateLimitResult.headers,
+        },
+      );
+    }
 
     if (!event || !event.gameId || !event.eventType) {
       return NextResponse.json(

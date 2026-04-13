@@ -1,12 +1,26 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import type { AudioResponseFormat } from 'openai/resources/audio';
+import { enforceRateLimit } from '@/lib/upstashRateLimit';
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 export async function POST(req: Request) {
+  const rateLimitResult = await enforceRateLimit({
+    request: req,
+    prefix: 'ai-whisper-api',
+    limit: 20,
+    window: '1 m',
+  });
+  if (rateLimitResult) {
+    return NextResponse.json(rateLimitResult.body, {
+      status: rateLimitResult.status,
+      headers: rateLimitResult.headers,
+    });
+  }
+
   const formData = await req.formData();
 
   const file = formData.get('file');

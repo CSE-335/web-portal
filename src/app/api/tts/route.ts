@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { enforceRateLimit } from "@/lib/upstashRateLimit";
 
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY || "";
 const ELEVENLABS_VOICE_LAURIE =
@@ -62,6 +63,19 @@ function sanitizeForSpeech(text: string): string {
 }
 
 export async function POST(request: NextRequest) {
+  const rateLimitResult = await enforceRateLimit({
+    request,
+    prefix: "ai-tts-api",
+    limit: 25,
+    window: "1 m",
+  });
+  if (rateLimitResult) {
+    return NextResponse.json(rateLimitResult.body, {
+      status: rateLimitResult.status,
+      headers: rateLimitResult.headers,
+    });
+  }
+
   if (!ELEVENLABS_API_KEY) {
     return NextResponse.json(
       { error: "ELEVENLABS_API_KEY not configured" },
