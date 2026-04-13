@@ -8,7 +8,7 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { Box, Transition } from "@mantine/core";
+import { Alert, Box, Transition } from "@mantine/core";
 import { useAssistant } from "./AssistantContext";
 import { MASCOT_VN_LAYOUT } from "./mascotLayout";
 import { useAutoAdvance } from "./hooks/useAutoAdvance";
@@ -21,7 +21,7 @@ import ChatInput from "./components/ChatInput";
 import MinimizedPill from "./components/MinimizedPill";
 
 export default function AssistantPanel() {
-  const { state, dismissDialogue } = useAssistant();
+  const { state, dismissDialogue, dispatch } = useAssistant();
   const pathname = usePathname();
   const prevPathnameRef = useRef(pathname);
 
@@ -48,8 +48,15 @@ export default function AssistantPanel() {
   const showPill = state.isOpen && state.isMinimized && hasDialogue;
   const showChatOnly =
     state.isOpen && !state.isMinimized && !hasDialogue && !state.isGenerating;
+  const showErrorBanner = Boolean(state.error);
 
-  if (!showOverlay && !showPill && !state.isGenerating && !showChatOnly)
+  if (
+    !showOverlay &&
+    !showPill &&
+    !state.isGenerating &&
+    !showChatOnly &&
+    !showErrorBanner
+  )
     return null;
 
   // Figure out who's currently speaking
@@ -59,6 +66,30 @@ export default function AssistantPanel() {
 
   return (
     <>
+      {showErrorBanner && (
+        <Box
+          style={{
+            position: "fixed",
+            bottom: showOverlay || showChatOnly ? 120 : 20,
+            left: 16,
+            right: 16,
+            zIndex: 1001,
+            pointerEvents: "auto",
+            maxWidth: 680,
+            margin: "0 auto",
+          }}
+        >
+          <Alert
+            color="red"
+            variant="light"
+            withCloseButton
+            onClose={() => dispatch({ type: "SET_ERROR", payload: null })}
+          >
+            {state.error}
+          </Alert>
+        </Box>
+      )}
+
       {/* Minimized pill */}
       <Transition mounted={showPill} transition="slide-up" duration={300}>
         {(styles) => (

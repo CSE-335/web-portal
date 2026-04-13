@@ -5,10 +5,7 @@ let warnedMissingRateLimitEnv = false;
 
 const redis =
   process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
-    ? new Redis({
-        url: process.env.UPSTASH_REDIS_REST_URL,
-        token: process.env.UPSTASH_REDIS_REST_TOKEN,
-      })
+    ? Redis.fromEnv()
     : null;
 
 const ratelimitCache = new Map<string, Ratelimit>();
@@ -66,7 +63,7 @@ export async function enforceRateLimit(options: {
 
   return {
     status: 429,
-    body: { error: "Too many requests. Please wait and try again." },
+    body: { error: "Rate limit exceeded, try again later" },
     headers: {
       "Retry-After": retryAfterSeconds.toString(),
       "X-RateLimit-Limit": limit.toString(),

@@ -17,6 +17,18 @@ const VOICE_SETTINGS: Record<string, object> = {
   Livvy: { stability: 0.4, similarity_boost: 0.8, style: 0.55, speed: 1.05 },
 };
 
+const DEFAULT_TTS_RATE_LIMIT = 25;
+type TtsRateLimitWindow = `${number} ${"s" | "m" | "h" | "d"}`;
+const DEFAULT_TTS_RATE_WINDOW: TtsRateLimitWindow = "1 m";
+
+function getTtsRateLimitConfig(): { limit: number; window: TtsRateLimitWindow } {
+  const parsed = Number.parseInt(process.env.TTS_RATE_LIMIT ?? "", 10);
+  const limit = Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_TTS_RATE_LIMIT;
+  const rawWindow = process.env.TTS_RATE_LIMIT_WINDOW?.trim();
+  const window = (rawWindow || DEFAULT_TTS_RATE_WINDOW) as TtsRateLimitWindow;
+  return { limit, window };
+}
+
 function sanitizeForSpeech(text: string): string {
   let s = text;
 
@@ -63,11 +75,13 @@ function sanitizeForSpeech(text: string): string {
 }
 
 export async function POST(request: NextRequest) {
+  const { limit: ttsRateLimit, window: ttsRateWindow } = getTtsRateLimitConfig();
   const rateLimitResult = await enforceRateLimit({
     request,
-    prefix: "ai-tts-api",
-    limit: 25,
-    window: "1 m",
+    prefix: "@upstash/ratelimit",
+    limit: ttsRateLimit,
+    window: ttsRateWindow,
+    identifierSuffix: "ai:tts",
   });
   if (rateLimitResult) {
     return NextResponse.json(rateLimitResult.body, {

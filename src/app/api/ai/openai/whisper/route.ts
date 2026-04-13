@@ -10,9 +10,10 @@ const client = new OpenAI({
 export async function POST(req: Request) {
   const rateLimitResult = await enforceRateLimit({
     request: req,
-    prefix: 'ai-whisper-api',
+    prefix: '@upstash/ratelimit',
     limit: 20,
     window: '1 m',
+    identifierSuffix: 'openai:whisper',
   });
   if (rateLimitResult) {
     return NextResponse.json(rateLimitResult.body, {

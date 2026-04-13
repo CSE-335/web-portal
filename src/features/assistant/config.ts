@@ -131,7 +131,13 @@ export function assistantReducer(
       return { ...state, historyOpen: !state.historyOpen };
 
     case "SET_ERROR":
-      return { ...state, error: action.payload, isGenerating: false };
+      return {
+        ...state,
+        error: action.payload,
+        isGenerating: false,
+        currentDialogue: null,
+        currentLineIndex: 0,
+      };
 
     case "ADD_USER_MESSAGE":
       return {

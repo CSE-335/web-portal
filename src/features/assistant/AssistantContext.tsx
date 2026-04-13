@@ -226,6 +226,7 @@ export function AssistantProvider({
   const dismissDialogue = useCallback(() => {
     cancelInFlight();
     dispatch({ type: "RESET_DIALOGUE" });
+    dispatch({ type: "SET_ERROR", payload: null });
     dispatch({ type: "MINIMIZE" });
   }, [cancelInFlight]);
 

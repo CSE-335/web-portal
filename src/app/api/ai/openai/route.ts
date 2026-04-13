@@ -9,9 +9,10 @@ const client = new OpenAI({
 export async function POST(req: Request) {
   const rateLimitResult = await enforceRateLimit({
     request: req,
-    prefix: 'ai-openai-api',
+    prefix: '@upstash/ratelimit',
     limit: 40,
     window: '1 m',
+    identifierSuffix: 'openai:chat',
   });
   if (rateLimitResult) {
     return NextResponse.json(rateLimitResult.body, {

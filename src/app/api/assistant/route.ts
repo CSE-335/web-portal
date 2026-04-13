@@ -11,8 +11,21 @@ import { getAssistantGameIntegration } from "@/features/assistant/gameIntegratio
 import { enforceRateLimit } from "@/lib/upstashRateLimit";
 
 const DEFAULT_MAX_LINES = 6;
-const ASSISTANT_RATE_LIMIT = 30;
-const ASSISTANT_RATE_LIMIT_WINDOW = "1 m";
+const DEFAULT_ASSISTANT_RATE_LIMIT = 30;
+type AssistantRateLimitWindow = `${number} ${"s" | "m" | "h" | "d"}`;
+const DEFAULT_ASSISTANT_RATE_WINDOW: AssistantRateLimitWindow = "1 m";
+
+function getAssistantRateLimitConfig(): {
+  limit: number;
+  window: AssistantRateLimitWindow;
+} {
+  const parsed = Number.parseInt(process.env.ASSISTANT_RATE_LIMIT ?? "", 10);
+  const limit =
+    Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_ASSISTANT_RATE_LIMIT;
+  const rawWindow = process.env.ASSISTANT_RATE_LIMIT_WINDOW?.trim();
+  const window = (rawWindow || DEFAULT_ASSISTANT_RATE_WINDOW) as AssistantRateLimitWindow;
+  return { limit, window };
+}
 
 function getRateLimitIdentifier(body: AssistantAPIRequest): string {
   const gameId = body.event?.gameId || "unknown-game";
@@ -76,18 +89,20 @@ export async function POST(request: NextRequest) {
     const body = (await request.json()) as AssistantAPIRequest;
     const { event, conversationHistory, maxLines } = body;
 
+    const { limit: assistantRateLimit, window: assistantRateWindow } =
+      getAssistantRateLimitConfig();
     const rateLimitResult = await enforceRateLimit({
       request,
-      prefix: "assistant-api",
-      limit: ASSISTANT_RATE_LIMIT,
-      window: ASSISTANT_RATE_LIMIT_WINDOW,
-      identifierSuffix: getRateLimitIdentifier(body),
+      prefix: "@upstash/ratelimit",
+      limit: assistantRateLimit,
+      window: assistantRateWindow,
+      identifierSuffix: `assistant:${getRateLimitIdentifier(body)}`,
     });
     if (rateLimitResult) {
       return NextResponse.json(
         {
           success: false,
-          error: "Too many assistant requests. Please wait and try again.",
+          error: rateLimitResult.body.error,
         } satisfies AssistantAPIResponse,
         {
           status: rateLimitResult.status,
