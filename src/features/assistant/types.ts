@@ -72,6 +72,12 @@ export interface AssistantState {
   history: AssistantResponse[];
   historyOpen: boolean;
   error: string | null;
+  /** When set with a rate-limited assistant error, epoch ms when the limit window resets. */
+  errorCooldownUntilMs: number | null;
+  /** Non-fatal banner (e.g. TTS rate limit → browser fallback). */
+  warning: string | null;
+  /** Absolute time (ms) when server-indicated TTS cooldown ends; drives countdown in the banner. */
+  warningCooldownUntilMs: number | null;
 }
 
 export type AssistantAction =
@@ -90,7 +96,20 @@ export type AssistantAction =
   | { type: "TOGGLE_VOICE" }
   | { type: "TOGGLE_AUTOPLAY" }
   | { type: "TOGGLE_HISTORY" }
-  | { type: "SET_ERROR"; payload: string | null }
+  | {
+      type: "SET_ERROR";
+      payload: {
+        message: string | null;
+        cooldownUntilMs?: number | null;
+      };
+    }
+  | {
+      type: "SET_ASSISTANT_WARNING";
+      payload: {
+        message: string | null;
+        cooldownUntilMs?: number | null;
+      };
+    }
   | { type: "ADD_USER_MESSAGE"; payload: DialogueLine };
 
 // ---------------------------------------------------------------------------

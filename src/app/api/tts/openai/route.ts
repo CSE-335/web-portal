@@ -2,26 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { enforceRateLimit } from "@/lib/upstashRateLimit";
 import { sanitizeForSpeech } from "@/lib/sanitizeForSpeech";
 
-const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY || "";
-const ELEVENLABS_VOICE_LAURIE =
-  process.env.ELEVENLABS_VOICE_LAURIE || "Xb7hH8MSUJpSbSDYk0k2";
-const ELEVENLABS_VOICE_LIVVY =
-  process.env.ELEVENLABS_VOICE_LIVVY || "cgSgspJ2msm6clMCkdW9";
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
 
-const VOICE_MAP: Record<string, string> = {
-  Laurie: ELEVENLABS_VOICE_LAURIE,
-  Livvy: ELEVENLABS_VOICE_LIVVY,
-};
+const OPENAI_TTS_MODEL = process.env.OPENAI_TTS_MODEL || "tts-1";
 
-const VOICE_SETTINGS: Record<string, object> = {
-  Laurie: { stability: 0.55, similarity_boost: 0.8, style: 0.3, speed: 0.95 },
-  Livvy: { stability: 0.4, similarity_boost: 0.8, style: 0.55, speed: 1.05 },
-};
+function voiceForSpeaker(speaker: string): string {
+  const laurie = process.env.OPENAI_TTS_VOICE_LAURIE || "nova";
+  const livvy = process.env.OPENAI_TTS_VOICE_LIVVY || "shimmer";
+  const you = process.env.OPENAI_TTS_VOICE_YOU || "alloy";
 
-/** Max TTS POSTs per window per IP when Upstash is configured. Override with env. */
+  if (speaker === "Livvy") return livvy;
+  if (speaker === "You") return you;
+  return laurie;
+}
+
 const DEFAULT_TTS_RATE_LIMIT = 10;
 type TtsRateLimitWindow = `${number} ${"s" | "m" | "h" | "d"}`;
-/** Sliding window for `TTS_RATE_LIMIT` (Upstash `Ratelimit.slidingWindow` format). */
 const DEFAULT_TTS_RATE_WINDOW: TtsRateLimitWindow = "1 m";
 
 function getTtsRateLimitConfig(): { limit: number; window: TtsRateLimitWindow } {
@@ -44,7 +40,7 @@ export async function POST(request: NextRequest) {
   if (rateLimitResult) {
     return NextResponse.json(
       {
-        error: "Rate limit exceeded for ElevenLabs TTS",
+        error: "Rate limit exceeded for TTS",
         code: "tts_rate_limit",
       },
       {
@@ -57,9 +53,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (!ELEVENLABS_API_KEY) {
+  if (!OPENAI_API_KEY) {
     return NextResponse.json(
-      { error: "ELEVENLABS_API_KEY not configured" },
+      { error: "OPENAI_API_KEY not configured" },
       { status: 503 }
     );
   }
@@ -77,40 +73,37 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const voiceId = VOICE_MAP[speaker] || VOICE_MAP.Laurie;
-    const voiceSettings = VOICE_SETTINGS[speaker] || VOICE_SETTINGS.Laurie;
     const spokenText = sanitizeForSpeech(text);
+    const voice = voiceForSpeaker(speaker);
 
-    const res = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=mp3_44100_128`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "xi-api-key": ELEVENLABS_API_KEY,
-        },
-        body: JSON.stringify({
-          text: spokenText,
-          model_id: "eleven_multilingual_v2",
-          voice_settings: voiceSettings,
-        }),
-      }
-    );
+    const res = await fetch("https://api.openai.com/v1/audio/speech", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: OPENAI_TTS_MODEL,
+        voice,
+        input: spokenText,
+        response_format: "mp3",
+      }),
+    });
 
     if (!res.ok) {
       const err = await res.text();
-      console.error(`[TTS] ElevenLabs error ${res.status}:`, err);
+      console.error(`[TTS/OpenAI] error ${res.status}:`, err);
       if (res.status === 429) {
         return NextResponse.json(
           {
-            error: "Rate limit exceeded for ElevenLabs TTS",
+            error: "Rate limit exceeded for OpenAI TTS",
             code: "tts_rate_limit",
           },
           { status: 429 }
         );
       }
       return NextResponse.json(
-        { error: `ElevenLabs API error: ${res.status}` },
+        { error: `OpenAI TTS error: ${res.status}` },
         { status: 502 }
       );
     }
@@ -125,7 +118,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (err) {
-    console.error("[TTS] Unexpected error:", err);
+    console.error("[TTS/OpenAI] Unexpected error:", err);
     return NextResponse.json(
       { error: "Internal TTS error" },
       { status: 500 }

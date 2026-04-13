@@ -22,7 +22,11 @@ import type {
   DialogueLine,
 } from "./types";
 import { DEFAULT_CONFIG, INITIAL_STATE, assistantReducer } from "./config";
-import { streamEvent, buildFollowUpEvent } from "./services/assistantApi";
+import {
+  streamEvent,
+  buildFollowUpEvent,
+  AssistantRequestError,
+} from "./services/assistantApi";
 import { loadConversation, saveConversation } from "./services/sessionStore";
 
 function isAbortError(err: unknown): boolean {
@@ -109,6 +113,8 @@ export function AssistantProvider({
       if (prevGameId !== nextGameId) {
         cancelInFlight();
         dispatch({ type: "RESET_CONVERSATION" });
+        dispatch({ type: "CLOSE_PANEL" });
+        dispatch({ type: "MINIMIZE" });
       }
 
       conversationRef.current = loadConversation(nextGameId);
@@ -137,11 +143,16 @@ export function AssistantProvider({
         activeGameIdRef.current = event.gameId;
         conversationRef.current = loadConversation(event.gameId);
         dispatch({ type: "RESET_CONVERSATION" });
+        dispatch({ type: "CLOSE_PANEL" });
+        dispatch({ type: "MINIMIZE" });
       }
 
+      // Clear dialogue immediately so TTS stops as soon as the user switches
+      // (hint / summary / new game event), not after the debounce window.
+      lastEventRef.current = event;
+      dispatch({ type: "START_STREAMING" });
+
       debounceRef.current = setTimeout(() => {
-        dispatch({ type: "START_STREAMING" });
-        lastEventRef.current = event;
         abortRef.current = new AbortController();
 
         streamEvent(
@@ -159,14 +170,26 @@ export function AssistantProvider({
               saveConversation(activeGameIdRef.current, conversationRef.current);
             },
             onError(msg) {
-              dispatch({ type: "SET_ERROR", payload: msg });
+              dispatch({ type: "SET_ERROR", payload: { message: msg } });
             },
           },
           abortRef.current.signal,
         ).catch((err) => {
           if (isAbortError(err)) return;
+          if (err instanceof AssistantRequestError) {
+            dispatch({
+              type: "SET_ERROR",
+              payload: {
+                message: err.message,
+                ...(err.cooldownUntilMs != null
+                  ? { cooldownUntilMs: err.cooldownUntilMs }
+                  : {}),
+              },
+            });
+            return;
+          }
           const msg = err instanceof Error ? err.message : "Network error";
-          dispatch({ type: "SET_ERROR", payload: msg });
+          dispatch({ type: "SET_ERROR", payload: { message: msg } });
         });
       }, config.eventDebounceMs);
     },
@@ -182,6 +205,8 @@ export function AssistantProvider({
         activeGameIdRef.current = inferredGameId;
         conversationRef.current = loadConversation(inferredGameId);
         dispatch({ type: "RESET_CONVERSATION" });
+        dispatch({ type: "CLOSE_PANEL" });
+        dispatch({ type: "MINIMIZE" });
       }
 
       const userLine: DialogueLine = {
@@ -226,7 +251,7 @@ export function AssistantProvider({
   const dismissDialogue = useCallback(() => {
     cancelInFlight();
     dispatch({ type: "RESET_DIALOGUE" });
-    dispatch({ type: "SET_ERROR", payload: null });
+    dispatch({ type: "SET_ERROR", payload: { message: null } });
     dispatch({ type: "MINIMIZE" });
   }, [cancelInFlight]);
 
