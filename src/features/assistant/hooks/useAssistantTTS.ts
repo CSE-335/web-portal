@@ -1,5 +1,5 @@
 // ============================================================================
-// Text-to-speech: ElevenLabs → OpenAI (/api/tts/openai) → Web Speech API.
+// Text-to-speech: ElevenLabs (/api/tts/elevenlabs) → OpenAI (/api/tts/openai) → Web Speech API.
 // ============================================================================
 
 "use client";
@@ -41,7 +41,7 @@ type TtsHttpAudioOutcome = {
 };
 
 // ---------------------------------------------------------------------------
-// MP3 from /api/tts (ElevenLabs) or /api/tts/openai (OpenAI)
+// MP3 from /api/tts/elevenlabs (ElevenLabs) or /api/tts/openai (OpenAI)
 // ---------------------------------------------------------------------------
 
 function isStaleUtterance(
@@ -215,7 +215,7 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
           skipSecondaryCloud,
           retryAfterSeconds: primaryRetryAfter,
         } = await speakViaTtsHttp(
-          "/api/tts",
+          "/api/tts/elevenlabs",
           line,
           activeAudioRef,
           activeUrlRef,

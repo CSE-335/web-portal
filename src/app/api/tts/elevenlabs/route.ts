@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { enforceRateLimit } from "@/lib/upstashRateLimit";
 import { sanitizeForSpeech } from "@/lib/sanitizeForSpeech";
 
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY || "";
@@ -18,45 +17,7 @@ const VOICE_SETTINGS: Record<string, object> = {
   Livvy: { stability: 0.4, similarity_boost: 0.8, style: 0.55, speed: 1.05 },
 };
 
-/** Max TTS POSTs per window per IP when Upstash is configured. Override with env. */
-const DEFAULT_TTS_RATE_LIMIT = 10;
-type TtsRateLimitWindow = `${number} ${"s" | "m" | "h" | "d"}`;
-/** Sliding window for `TTS_RATE_LIMIT` (Upstash `Ratelimit.slidingWindow` format). */
-const DEFAULT_TTS_RATE_WINDOW: TtsRateLimitWindow = "1 m";
-
-function getTtsRateLimitConfig(): { limit: number; window: TtsRateLimitWindow } {
-  const parsed = Number.parseInt(process.env.TTS_RATE_LIMIT ?? "", 10);
-  const limit = Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_TTS_RATE_LIMIT;
-  const rawWindow = process.env.TTS_RATE_LIMIT_WINDOW?.trim();
-  const window = (rawWindow || DEFAULT_TTS_RATE_WINDOW) as TtsRateLimitWindow;
-  return { limit, window };
-}
-
 export async function POST(request: NextRequest) {
-  const { limit: ttsRateLimit, window: ttsRateWindow } = getTtsRateLimitConfig();
-  const rateLimitResult = await enforceRateLimit({
-    request,
-    prefix: "@upstash/ratelimit",
-    limit: ttsRateLimit,
-    window: ttsRateWindow,
-    identifierSuffix: "ai:tts",
-  });
-  if (rateLimitResult) {
-    return NextResponse.json(
-      {
-        error: "Rate limit exceeded for ElevenLabs TTS",
-        code: "tts_rate_limit",
-      },
-      {
-        status: rateLimitResult.status,
-        headers: {
-          ...rateLimitResult.headers,
-          "X-TTS-Limited-By": "upstash",
-        },
-      },
-    );
-  }
-
   if (!ELEVENLABS_API_KEY) {
     return NextResponse.json(
       { error: "ELEVENLABS_API_KEY not configured" },

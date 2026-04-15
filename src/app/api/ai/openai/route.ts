@@ -1,26 +1,11 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import { enforceRateLimit } from '@/lib/upstashRateLimit';
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 export async function POST(req: Request) {
-  const rateLimitResult = await enforceRateLimit({
-    request: req,
-    prefix: '@upstash/ratelimit',
-    limit: 40,
-    window: '1 m',
-    identifierSuffix: 'openai:chat',
-  });
-  if (rateLimitResult) {
-    return NextResponse.json(rateLimitResult.body, {
-      status: rateLimitResult.status,
-      headers: rateLimitResult.headers,
-    });
-  }
-
   const body = await req.json();
 
   if (!body.model || !body.messages) {

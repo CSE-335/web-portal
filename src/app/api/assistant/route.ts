@@ -8,33 +8,8 @@ import { buildSystemPrompt, buildUserPrompt } from "./lib/prompts";
 import { AssistantResponseSchema } from "./lib/schema";
 import { getStaticFallback } from "./lib/fallbacks";
 import { getAssistantGameIntegration } from "@/features/assistant/gameIntegration";
-import { enforceRateLimit } from "@/lib/upstashRateLimit";
 
 const DEFAULT_MAX_LINES = 6;
-const DEFAULT_ASSISTANT_RATE_LIMIT = 30;
-type AssistantRateLimitWindow = `${number} ${"s" | "m" | "h" | "d"}`;
-const DEFAULT_ASSISTANT_RATE_WINDOW: AssistantRateLimitWindow = "1 m";
-
-function getAssistantRateLimitConfig(): {
-  limit: number;
-  window: AssistantRateLimitWindow;
-} {
-  const parsed = Number.parseInt(process.env.ASSISTANT_RATE_LIMIT ?? "", 10);
-  const limit =
-    Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_ASSISTANT_RATE_LIMIT;
-  const rawWindow = process.env.ASSISTANT_RATE_LIMIT_WINDOW?.trim();
-  const window = (rawWindow || DEFAULT_ASSISTANT_RATE_WINDOW) as AssistantRateLimitWindow;
-  return { limit, window };
-}
-
-function getRateLimitIdentifier(body: AssistantAPIRequest): string {
-  const gameId = body.event?.gameId || "unknown-game";
-  const userId = typeof body.event?.additionalContext?.userId === "string"
-    ? body.event.additionalContext.userId
-    : "anonymous";
-
-  return `${userId}:${gameId}`;
-}
 
 async function generateAssistantReply(systemPrompt: string, userPrompt: string) {
   const hasAnthropic = Boolean(process.env.ANTHROPIC_API_KEY);
@@ -88,28 +63,6 @@ export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as AssistantAPIRequest;
     const { event, conversationHistory, maxLines } = body;
-
-    const { limit: assistantRateLimit, window: assistantRateWindow } =
-      getAssistantRateLimitConfig();
-    const rateLimitResult = await enforceRateLimit({
-      request,
-      prefix: "@upstash/ratelimit",
-      limit: assistantRateLimit,
-      window: assistantRateWindow,
-      identifierSuffix: `assistant:${getRateLimitIdentifier(body)}`,
-    });
-    if (rateLimitResult) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: rateLimitResult.body.error,
-        } satisfies AssistantAPIResponse,
-        {
-          status: rateLimitResult.status,
-          headers: rateLimitResult.headers,
-        },
-      );
-    }
 
     if (!event || !event.gameId || !event.eventType) {
       return NextResponse.json(
