@@ -15,12 +15,12 @@ type RateLimitConfig = {
   window: Parameters<typeof Ratelimit.slidingWindow>[1];
 };
 
-const defaultLimit: Omit<RateLimitConfig, "path" | "prefix"> = { auth: 50, anon: 10, window: "15m" };
+const defaultLimit: Omit<RateLimitConfig, "path" | "prefix"> = { auth: 1, anon: 1, window: "30s" };
 
 const routeLimits: RateLimitConfig[] = [
-  { path: "/api/ai/openai/whisper", prefix: "rl:whisper", auth: 20, anon: 5, window: "1m" },
-  { path: "/api/assistant", prefix: "rl:assistant", auth: 30, anon: 10, window: "1m" },
-  { path: "/api/tts", prefix: "rl:tts", auth: 10, anon: 5, window: "1m" },
+  { path: "/api/ai/openai/whisper", prefix: "rl:whisper", auth: 1, anon: 1, window: "30s" },
+  { path: "/api/assistant", prefix: "rl:assistant", auth: 1, anon: 1, window: "30s" },
+  { path: "/api/tts", prefix: "rl:tts", auth: 1, anon: 1, window: "30s" },
 ];
 
 // Cache rate limiter instances so they're created once
@@ -50,20 +50,28 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Optional local testing bypass to demo rate limiting without auth cookie setup.
+  const allowMissingTokenInDev =
+    process.env.NODE_ENV === "development" && process.env.ALLOW_MISSING_GAME_TOKEN === "1";
+
   // Read token from cookie
   const token = request.cookies.get("game-token")?.value;
 
-  if (!token) {
+  if (!token && !allowMissingTokenInDev) {
     return NextResponse.json({ error: "Missing game token" }, { status: 403 });
   }
 
   // Verify JWT signature and expiry
   let payload: { userId?: string | null };
+  if (!token && allowMissingTokenInDev) {
+    payload = { userId: null };
+  } else {
   try {
-    const { payload: verified } = await jwtVerify(token, secret);
+    const { payload: verified } = await jwtVerify(token!, secret);
     payload = verified as { userId?: string | null };
   } catch {
     return NextResponse.json({ error: "Invalid or expired token" }, { status: 403 });
+  }
   }
 
   // Match route-specific limits or fall back to default

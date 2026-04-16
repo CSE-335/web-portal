@@ -41,6 +41,7 @@ export default async function RootLayout({
         <ColorSchemeScript defaultColorScheme="dark" />
       </head>
       <body
+        suppressHydrationWarning
         className='antialiased min-h-screen'
         style={{ background: 'var(--app-bg-gradient)' }}
       >
