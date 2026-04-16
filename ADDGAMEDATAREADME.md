@@ -108,7 +108,7 @@ This keeps game code minimal while preserving additive updates.
 1. Game appears in metadata:
    - `src/data/games.ts` has your game slug.
 2. Games table is seeded:
-   - Hit `/api/seed`.
+   - Run `npm run setup-games` (this now seeds automatically), or `npm run seed-games`.
 3. User is authenticated in portal.
 4. User has a `user_profiles` row.
 5. Game is staged in portal static path:
@@ -137,7 +137,7 @@ Cause:
 - Slug exists in app metadata but not in `games` table.
 
 Fix:
-- Rerun seed endpoint and confirm slug in DB.
+- Rerun `npm run seed-games` and confirm slug in DB.
 
 ### Save requests not reflected in DB
 

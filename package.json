@@ -10,7 +10,8 @@
     "test": "jest",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "setup-games": "node scripts/setup-games.js"
+    "setup-games": "node scripts/setup-games.js",
+    "seed-games": "node scripts/seed-games.js"
   },
   "dependencies": {
     "@mantine/core": "^8.3.15",
