@@ -1,8 +1,13 @@
-import { createServerClient } from "@supabase/ssr";
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import {
+  createAdminClient,
+  createSessionClient,
+  getAuthenticatedUserId,
+  getGameIdBySlug,
+  getProfileIdByAuthUserId,
+  type AdminClient,
+} from "@/lib/supabase/game-data";
 import type { Database, Json } from "../../../../lib/supabase/database.types";
 
 const DEFAULT_GAME_DATA: Json = {};
@@ -11,8 +16,6 @@ type RouteContext = {
   params: Promise<{ slug: string }> | { slug: string };
 };
 
-type SessionClient = SupabaseClient<Database>;
-type AdminClient = SupabaseClient<Database>;
 type SaveError = { message: string; code?: string | null };
 
 function normalizeGameData(value: unknown): { gameData: Json; fallbackUsed: boolean } {
@@ -23,120 +26,6 @@ function normalizeGameData(value: unknown): { gameData: Json; fallbackUsed: bool
   if (Array.isArray(value)) return { gameData: value as Json, fallbackUsed: false };
   if (typeof value === "object") return { gameData: value as Json, fallbackUsed: false };
   return { gameData: DEFAULT_GAME_DATA, fallbackUsed: true };
-}
-
-async function createSessionClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !supabaseAnonKey) {
-    return {
-      ok: false as const,
-      response: NextResponse.json(
-        { ok: false, error: "Missing Supabase environment variables." },
-        { status: 500 }
-      ),
-    };
-  }
-
-  const cookieStore = await cookies();
-  const supabase = createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
-    cookies: {
-      getAll: () => cookieStore.getAll(),
-      setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
-      },
-    },
-  });
-
-  return { ok: true as const, supabase };
-}
-
-function createAdminClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  // Treat empty string as configured for local scaffolding;
-  // only fail when the variable is truly missing (undefined/null).
-  if (supabaseUrl == null || serviceRoleKey == null) {
-    return {
-      ok: false as const,
-      response: NextResponse.json(
-        { ok: false, error: "Missing SUPABASE_SERVICE_ROLE_KEY." },
-        { status: 500 }
-      ),
-    };
-  }
-
-  const supabase = createClient<Database>(supabaseUrl, serviceRoleKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-
-  return { ok: true as const, supabase };
-}
-
-async function getAuthenticatedUserId(sessionSupabase: SessionClient, request: NextRequest) {
-  const authHeader = request.headers.get("authorization");
-  const accessToken = authHeader?.replace(/^Bearer\s+/i, "").trim();
-
-  const {
-    data: { user },
-    error,
-  } = accessToken
-    ? await sessionSupabase.auth.getUser(accessToken)
-    : await sessionSupabase.auth.getUser();
-
-  if (error || !user) {
-    return {
-      ok: false as const,
-      response: NextResponse.json({ ok: false, error: "Not authenticated." }, { status: 401 }),
-    };
-  }
-
-  return { ok: true as const, authUserId: user.id };
-}
-
-async function getGameIdBySlug(adminSupabase: AdminClient, slug: string) {
-  const { data: game, error } = await adminSupabase.from("games").select("id").eq("slug", slug).maybeSingle();
-
-  if (error) {
-    return {
-      ok: false as const,
-      response: NextResponse.json(
-        { ok: false, error: "Failed to resolve game.", details: error.message },
-        { status: 500 }
-      ),
-    };
-  }
-
-  if (!game) {
-    return {
-      ok: false as const,
-      response: NextResponse.json({ ok: false, error: `Game "${slug}" not found.` }, { status: 404 }),
-    };
-  }
-
-  return { ok: true as const, gameId: game.id };
-}
-
-async function getProfileIdByAuthUserId(adminSupabase: AdminClient, authUserId: string) {
-  const { data: profile, error } = await adminSupabase
-    .from("user_profiles")
-    .select("id")
-    .eq("auth_user_id", authUserId)
-    .maybeSingle();
-
-  if (error) {
-    return {
-      ok: false as const,
-      response: NextResponse.json(
-        { ok: false, error: "Failed to resolve user profile.", details: error.message },
-        { status: 500 }
-      ),
-    };
-  }
-
-  return { ok: true as const, profileId: profile?.id ?? null };
 }
 
 async function resolveOwnership(
