@@ -5,7 +5,6 @@ import {
   createSessionClient,
   getAuthenticatedUserId,
   getGameIdBySlug,
-  getProfileIdByAuthUserId,
   type AdminClient,
 } from "@/lib/supabase/game-data";
 import type { Database, Json } from "../../../../lib/supabase/database.types";
@@ -32,7 +31,7 @@ async function resolveOwnership(
   request: NextRequest,
   slug: string
 ): Promise<
-  | { ok: true; adminSupabase: AdminClient; userIds: string[]; gameId: number }
+  | { ok: true; adminSupabase: AdminClient; userId: string; gameId: number }
   | { ok: false; response: NextResponse }
 > {
   const sessionResult = await createSessionClient();
@@ -47,17 +46,10 @@ async function resolveOwnership(
   const gameResult = await getGameIdBySlug(adminResult.supabase, slug);
   if (!gameResult.ok) return gameResult;
 
-  const profileResult = await getProfileIdByAuthUserId(adminResult.supabase, authResult.authUserId);
-  if (!profileResult.ok) return profileResult;
-
-  const userIds = Array.from(
-    new Set([authResult.authUserId, profileResult.profileId].filter((value): value is string => Boolean(value)))
-  );
-
   return {
     ok: true,
     adminSupabase: adminResult.supabase,
-    userIds,
+    userId: authResult.authUserId,
     gameId: gameResult.gameId,
   };
 }
@@ -72,7 +64,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
   const { data, error } = await ownership.adminSupabase
     .from("game_data")
     .select("data_json")
-    .in("user_id", ownership.userIds)
+    .eq("user_id", ownership.userId)
     .eq("game_id", ownership.gameId)
     .order("updated_at", { ascending: false })
     .limit(1)
@@ -83,6 +75,14 @@ export async function GET(request: NextRequest, context: RouteContext) {
       { ok: false, error: "Failed to load game data.", details: error.message },
       { status: 500 }
     );
+  }
+
+  if (!data) {
+    console.warn("[game-data] no row found for auth user id", {
+      slug,
+      userId: ownership.userId,
+      gameId: ownership.gameId,
+    });
   }
 
   const rawGameData = data?.data_json ?? DEFAULT_GAME_DATA;
@@ -101,7 +101,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
   if (!ownership.ok) {
     return ownership.response;
   }
-  const { adminSupabase, userIds, gameId } = ownership;
+  const { adminSupabase, userId, gameId } = ownership;
 
   const body = (await request.json().catch(() => null)) as { data?: unknown } | null;
   const { gameData, fallbackUsed } = normalizeGameData(body?.data);
@@ -145,33 +145,28 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     return { ok: false, error: insertError };
   }
 
-  const saveErrors: SaveError[] = [];
-  for (const userId of userIds) {
-    const saveResult = await saveForUserId(userId);
-    if (saveResult.ok) {
-      return NextResponse.json({
-        ok: true,
-        gameData,
-        fallbackUsed,
-      });
-    }
-    saveErrors.push(saveResult.error);
+  const saveResult = await saveForUserId(userId);
+  if (saveResult.ok) {
+    return NextResponse.json({
+      ok: true,
+      gameData,
+      fallbackUsed,
+    });
   }
 
   console.error("[game-data] save failed", {
     slug,
     gameId,
-    userIds,
-    errors: saveErrors.map((error) => ({ code: error.code ?? null, message: error.message })),
+    userId,
+    error: { code: saveResult.error.code ?? null, message: saveResult.error.message },
   });
 
-  const firstError = saveErrors[0];
   return NextResponse.json(
     {
       ok: false,
       error: "Failed to save game data.",
-      details: firstError?.message ?? "Unknown save error",
-      code: firstError?.code ?? null,
+      details: saveResult.error.message,
+      code: saveResult.error.code ?? null,
     },
     { status: 500 }
   );
