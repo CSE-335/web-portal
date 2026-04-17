@@ -20,9 +20,34 @@ jest.mock('@/data/games', () => {
     getGameBySlug: (slug: string) => slug === 'test-game' ? game : undefined,
   };
 });
+import { notFound } from 'next/navigation';
 
 jest.mock('next/navigation', () => ({
+  useRouter: () => ({ push: jest.fn(), replace: jest.fn(), back: jest.fn() }),
   notFound: jest.fn(),
+}));
+
+jest.mock('@/lib/supabase/client', () => ({
+  supabase: {
+    from: () => ({
+      select: () => ({
+        eq: () => ({ data: [], error: null }),
+        limit: () => Promise.resolve({ data: [], error: null }),
+      }),
+    }),
+    auth: {
+      getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+    },
+  },
+}));
+
+jest.mock('@/features/assistant', () => ({
+  GameIframeBridge: () => null,
+  GameSessionRegistration: () => null,
+  useAssistant: () => ({
+    state: { isOpen: false },
+    dispatch: jest.fn(),
+  }),
 }));
 
 describe('Game page', () => {
@@ -40,7 +65,6 @@ describe('Game page', () => {
   });
 
   it('calls notFound for an invalid slug', async () => {
-    const { notFound } = require('next/navigation');
     const params = Promise.resolve({ slug: 'nonexistent-game' });
 
     await GamePage({ params }).catch(() => {});

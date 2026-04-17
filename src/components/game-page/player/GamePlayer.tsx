@@ -21,7 +21,7 @@ export default function GamePlayer({
   embedHeight = "760px",
   slug,
 }: GamePlayerProps) {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const embedRef = useRef<HTMLDivElement>(null);
 
   return (
     <Paper
@@ -29,25 +29,27 @@ export default function GamePlayer({
       radius={28}
       style={{
         overflow: "hidden",
-        background: "rgba(34, 38, 63, 0.95)",
-        border: "1px solid rgba(255,255,255,0.1)",
-        boxShadow: "0 18px 45px rgba(0,0,0,0.30)",
+        background: "var(--player-bg)",
+        border: "1px solid var(--player-border)",
+        boxShadow: "var(--shadow-card)",
       }}
     >
-      <SaveProgressBanner />
-
       <Box p="xs">
         <Box
+          ref={embedRef}
           style={{
+            position: "relative",
             overflow: "hidden",
-            background: "linear-gradient(180deg, #2A2F56 0%, #202542 100%)",
+            borderRadius: 20,
+            background: "var(--player-embed-bg)",
           }}
         >
+          <SaveProgressBanner />
           <GameEmbed src={iframeSrc} title={title} height={embedHeight} slug={slug} />
         </Box>
       </Box>
 
-      <GameToolbar title={title} subject={subject} iframeSrc={iframeSrc} />
+      <GameToolbar slug={slug} title={title} subject={subject} iframeSrc={iframeSrc} embedRef={embedRef} />
     </Paper>
   );
 }

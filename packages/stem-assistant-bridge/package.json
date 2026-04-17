@@ -1,0 +1,24 @@
+{
+  "name": "stem-assistant-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "postMessage bridge from embedded STEM games to the S26 web assistant hub",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc -p .",
+    "prepare": "npm run build"
+  },
+  "license": "UNLICENSED"
+}

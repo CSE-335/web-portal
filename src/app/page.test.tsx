@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MantineProvider } from '@mantine/core';
 import HomePage from './page';
+import { games } from '@/data/games';
 
 jest.mock('../data/games', () => ({
   games: [
@@ -27,6 +28,11 @@ jest.mock('../data/games', () => ({
     },
   ],
   getGameBySlug: (slug: string) => undefined,
+}));
+
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ push: jest.fn(), replace: jest.fn(), back: jest.fn() }),
+  notFound: jest.fn(),
 }));
 
 jest.mock('../lib/supabase/server', () => ({
@@ -64,7 +70,7 @@ describe('Home page', () => {
   it('renders play links for each game', async () => {
     await renderHomePage();
     const playLinks = screen.getAllByRole('link', { name: 'Play' });
-    expect(playLinks).toHaveLength(2);
+    expect(playLinks).toHaveLength(games.length);
   });
 
   it('renders the bottom buttons', async () => {

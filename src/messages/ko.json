@@ -1,0 +1,176 @@
+{
+  "nav": {
+    "searchPlaceholder": "STEM 게임 검색...",
+    "logIn": "로그인",
+    "language": "언어"
+  },
+  "footer": {
+    "links": {
+      "allGames": "모든 게임",
+      "aboutUs": "소개",
+      "contactUs": "문의하기",
+      "privacy": "개인정보",
+      "feedback": "피드백"
+    },
+    "description": "로렌스 리버모어 국립연구소 STEM 게임 포털에 오신 것을 환영합니다. 다운로드 없이 스마트폰, 태블릿, PC에서 즐길 수 있는 교육용 STEM 게임 라이브러리를 즐겨보세요."
+  },
+  "login": {
+    "title": "로그인",
+    "email": "이메일",
+    "password": "비밀번호",
+    "noAccount": "계정이 없으신가요?",
+    "registerHere": "여기서 등록",
+    "forgotPassword": "비밀번호를 잊으셨나요?",
+    "recoverPassword": "비밀번호 복구",
+    "signInGoogle": "Google로 로그인",
+    "continue": "계속",
+    "invalidEmail": "유효하지 않은 이메일",
+    "passwordShort": "비밀번호는 최소 6자 이상이어야 합니다"
+  },
+  "signup": {
+    "title": "계정 만들기",
+    "email": "이메일",
+    "password": "비밀번호",
+    "confirmPassword": "비밀번호 확인",
+    "characters": "문자",
+    "number": "숫자",
+    "letter": "문자",
+    "signUpGoogle": "Google로 가입",
+    "continue": "계속",
+    "invalidEmail": "유효하지 않은 이메일 주소입니다.",
+    "passwordShort": "비밀번호는 최소 6자 이상이어야 합니다",
+    "passwordMismatch": "비밀번호가 일치하지 않습니다"
+  },
+  "profile": {
+    "editTitle": "프로필 수정",
+    "usernameLabel": "사용자 이름",
+    "usernamePlaceholder": "사용자 이름 입력",
+    "locationLabel": "위치",
+    "locationPlaceholder": "위치 선택",
+    "saved": "저장되었습니다!",
+    "saveChanges": "변경사항 저장",
+    "menuProfile": "프로필",
+    "menuEditProfile": "프로필 수정",
+    "menuAccountSettings": "계정 설정",
+    "menuLogOut": "로그아웃",
+    "menuContactUs": "문의하기",
+    "menuPartner": "파트너 — LLNL",
+    "menuLanguage": "언어",
+    "changeBanner": "배너 변경"
+  },
+  "profilePage": {
+    "editProfile": "프로필 수정",
+    "stats": "통계",
+    "memberFor": "가입 기간",
+    "today": "오늘",
+    "days": "{count}일",
+    "gamesLiked": "좋아하는 게임",
+    "playstreak": "연속 플레이",
+    "recentlyPlayed": "최근 플레이",
+    "tabLiked": "좋아하는 게임",
+    "tabLeaderboards": "리더보드",
+    "noLikedGames": "아직 좋아하는 게임이 없습니다. 탐색해서 추가해보세요!",
+    "leaderboardsSoon": "리더보드 곧 출시!",
+    "justNow": "방금",
+    "minutesAgo": "{m}분 전",
+    "hoursAgo": "{h}시간 전",
+    "daysAgo": "{d}일 전"
+  },
+  "saveBanner": {
+    "dontLose": "진행 상황을 잃지 마세요",
+    "signUp": "가입하기",
+    "close": "닫기"
+  },
+  "accountSettings": {
+    "title": "계정 설정",
+    "updateEmail": "이메일 업데이트",
+    "secureAccount": "계정 보안",
+    "logOutAll": "모든 기기에서 로그아웃",
+    "deleteAccount": "계정 삭제",
+    "deleteButton": "계정 삭제하기",
+    "deleteConfirm": "확실하신가요? 확인하려면 다시 클릭하세요",
+    "back": "뒤로",
+    "currentEmail": "현재 이메일",
+    "newEmailDesc": "새 이메일 주소를 입력하세요. 확인 링크를 보내드리겠습니다.",
+    "newEmailPlaceholder": "새 이메일 주소",
+    "invalidEmail": "유효한 이메일 주소를 입력해주세요.",
+    "sameEmail": "이미 현재 이메일 주소입니다.",
+    "sendVerification": "인증 보내기",
+    "emailSentTitle": "이메일을 확인하세요",
+    "emailSentDesc": "{email}로 확인 링크를 보냈습니다. 링크를 클릭하여 이메일 주소를 업데이트하세요.",
+    "done": "완료"
+  },
+  "feedback": {
+    "title": "사이트 피드백",
+    "subtitle": "경험 개선에 도움을 주세요",
+    "name": "이름",
+    "email": "이메일",
+    "optional": "선택",
+    "issues": "어떤 문제가 있었나요?",
+    "issuesPlaceholder": "문제를 설명해주세요...",
+    "ideas": "어떤 기능이나 게임을 보고 싶으신가요?",
+    "ideasPlaceholder": "아이디어를 공유해주세요...",
+    "likelihood": "다시 방문할 가능성은 얼마나 되나요?",
+    "veryUnlikely": "매우 낮음",
+    "unlikely": "낮음",
+    "notSure": "모르겠음",
+    "likely": "높음",
+    "veryLikely": "매우 높음",
+    "comments": "추가 의견",
+    "commentsPlaceholder": "추가 생각...",
+    "submit": "피드백 제출",
+    "success": "피드백 감사합니다!",
+    "error": "오류가 발생했습니다. 다시 시도해주세요."
+  },
+  "common": {
+    "play": "플레이",
+    "randomGame": "랜덤 게임",
+    "backToTop": "맨 위로",
+    "educational": "교육적"
+  },
+  "home": {
+    "welcome1": "LLNL에 오신 것을 환영합니다",
+    "welcome2": "STEM 게임",
+    "interactiveLearning": "인터랙티브 학습",
+    "saveProgress": "진행 상황 저장",
+    "playAnyDevice": "모든 기기에서 플레이"
+  },
+  "gameCard": {
+    "tags": "태그",
+    "Science": "과학",
+    "Technology": "기술",
+    "Engineering": "공학",
+    "Mathematics": "수학"
+  },
+  "gameDetails": {
+    "title": "게임 세부정보",
+    "subject": "과목",
+    "playStyle": "플레이 스타일",
+    "playStyleValue": "인터랙티브 웹 게임",
+    "access": "접근",
+    "accessValue": "브라우저 기반, 다운로드 불필요"
+  },
+  "gameDescription": {
+    "title": "게임 설명"
+  },
+  "games": {
+    "matrix-meadow": {
+      "description": "인터랙티브 몬스터 스케일링 챌린지와 AI 지원 피드백을 통해 행렬 곱셈을 연습하세요.",
+      "long1": "Matrix Meadow Academy는 행렬 곱셈을 시각적 몬스터 스케일링 챌린지로 변환하여 학생들이 화면에서 직접 생물을 변환하며 학습합니다. 문제를 개별적으로 풀는 대신, 플레이어는 행렬을 적용하여 목표 모양에 맞춰 추상적인 선형대수를 더 구체적이고 직관적으로 만듭니다.",
+      "long2": "게임은 스케일링 변환, 행렬 구조, 수치 입력과 시각적 출력 간의 관계와 같은 핵심 개념에 초점을 맞춥니다. 각 문제를 즉각적인 시각적 결과에 연결함으로써 학생들은 행렬 곱셈이 크기와 형태를 어떻게 변경하는지 더 잘 이해할 수 있습니다.",
+      "long3": "AI 지원 피드백은 변환이 성공하거나 실패한 이유를 이해하도록 도와 패턴 인식을 강화하고 안내된 연습을 통해 수정을 장려합니다."
+    },
+    "sonic-fingerprint-lab": {
+      "description": "인터랙티브 사운드 랩을 통해 오디오 패턴, 주파수 및 음성 기반 분석을 탐색하세요.",
+      "long1": "Sonic Fingerprint Lab은 학생들이 주파수 기반 패턴을 통해 소리를 어떻게 시각화, 비교 및 분석할 수 있는지 탐구하는 인터랙티브 과학 게임입니다.",
+      "long2": "게임은 수동적 암기가 아닌 실습 실험을 통해 피치, 파형 동작 및 주파수 차이와 같은 개념을 소개합니다.",
+      "long3": "AI 지원 피드백은 플레이어의 결과를 해석하고 사운드 데이터의 의미 있는 차이를 지적하며 주파수 패턴과 음성 및 음향 특성 간의 관계에 대한 더 깊은 이해로 안내합니다."
+    },
+    "biology-virus-outbreak-simulator": {
+      "description": "인터랙티브 모델링과 AI 지원 피드백을 통해 바이러스 발생을 탐색하고 역학 개념을 배우세요.",
+      "long1": "Biology Virus Outbreak Simulator는 학생들이 바이러스 발생이 어떻게 확산되고 진화하는지 탐구하는 인터랙티브 과학 게임입니다.",
+      "long2": "게임은 실습 실험을 통해 감염 역학, 면역 및 공중 보건 개입과 같은 개념을 소개합니다.",
+      "long3": "AI 지원 피드백은 플레이어에게 개입의 효과에 대한 통찰력을 제공하여 바이러스 전파와 통제에 영향을 미치는 요인들의 복잡한 상호작용을 이해하도록 돕습니다."
+    }
+  }
+}

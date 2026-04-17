@@ -187,7 +187,7 @@ export default function GameEmbed({
   }, [slug, gameOrigin]);
 
   return (
-    <Box style={{ overflow: "hidden", background: "rgba(0,0,0,0.2)" }}>
+    <Box style={{ overflow: "hidden", borderRadius: 20, background: "rgba(0,0,0,0.2)" }}>
       <iframe
         ref={iframeRef}
         src={src}

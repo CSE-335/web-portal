@@ -1,24 +1,37 @@
+'use client';
+import { useTranslations } from 'next-intl';
 import Image from "next/image";
 import { Button, Group } from "@mantine/core";
 import { BLUE_RADIAL_GRADIENT } from "@/constants/layout";
+import { useRouter } from 'next/navigation';
+import { games } from '@/data/games';
 
 type BottomButtonsProps = {
   random?: boolean;
 };
 
 export default function BottomButtons({ random }: BottomButtonsProps) {
+  const t = useTranslations('common');
+  const router = useRouter();
+
+  function handleRandomGame() {
+    const randomGame = games[Math.floor(Math.random() * games.length)];
+    router.push(`/games/${randomGame.slug}`);
+  }
+
   return (
     <Group justify="center" gap="md" mt={48} px="md">
-      {/*hide the random button if false is passed in*/}
       {random != false &&
         <Button
           size="lg"
           color="#525B86"
+          className="btn-theme"
           miw={178}
+          onClick={handleRandomGame}
         >
           <span className="flex items-center gap-3">
             <Image src="/images/shuffle.svg" alt="shuffle" width={28} height={28} aria-hidden className="shrink-0" />
-            Random Game
+            {t('randomGame')}
           </span>
         </Button>
       }
@@ -32,7 +45,7 @@ export default function BottomButtons({ random }: BottomButtonsProps) {
       >
         <span className="flex items-center gap-3">
           <Image src="/images/arrow.svg" alt="up arrow" width={18} height={18} aria-hidden className="shrink-0" />
-          Back to the top
+          {t('backToTop')}
         </span>
       </Button>
     </Group>

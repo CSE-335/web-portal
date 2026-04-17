@@ -3,6 +3,7 @@ name: CI
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
@@ -14,32 +15,37 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: node scripts/generate-games.js
+      - run: node scripts/setup-games.mjs --metadata-only
       - run: npm test
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
   deploy:
     needs: test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: arc-runner-cse120
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: recursive
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
+      - name: Get latest game commits
+        id: game-commits
+        run: echo "hash=$(node scripts/hash-game-commits.mjs)" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@v4
         with:
           path: |
             .game-build-cache.json
             public/staticGames
             public/gameThumbnails
-          key: game-builds-${{ hashFiles('.gitmodules', 'games/*/data/game.json') }}
+          key: game-builds-${{ hashFiles('games.config.mjs') }}-${{ steps.game-commits.outputs.hash }}
           restore-keys: |
+            game-builds-${{ hashFiles('games.config.mjs') }}-
             game-builds-
-      - run: node scripts/setup-games.js
       - run: npm ci
+      - run: node scripts/setup-games.mjs
       - run: npx opennextjs-cloudflare build
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
@@ -49,3 +55,38 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
+
+  deploy-dev:
+    needs: test
+    if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+    runs-on: arc-runner-cse120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Get latest game commits
+        id: game-commits
+        run: echo "hash=$(node scripts/hash-game-commits.mjs)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: |
+            .game-build-cache.json
+            public/staticGames
+            public/gameThumbnails
+          key: game-builds-dev-${{ hashFiles('games.config.mjs') }}-${{ steps.game-commits.outputs.hash }}
+          restore-keys: |
+            game-builds-dev-${{ hashFiles('games.config.mjs') }}-
+            game-builds-dev-
+      - run: npm ci
+      - run: node scripts/setup-games.mjs
+      - run: npx opennextjs-cloudflare build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --env dev
