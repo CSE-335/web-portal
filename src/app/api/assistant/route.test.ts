@@ -49,6 +49,29 @@ function makeRequest(body: unknown) {
   });
 }
 
+/** Body is not valid JSON — triggers the outer catch and 500. */
+function makeMalformedJsonRequest() {
+  return new NextRequest("http://localhost/api/assistant", {
+    method: "POST",
+    body: "not-json{{{",
+    headers: {
+      "content-type": "application/json",
+    },
+  });
+}
+
+function validEvent(overrides: Partial<Record<string, unknown>> = {}) {
+  return {
+    gameId: "general",
+    levelId: "level-1",
+    eventType: "hint_request",
+    targetConcept: "fractions",
+    hintCount: 0,
+    timeSpentSeconds: 12,
+    ...overrides,
+  };
+}
+
 describe("POST /api/assistant", () => {
   const originalOpenAIKey = process.env.OPENAI_API_KEY;
   const originalAnthropicKey = process.env.ANTHROPIC_API_KEY;
@@ -87,6 +110,73 @@ describe("POST /api/assistant", () => {
     expect(json).toEqual({
       success: false,
       error: "Missing required event fields",
+    });
+  });
+
+  it("returns 400 when event is omitted from the body", async () => {
+    const response = await POST(makeRequest({}));
+    const json = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(json.error).toBe("Missing required event fields");
+  });
+
+  it("returns 400 when gameId is missing", async () => {
+    const response = await POST(
+      makeRequest({
+        event: {
+          levelId: "level-1",
+          eventType: "hint_request",
+          targetConcept: "fractions",
+          hintCount: 0,
+          timeSpentSeconds: 12,
+        },
+      }),
+    );
+    const json = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(json.error).toBe("Missing required event fields");
+  });
+
+  it("returns 400 when eventType is missing", async () => {
+    const response = await POST(
+      makeRequest({
+        event: {
+          gameId: "general",
+          levelId: "level-1",
+          targetConcept: "fractions",
+          hintCount: 0,
+          timeSpentSeconds: 12,
+        },
+      }),
+    );
+    const json = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(json.error).toBe("Missing required event fields");
+  });
+
+  it("returns 400 when gameId or eventType is an empty string", async () => {
+    const missingGameId = await POST(
+      makeRequest({ event: validEvent({ gameId: "" }) }),
+    );
+    expect(missingGameId.status).toBe(400);
+
+    const missingEventType = await POST(
+      makeRequest({ event: validEvent({ eventType: "" }) }),
+    );
+    expect(missingEventType.status).toBe(400);
+  });
+
+  it("returns 500 when the request body is not valid JSON", async () => {
+    const response = await POST(makeMalformedJsonRequest());
+    const json = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(json).toEqual({
+      success: false,
+      error: "Internal assistant error",
     });
   });
 
@@ -156,6 +246,85 @@ describe("POST /api/assistant", () => {
     );
     expect(mockedBuildUserPrompt).toHaveBeenCalled();
     expect(mockedGetStaticFallback).not.toHaveBeenCalled();
+  });
+
+  it("defaults maxLines to 6 and passes it to buildSystemPrompt", async () => {
+    process.env.OPENAI_API_KEY = "test-openai-key";
+    mockedGenerateObject.mockResolvedValue({
+      object: {
+        lines: [{ speaker: "Laurie", text: "Line", emotion: "speaking" }],
+        summary: "S",
+      },
+    } as Awaited<ReturnType<typeof generateObject>>);
+
+    await POST(
+      makeRequest({
+        event: validEvent(),
+        // omit maxLines — route should use DEFAULT_MAX_LINES (6)
+      }),
+    );
+
+    expect(mockedBuildSystemPrompt).toHaveBeenCalledWith(
+      6,
+      expect.objectContaining({ slug: "general" }),
+    );
+  });
+
+  it("succeeds with Anthropic only when OpenAI key is absent", async () => {
+    delete process.env.OPENAI_API_KEY;
+    process.env.ANTHROPIC_API_KEY = "anthropic-only";
+    mockedGenerateObject.mockResolvedValue({
+      object: {
+        lines: [{ speaker: "Laurie", text: "Claude line", emotion: "speaking" }],
+        summary: "Via Anthropic",
+      },
+    } as Awaited<ReturnType<typeof generateObject>>);
+
+    const response = await POST(makeRequest({ event: validEvent() }));
+    const json = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(json.success).toBe(true);
+    expect(json.data?.summary).toBe("Via Anthropic");
+    expect(mockedGenerateObject).toHaveBeenCalledTimes(1);
+  });
+
+  it("uses Anthropic when OpenAI fails but Anthropic is configured", async () => {
+    process.env.OPENAI_API_KEY = "openai";
+    process.env.ANTHROPIC_API_KEY = "anthropic";
+    mockedGenerateObject
+      .mockRejectedValueOnce(new Error("OpenAI down"))
+      .mockResolvedValueOnce({
+        object: {
+          lines: [{ speaker: "Livvy", text: "Anthropic recovered", emotion: "happy" }],
+          summary: "Recovered via Anthropic",
+        },
+      } as Awaited<ReturnType<typeof generateObject>>);
+
+    const response = await POST(makeRequest({ event: validEvent() }));
+    const json = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(json.success).toBe(true);
+    expect(json.data?.summary).toBe("Recovered via Anthropic");
+    expect(mockedGenerateObject).toHaveBeenCalledTimes(2);
+  });
+
+  it("falls back when both OpenAI and Anthropic calls fail", async () => {
+    process.env.OPENAI_API_KEY = "o";
+    process.env.ANTHROPIC_API_KEY = "a";
+    mockedGenerateObject
+      .mockRejectedValueOnce(new Error("openai failed"))
+      .mockRejectedValueOnce(new Error("anthropic failed"));
+
+    const response = await POST(makeRequest({ event: validEvent() }));
+    const json = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(json.success).toBe(true);
+    expect(json.data?.summary).toBe("Fallback summary");
+    expect(mockedGenerateObject).toHaveBeenCalledTimes(2);
+    expect(mockedGetStaticFallback).toHaveBeenCalledTimes(1);
   });
 
   it("falls back when the LLM request fails", async () => {
