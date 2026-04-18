@@ -15,12 +15,12 @@ type RateLimitConfig = {
   window: Parameters<typeof Ratelimit.slidingWindow>[1];
 };
 
-const defaultLimit: Omit<RateLimitConfig, "path" | "prefix"> = { auth: 1, anon: 1, window: "30s" };
+const defaultLimit: Omit<RateLimitConfig, "path" | "prefix"> = { auth: 50, anon: 10, window: "15m" };
 
 const routeLimits: RateLimitConfig[] = [
-  { path: "/api/ai/openai/whisper", prefix: "rl:whisper", auth: 1, anon: 1, window: "30s" },
-  { path: "/api/assistant", prefix: "rl:assistant", auth: 1, anon: 1, window: "30s" },
-  { path: "/api/tts", prefix: "rl:tts", auth: 1, anon: 1, window: "30s" },
+  { path: "/api/ai/openai/whisper", prefix: "rl:whisper", auth: 20, anon: 5, window: "1m"},
+  { path: "/api/assistant", prefix: "rl:assistant", auth: 30, anon: 10, window: "1m" },
+  { path: "/api/tts", prefix: "rl:tts", auth: 10, anon: 5, window: "1m" }
 ];
 
 // Cache rate limiter instances so they're created once
