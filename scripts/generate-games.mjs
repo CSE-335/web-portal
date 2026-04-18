@@ -12,7 +12,7 @@ import { fileURLToPath } from 'url';
 import { ROOT_DIR, getConfiguredGameEntries } from './gameSources.mjs';
 import { readJson } from './utils.mjs';
 
-const __filename = fileURLToPath(import.meta.url);
+const _scriptFile = fileURLToPath(import.meta.url);
 const outputPath = path.join(ROOT_DIR, 'src', 'data', 'games.ts');
 const validSubjects = ['Science', 'Technology', 'Engineering', 'Mathematics'];
 
@@ -120,6 +120,6 @@ export function getGameBySlug(slug: string) {
   console.log(`Generated ${outputPath} with ${games.length} game(s).`);
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === __filename) {
+if (process.argv[1] && path.resolve(process.argv[1]) === _scriptFile) {
   generateGamesData();
 }
