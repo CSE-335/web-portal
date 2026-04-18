@@ -98,51 +98,30 @@ export interface Database {
         };
         Relationships: [];
       };
-      game_likes: {
+      game_data: {
         Row: {
           id: number;
           user_id: string;
-          game_slug: string;
+          game_id: number;
+          data_json: Json;
           created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: number;
           user_id: string;
-          game_slug: string;
+          game_id: number;
+          data_json?: Json;
           created_at?: string;
+          updated_at?: string;
         };
         Update: {
           id?: number;
           user_id?: string;
-          game_slug?: string;
+          game_id?: number;
+          data_json?: Json;
           created_at?: string;
-        };
-        Relationships: [];
-      };
-      play_sessions: {
-        Row: {
-          id: number;
-          user_id: string;
-          game_slug: string;
-          started_at: string;
-          ended_at: string | null;
-          duration_seconds: number | null;
-        };
-        Insert: {
-          id?: number;
-          user_id: string;
-          game_slug: string;
-          started_at?: string;
-          ended_at?: string | null;
-          duration_seconds?: number | null;
-        };
-        Update: {
-          id?: number;
-          user_id?: string;
-          game_slug?: string;
-          started_at?: string;
-          ended_at?: string | null;
-          duration_seconds?: number | null;
+          updated_at?: string;
         };
         Relationships: [];
       };
