@@ -7,6 +7,7 @@
  *   3. Copies built files to public/staticGames/<game-id>/
  *   4. Copies thumbnails to public/gameThumbnails/<game-id>.png
  *   5. Generates src/data/games.ts from each repo's data/game.json
+ *   6. Seeds game metadata to Supabase via scripts/seed-games.js (when credentials exist)
  *
  * Run this after cloning, whenever games.config.mjs changes, or whenever a
  * game repo changes upstream.
@@ -14,12 +15,13 @@
  * Usage: node scripts/setup-games.mjs
  *
  * Flags:
- *   --force          Skip cache and rebuild all games
+ *   --force          Skip cache, rebuild all games, and force-reset seeded DB rows
  *   --metadata-only  Sync repos and generate games.ts without building
  */
 
 import fs from 'fs';
 import path from 'path';
+import { spawnSync } from 'child_process';
 import { mkdirp } from './osHelper.mjs';
 import { buildAndCopy, canSkipGame } from './setupGamesHelper.mjs';
 import { getGitCommit, loadCache, readJson, saveCache } from './utils.mjs';
@@ -44,6 +46,45 @@ let gamesBuilt = 0;
 let gamesSkipped = 0;
 let gamesFailed = 0;
 
+function runSeedGames() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    console.warn(
+      '\nSkipping games metadata seed — NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is not set ' +
+        '(expected for fork PR CI / local runs without secrets).',
+    );
+    return;
+  }
+
+  const seedScript = path.join(ROOT_DIR, 'scripts', 'seed-games.js');
+  if (!fs.existsSync(seedScript)) {
+    console.warn(`\nSkipping games metadata seed — missing ${seedScript}`);
+    return;
+  }
+
+  const seedArgs = [seedScript];
+  if (forceRebuild) {
+    seedArgs.push('--force');
+  }
+
+  console.log(`\nSeeding games metadata${forceRebuild ? ' with --force' : ''}...`);
+  const result = spawnSync(process.execPath, seedArgs, {
+    cwd: ROOT_DIR,
+    stdio: 'inherit',
+    env: process.env,
+  });
+
+  if (result.error) {
+    throw result.error;
+  }
+
+  if (result.status !== 0) {
+    throw new Error(`seed-games failed with exit code ${result.status ?? 'unknown'}.`);
+  }
+}
+
 // Sync all repos first
 for (const { repoUrl, repoName } of getConfiguredGameEntries()) {
   const repoDir = getRepoCacheDir(repoUrl);
@@ -65,6 +106,7 @@ for (const { repoUrl, repoName } of getConfiguredGameEntries()) {
 if (metadataOnly) {
   console.log('\nGenerating src/data/games.ts (metadata-only mode)...');
   generateGamesData();
+  runSeedGames();
   console.log('Done.');
   process.exit(0);
 }
@@ -135,5 +177,6 @@ saveCache(CACHE_FILE, newCache);
 
 console.log('\nGenerating src/data/games.ts...');
 generateGamesData();
+runSeedGames();
 
 console.log(`\nDone — ${gamesBuilt} built, ${gamesSkipped} skipped (cached), ${gamesFailed} failed.`);
