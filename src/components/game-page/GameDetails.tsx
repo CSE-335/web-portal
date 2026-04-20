@@ -5,19 +5,13 @@ import { CARD_PANEL_STYLE } from "@/constants/layout";
 import DetailCard from "./DetailCard";
 
 type GameDetailsProps = {
-  slug: string;
   subject: string;
   description: string;
 };
 
-export default function GameDetails({ slug, subject, description }: GameDetailsProps) {
+export default function GameDetails({ subject, description }: GameDetailsProps) {
   const t = useTranslations('gameDetails');
   const tCard = useTranslations('gameCard');
-  const tGames = useTranslations('games');
-
-  const translatedDescription = tGames.has(`${slug}.description`)
-    ? tGames(`${slug}.description`)
-    : description;
 
   return (
     <Paper radius={24} p="lg" style={CARD_PANEL_STYLE}>
@@ -32,7 +26,7 @@ export default function GameDetails({ slug, subject, description }: GameDetailsP
       </SimpleGrid>
 
       <Text fz="md" lh={1.6} c="var(--text-body)" mt="lg">
-        {translatedDescription}
+        {description}
       </Text>
     </Paper>
   );

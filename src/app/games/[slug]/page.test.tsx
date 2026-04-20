@@ -21,6 +21,29 @@ jest.mock('@/data/games', () => {
   };
 });
 import { notFound } from 'next/navigation';
+jest.mock('next-intl/server', () => ({
+  getLocale: () => Promise.resolve('en'),
+}));
+jest.mock('@/lib/supabase/game-translations', () => ({
+  getLocalizedGameBySlug: async (slug: string) => {
+    if (slug !== 'test-game') return null;
+    return {
+      game: {
+        slug: 'test-game',
+        title: 'Test Game',
+        subject: 'Science',
+        description: 'A test game',
+        longDescription: ['Test description paragraph.'],
+        iframeSrc: '/games/test-game/index.html',
+        thumbnailSrc: '/images/test-game-thumb.png',
+        embedHeight: '800px',
+        featured: true,
+      },
+      localeUsed: 'en',
+      isFallback: false,
+    };
+  },
+}));
 
 jest.mock('next/navigation', () => ({
   useRouter: () => ({ push: jest.fn(), replace: jest.fn(), back: jest.fn() }),

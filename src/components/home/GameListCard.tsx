@@ -18,13 +18,8 @@ export default function GameListCard({
   subject,
   thumbnailSrc,
 }: GameListCardProps) {
-  const tGames = useTranslations('games');
   const tCard = useTranslations('gameCard');
   const tCommon = useTranslations('common');
-
-  const translatedDescription = tGames.has(`${slug}.description`)
-    ? tGames(`${slug}.description`)
-    : description;
 
   return (
     <article className="rounded-[20px] p-4" style={{ background: "var(--surface-card-game)", border: "1px solid var(--card-border)", boxShadow: "var(--shadow-card)" }}>
@@ -43,7 +38,7 @@ export default function GameListCard({
           <div>
             <h2 className="text-3xl font-extrabold tracking-tight" style={{ color: "var(--title-color)", textShadow: "var(--title-glow)" }}>{title}</h2>
             <p className="mt-3 max-w-xl text-lg leading-relaxed" style={{ color: "var(--text-body)" }}>
-              {translatedDescription}
+              {description}
             </p>
           </div>
 
