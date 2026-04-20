@@ -50,6 +50,12 @@ jest.mock('@/features/assistant', () => ({
   }),
 }));
 
+jest.mock('@/components/game-page/GameTokenProvider', () => ({
+  __esModule: true,
+  default: () => null,
+}));
+
+
 describe('Game page', () => {
   it('renders a valid game', async () => {
     const params = Promise.resolve({ slug: 'test-game' });
