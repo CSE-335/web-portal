@@ -9,6 +9,10 @@ export { GameSessionRegistration } from "./GameSessionRegistration";
 // Game hooks
 export { useGameAssistant } from "./hooks/useGameAssistant";
 export { useAssistantTTS } from "./hooks/useAssistantTTS";
+export {
+  useHoldToTalkSpeechRecognition,
+  isBrowserSpeechRecognitionSupported,
+} from "./hooks/useHoldToTalkSpeechRecognition";
 
 // Icons (for use in game pages, e.g. "Ask Tutors" button)
 export { TutorIcon } from "./components/icons";
