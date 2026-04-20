@@ -1,8 +1,9 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Stack, UnstyledButton, Text, ScrollArea } from '@mantine/core';
+import { Group, Stack, UnstyledButton, Text, ScrollArea } from '@mantine/core';
 import { locales, languageNames, LOCALE_COOKIE, type Locale } from '@/i18n/routing';
 import { switchLocale } from '@/lib/locale/switchLocale';
+import FlagIcon from '@/components/FlagIcon';
 
 export default function LocaleSwitcher({ onClose }: { onClose?: () => void }) {
   const [current, setCurrent] = useState<Locale>('en');
@@ -53,9 +54,12 @@ export default function LocaleSwitcher({ onClose }: { onClose?: () => void }) {
                 if (!active) e.currentTarget.style.background = 'transparent';
               }}
             >
-              <Text size="sm" style={{ color: active ? '#6e90b6' : '#cdd5e0' }} fw={active ? 600 : 400}>
-                {languageNames[locale]}
-              </Text>
+              <Group gap={8}>
+                <FlagIcon locale={locale} style={{ width: 20, borderRadius: 2, flexShrink: 0 }} />
+                <Text size="sm" style={{ color: active ? '#6e90b6' : '#cdd5e0' }} fw={active ? 600 : 400}>
+                  {languageNames[locale]}
+                </Text>
+              </Group>
               {active && (
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6e90b6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12" />

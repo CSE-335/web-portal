@@ -33,7 +33,7 @@ function ToolbarAction({
     <ActionIcon
       variant="default"
       radius="xl"
-      size="lg"
+      size={44}
       aria-label={label}
       style={{ ...actionButtonStyle, ...style }}
       onClick={onClick}

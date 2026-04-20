@@ -10,21 +10,26 @@ import ProfilePopup from "@/components/ProfilePopup";
 import { getUserProfile } from "@/lib/supabase/user-profile";
 import ThemeToggle from "@/components/layout/Header/ThemeToggle";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
+import FlagIcon from "@/components/FlagIcon";
+import { locales, LOCALE_COOKIE, type Locale } from "@/i18n/routing";
 
 
 interface UtilityNavProps {
   loginModalOpened: boolean;
   setLoginModalOpened: (opened: boolean) => void;
   user: User | null;
+  compact?: boolean;
 }
 
 export default function UtilityNav({
   setLoginModalOpened,
   user,
+  compact = false,
 }: UtilityNavProps) {
   const [profileOpened, setProfileOpened] = useState(false);
   const [langOpened, setLangOpened] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("/images/bobcat.png");
+  const [currentLocale, setCurrentLocale] = useState<Locale>('en');
   const router = useRouter();
   const t = useTranslations('nav');
 
@@ -36,8 +41,16 @@ export default function UtilityNav({
     }
   }, [user]);
 
+  useEffect(() => {
+    const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${LOCALE_COOKIE}=([^;]+)`));
+    const raw = match?.[1];
+    if (raw && locales.includes(raw as Locale)) {
+      setCurrentLocale(raw as Locale);
+    }
+  }, []);
+
   return (
-    <Group gap="sm" wrap="nowrap" ml="auto">
+    <Group gap="sm" wrap={compact ? "wrap" : "nowrap"} ml={compact ? 0 : "auto"} justify={compact ? "center" : undefined}>
       <ThemeToggle />
 
       <Popover
@@ -59,7 +72,7 @@ export default function UtilityNav({
             aria-label="Language"
             onClick={() => setLangOpened((o) => !o)}
           >
-            <Image src="/images/language.svg" alt="" width={24} height={24} aria-hidden style={{ filter: 'brightness(0) invert(1)' }} />
+            <FlagIcon locale={currentLocale} style={{ width: 24, borderRadius: 2, flexShrink: 0 }} />
           </ActionIcon>
         </Popover.Target>
         <Popover.Dropdown
@@ -117,6 +130,7 @@ export default function UtilityNav({
           onClick={() => setLoginModalOpened(true)}
           size="md"
           style={{ background: BLUE_RADIAL_GRADIENT }}
+          fullWidth={compact}
         >
           {t('logIn')}
         </Button>

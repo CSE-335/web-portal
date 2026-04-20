@@ -26,7 +26,7 @@ export default function GamePlayer({
   return (
     <Paper
       component="section"
-      radius={28}
+      radius={{ base: 16, md: 28 }}
       style={{
         overflow: "hidden",
         background: "var(--player-bg)",
@@ -34,13 +34,13 @@ export default function GamePlayer({
         boxShadow: "var(--shadow-card)",
       }}
     >
-      <Box p="xs">
+      <Box p={{ base: 6, md: "xs" }}>
         <Box
           ref={embedRef}
           style={{
             position: "relative",
             overflow: "hidden",
-            borderRadius: 20,
+            borderRadius: "clamp(14px, 2.5vw, 20px)",
             background: "var(--player-embed-bg)",
           }}
         >

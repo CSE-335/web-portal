@@ -38,7 +38,7 @@ export default async function GamePage({ params }: GamePageProps) {
         title={game.title}
         subject={game.subject}
         iframeSrc={game.iframeSrc}
-        embedHeight="800px"
+        embedHeight="clamp(360px, 68dvh, 800px)"
       />
 
       <Stack component="section" gap="lg" mt="lg">
