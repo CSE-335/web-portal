@@ -31,6 +31,18 @@ if (!runtimeGlobal.WritableStream) {
   runtimeGlobal.WritableStream = webStreams.WritableStream;
 }
 
+// jsdom does not always define `fetch`; client components that call it in `useEffect` need a stub.
+if (typeof globalThis.fetch !== "function") {
+  globalThis.fetch = jest.fn(() =>
+    Promise.resolve({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({}),
+      text: () => Promise.resolve(""),
+    } as Response),
+  );
+}
+
 function createTranslator(namespace?: string) {
   const t = ((key: string) => {
     const fullKey = namespace ? `${namespace}.${key}` : key;

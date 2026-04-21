@@ -24,12 +24,24 @@ export default function SearchBar({ value, onChange, onSelect }: SearchBarProps)
     onSelect?.();
   }
 
+  function handleSubmitSearch() {
+    if (results.length > 0) {
+      handleSelect(results[0].slug);
+    }
+  }
+
   return (
     <div style={{ position: 'relative', flex: 1, maxWidth: 580, marginLeft: 'auto', minWidth: 0 }}>
       <TextInput
         placeholder={t('searchPlaceholder')}
         value={value}
         onChange={onChange}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            handleSubmitSearch();
+          }
+        }}
         radius="xl"
         size="md"
         rightSection={<img src="/images/search.svg" alt="" aria-hidden width={20} height={20} style={{ filter: "var(--icon-filter)" }} />}

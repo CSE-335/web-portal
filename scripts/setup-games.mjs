@@ -7,7 +7,7 @@
  *   3. Copies built files to public/staticGames/<game-id>/
  *   4. Copies thumbnails to public/gameThumbnails/<game-id>.png
  *   5. Generates src/data/games.ts from each repo's data/game.json
- *   6. Seeds game metadata to Supabase via scripts/seed-games.js
+ *   6. Seeds game metadata to Supabase via scripts/seed-games.js (when credentials exist)
  *
  * Run this after cloning, whenever games.config.mjs changes, or whenever a
  * game repo changes upstream.
@@ -35,56 +35,51 @@ import {
 } from './gameSources.mjs';
 import { generateGamesData } from './generate-games.mjs';
 
-const DEFAULT_PUBLIC_GAMES_DIR = path.join(ROOT_DIR, 'public', 'staticGames');
-const DEFAULT_PUBLIC_THUMBS_DIR = path.join(ROOT_DIR, 'public', 'gameThumbnails');
-const DEFAULT_CACHE_FILE = path.join(ROOT_DIR, '.game-build-cache.json');
+const PUBLIC_GAMES_DIR = path.join(ROOT_DIR, 'public', 'staticGames');
+const PUBLIC_THUMBS_DIR = path.join(ROOT_DIR, 'public', 'gameThumbnails');
+const CACHE_FILE = path.join(ROOT_DIR, '.game-build-cache.json');
 
-export function runSetupGames({
-  repoUrls = null,
-  publicGamesDir = DEFAULT_PUBLIC_GAMES_DIR,
-  publicThumbsDir = DEFAULT_PUBLIC_THUMBS_DIR,
-  cacheFile = DEFAULT_CACHE_FILE,
-  gameCacheDir = CACHE_GAMES_DIR,
-  forceRebuild = false,
-  metadataOnly = false,
-  onGenerateData = () => generateGamesData(),
-} = {}) {
-  const urls = repoUrls ?? getConfiguredGameRepos();
-  const entries = urls.map((repoUrl) => ({
-    repoUrl,
-    repoName: getRepoDirName(repoUrl),
-  }));
+const forceRebuild = process.argv.includes('--force');
+const metadataOnly = process.argv.includes('--metadata-only');
+const cache = forceRebuild ? {} : loadCache(CACHE_FILE);
+const newCache = {};
 
-  const cache = forceRebuild ? {} : loadCache(cacheFile);
-  const newCache = {};
+let gamesBuilt = 0;
+let gamesSkipped = 0;
+let gamesFailed = 0;
 
-  let gamesBuilt = 0;
-  let gamesSkipped = 0;
-  let gamesFailed = 0;
+function runSeedGames() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
 
-  // Sync all repos first
-  for (const { repoUrl, repoName } of entries) {
-    const repoDir = getRepoCacheDir(repoUrl, gameCacheDir);
-
-    try {
-      syncGameRepo(repoUrl, { cacheDir: gameCacheDir });
-    } catch (err) {
-      if (!fs.existsSync(repoDir)) {
-        console.warn(`Failed to sync ${repoName}; no cached repo available. err: ${err}`);
-        gamesFailed++;
-        continue;
-      }
-
-      console.warn(`Failed to sync ${repoName}, using cached repo. err: ${err}`);
-    }
+  if (!supabaseUrl || !serviceRoleKey) {
+    console.warn(
+      '\nSkipping games metadata seed — NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is not set ' +
+        '(expected for fork PR CI / local runs without secrets).',
+    );
+    return;
   }
 
-  // In metadata-only mode, just generate games.ts and exit
-  if (metadataOnly) {
-    console.log('\nGenerating src/data/games.ts (metadata-only mode)...');
-    onGenerateData();
-    console.log('Done.');
-    return { gamesBuilt, gamesSkipped, gamesFailed };
+  const seedScript = path.join(ROOT_DIR, 'scripts', 'seed-games.js');
+  if (!fs.existsSync(seedScript)) {
+    console.warn(`\nSkipping games metadata seed — missing ${seedScript}`);
+    return;
+  }
+
+  const seedArgs = [seedScript];
+  if (forceRebuild) {
+    seedArgs.push('--force');
+  }
+
+  console.log(`\nSeeding games metadata${forceRebuild ? ' with --force' : ''}...`);
+  const result = spawnSync(process.execPath, seedArgs, {
+    cwd: ROOT_DIR,
+    stdio: 'inherit',
+    env: process.env,
+  });
+
+  if (result.error) {
+    throw result.error;
   }
 
   // Build each game
