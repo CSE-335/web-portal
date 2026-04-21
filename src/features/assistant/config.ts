@@ -28,6 +28,9 @@ export const INITIAL_STATE: AssistantState = {
   history: [],
   historyOpen: false,
   error: null,
+  errorCooldownUntilMs: null,
+  warning: null,
+  warningCooldownUntilMs: null,
 };
 
 // ---------------------------------------------------------------------------
@@ -60,10 +63,18 @@ export function assistantReducer(
         history: [],
         historyOpen: false,
         error: null,
+        errorCooldownUntilMs: null,
+        warning: null,
+        warningCooldownUntilMs: null,
       };
 
     case "SET_GENERATING":
-      return { ...state, isGenerating: action.payload, error: null };
+      return {
+        ...state,
+        isGenerating: action.payload,
+        error: null,
+        errorCooldownUntilMs: null,
+      };
 
     case "SET_DIALOGUE":
       return {
@@ -71,8 +82,6 @@ export function assistantReducer(
         currentDialogue: action.payload,
         currentLineIndex: 0,
         isGenerating: false,
-        isOpen: true,
-        isMinimized: false,
         history: [...state.history, action.payload],
       };
 
@@ -80,11 +89,12 @@ export function assistantReducer(
       return {
         ...state,
         isGenerating: true,
-        isOpen: true,
-        isMinimized: false,
         currentDialogue: { lines: [], summary: "" },
         currentLineIndex: 0,
         error: null,
+        errorCooldownUntilMs: null,
+        warning: null,
+        warningCooldownUntilMs: null,
       };
 
     case "APPEND_LINES": {
@@ -119,7 +129,13 @@ export function assistantReducer(
       };
 
     case "RESET_DIALOGUE":
-      return { ...state, currentDialogue: null, currentLineIndex: 0 };
+      return {
+        ...state,
+        currentDialogue: null,
+        currentLineIndex: 0,
+        warning: null,
+        warningCooldownUntilMs: null,
+      };
 
     case "TOGGLE_VOICE":
       return { ...state, voiceEnabled: !state.voiceEnabled };
@@ -130,8 +146,38 @@ export function assistantReducer(
     case "TOGGLE_HISTORY":
       return { ...state, historyOpen: !state.historyOpen };
 
-    case "SET_ERROR":
-      return { ...state, error: action.payload, isGenerating: false };
+    case "SET_ERROR": {
+      const { message, cooldownUntilMs } = action.payload;
+      return {
+        ...state,
+        error: message,
+        errorCooldownUntilMs:
+          message === null
+            ? null
+            : cooldownUntilMs === undefined
+              ? null
+              : cooldownUntilMs,
+        isGenerating: false,
+        currentDialogue: null,
+        currentLineIndex: 0,
+        warning: null,
+        warningCooldownUntilMs: null,
+      };
+    }
+
+    case "SET_ASSISTANT_WARNING": {
+      const { message, cooldownUntilMs } = action.payload;
+      return {
+        ...state,
+        warning: message,
+        warningCooldownUntilMs:
+          message === null
+            ? null
+            : cooldownUntilMs === undefined
+              ? null
+              : cooldownUntilMs,
+      };
+    }
 
     case "ADD_USER_MESSAGE":
       return {

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { sanitizeForSpeech } from "@/lib/sanitizeForSpeech";
 
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY || "";
 const ELEVENLABS_VOICE_LAURIE =
@@ -15,51 +16,6 @@ const VOICE_SETTINGS: Record<string, object> = {
   Laurie: { stability: 0.55, similarity_boost: 0.8, style: 0.3, speed: 0.95 },
   Livvy: { stability: 0.4, similarity_boost: 0.8, style: 0.55, speed: 1.05 },
 };
-
-function sanitizeForSpeech(text: string): string {
-  let s = text;
-
-  // Matrices: [[1,0],[0,1]] → "the matrix: 1, 0, 0, 1"
-  s = s.replace(/\[\[(.+?)\]\]/g, (_match, inner: string) => {
-    const entries = inner.replace(/\]\s*,\s*\[/g, ", ").replace(/,/g, ", ");
-    return `the matrix: ${entries}`;
-  });
-
-  // Remaining brackets: [1, 2, 3] → "1, 2, 3"
-  s = s.replace(/\[([^\]]+)\]/g, "$1");
-
-  // Exponents: x^2 → "x to the power of 2", 3^n → "3 to the power of n"
-  s = s.replace(/(\w+)\^(\w+)/g, "$1 to the power of $2");
-
-  // Multiplication: 3*4 or 3×4 → "3 times 4"
-  s = s.replace(/(\d+)\s*[*×]\s*(\d+)/g, "$1 times $2");
-
-  // Division: 6/2 → "6 divided by 2" (only digit/digit to avoid breaking words)
-  s = s.replace(/(\d+)\s*\/\s*(\d+)/g, "$1 divided by $2");
-
-  // Plus/minus between numbers: 3+4 → "3 plus 4", 5-2 → "5 minus 2"
-  s = s.replace(/(\d+)\s*\+\s*(\d+)/g, "$1 plus $2");
-  s = s.replace(/(\d+)\s*-\s*(\d+)/g, "$1 minus $2");
-
-  // Equals sign: = → "equals"
-  s = s.replace(/\s*=\s*/g, " equals ");
-
-  // ≠ → "is not equal to"
-  s = s.replace(/≠/g, "is not equal to");
-
-  // ≤ ≥ → spoken form
-  s = s.replace(/≤/g, "is less than or equal to");
-  s = s.replace(/≥/g, "is greater than or equal to");
-
-  // sqrt or √ → "the square root of"
-  s = s.replace(/√(\w+)/g, "the square root of $1");
-  s = s.replace(/sqrt\(([^)]+)\)/gi, "the square root of $1");
-
-  // Collapse extra whitespace
-  s = s.replace(/\s{2,}/g, " ").trim();
-
-  return s;
-}
 
 export async function POST(request: NextRequest) {
   if (!ELEVENLABS_API_KEY) {
@@ -105,6 +61,15 @@ export async function POST(request: NextRequest) {
     if (!res.ok) {
       const err = await res.text();
       console.error(`[TTS] ElevenLabs error ${res.status}:`, err);
+      if (res.status === 429) {
+        return NextResponse.json(
+          {
+            error: "Rate limit exceeded for ElevenLabs TTS",
+            code: "tts_rate_limit",
+          },
+          { status: 429 }
+        );
+      }
       return NextResponse.json(
         { error: `ElevenLabs API error: ${res.status}` },
         { status: 502 }

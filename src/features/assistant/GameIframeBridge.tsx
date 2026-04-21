@@ -78,8 +78,6 @@ export default function GameIframeBridge({
       const data = event.data;
       if (!isGamePostMessage(data)) return;
       if (gameFilter && data.payload.gameId !== gameFilter) return;
-      // Deprecated/removed: never auto-pop the assistant due to inactivity.
-      if (data.payload.eventType === "idle_nudge") return;
 
       sendGameEvent(data.payload);
     }
