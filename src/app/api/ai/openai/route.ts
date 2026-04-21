@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let client: OpenAI | null = null;
+function getClient() {
+  if (!client) client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  return client;
+}
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -16,7 +18,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const completion = await client.chat.completions.create({
+    const completion = await getClient().chat.completions.create({
       model: body.model,
       messages: body.messages,
       max_tokens: body.max_tokens,

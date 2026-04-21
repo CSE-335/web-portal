@@ -2,9 +2,11 @@ import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import type { AudioResponseFormat } from 'openai/resources/audio';
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let client: OpenAI | null = null;
+function getClient() {
+  if (!client) client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  return client;
+}
 
 export async function POST(req: Request) {
   const formData = await req.formData();
@@ -20,7 +22,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const transcription = await client.audio.transcriptions.create({
+    const transcription = await getClient().audio.transcriptions.create({
       file: file as File,
       model: model as string,
       language: (formData.get('language') as string) || undefined,
