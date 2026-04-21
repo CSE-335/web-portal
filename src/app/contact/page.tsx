@@ -12,7 +12,7 @@ export default function ContactPage() {
   return (
     <div
       style={{
-        background: "linear-gradient(180deg, #2F356B 0%, #29315F 100%)",
+        backgroundColor: "var(--about-wrapper-bg)",
         minHeight: "100vh",
         paddingTop: "48px",
         paddingBottom: "72px",
@@ -24,7 +24,7 @@ export default function ContactPage() {
             <Title
               order={1}
               style={{
-                color: "white",
+                color: "var(--about-text)",
                 fontSize: "48px",
                 fontWeight: 700,
                 marginBottom: "10px",
@@ -38,7 +38,7 @@ export default function ContactPage() {
               style={{
                 width: "100%",
                 height: "1px",
-                backgroundColor: "rgba(255,255,255,0.22)",
+                backgroundColor: "var(--app-divider-color)",
               }}
             />
           </Box>
@@ -47,15 +47,15 @@ export default function ContactPage() {
             shadow="sm"
             radius="md"
             style={{
-              backgroundColor: "#F8FAFC",
-              border: "1px solid #D1D5DB",
+              backgroundColor: "var(--about-container-bg)",
+              border: "1px solid var(--border-color)",
               padding: "24px 28px",
             }}
           >
             <Stack gap="md">
               <Text
                 style={{
-                  color: "#111827",
+                  color: "var(--about-text)",
                   fontSize: "20px",
                   fontWeight: 700,
                 }}
@@ -65,7 +65,7 @@ export default function ContactPage() {
 
               <Text
                 style={{
-                  color: "#374151",
+                  color: "var(--about-text)",
                   fontSize: "16px",
                   lineHeight: 1.8,
                 }}
@@ -78,16 +78,16 @@ export default function ContactPage() {
                   <Text
                     key={person.email}
                     style={{
-                      color: "#374151",
+                      color: "var(--about-text)",
                       fontSize: "16px",
                       lineHeight: 1.7,
                     }}
                   >
-                    <strong style={{ color: "#111827" }}>{person.name}:</strong>{" "}
+                    <strong style={{ color: "var(--about-text)" }}>{person.name}:</strong>{" "}
                     <a
                       href={`mailto:${person.email}`}
                       style={{
-                        color: "#2F5DCC",
+                        color: "var(--text-muted)",
                         textDecoration: "none",
                         fontWeight: 500,
                       }}

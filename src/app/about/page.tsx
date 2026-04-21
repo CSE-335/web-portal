@@ -147,6 +147,7 @@ export default function AboutPage() {
                         width: "110px",
                         height: "110px",
                         objectFit: "cover",
+                        borderRadius: "12px",
                         border: "2px solid #374151",
                         marginBottom: "20px",
                         backgroundColor: "#D1D5DB",
@@ -158,6 +159,7 @@ export default function AboutPage() {
                         width: "110px",
                         height: "110px",
                         backgroundColor: "#D1D5DB",
+                        borderRadius: "12px",
                         border: "2px solid #374151",
                         marginBottom: "20px",
                       }}
