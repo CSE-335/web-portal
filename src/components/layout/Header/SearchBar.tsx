@@ -9,9 +9,11 @@ type SearchBarProps = {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSelect?: () => void;
+  /** Fill available width (e.g. mobile header between logo and menu). */
+  fullWidth?: boolean;
 };
 
-export default function SearchBar({ value, onChange, onSelect }: SearchBarProps) {
+export default function SearchBar({ value, onChange, onSelect, fullWidth }: SearchBarProps) {
   const t = useTranslations('nav');
   const router = useRouter();
 
@@ -30,8 +32,12 @@ export default function SearchBar({ value, onChange, onSelect }: SearchBarProps)
     }
   }
 
+  const rootStyle = fullWidth
+    ? { position: "relative" as const, flex: 1, minWidth: 0, width: "100%", maxWidth: "none" }
+    : { position: "relative" as const, flex: 1, maxWidth: 580, marginLeft: "auto", minWidth: 0 };
+
   return (
-    <div style={{ position: 'relative', flex: 1, maxWidth: 580, marginLeft: 'auto', minWidth: 0 }}>
+    <div style={rootStyle}>
       <TextInput
         placeholder={t('searchPlaceholder')}
         value={value}
@@ -43,7 +49,7 @@ export default function SearchBar({ value, onChange, onSelect }: SearchBarProps)
           }
         }}
         radius="xl"
-        size="md"
+        size={fullWidth ? "sm" : "md"}
         rightSection={<img src="/images/search.svg" alt="" aria-hidden width={20} height={20} style={{ filter: "var(--icon-filter)" }} />}
         styles={{
           input: {

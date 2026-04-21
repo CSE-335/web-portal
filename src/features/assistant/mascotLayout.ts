@@ -27,5 +27,17 @@ export const MASCOT_VN_LAYOUT = {
   stageBottom: "clamp(5.5rem, min(28dvh, 10rem), 11rem)",
 } as const;
 
+/**
+ * Single active speaker beside the dialogue (narrow / portrait phones).
+ * Caps dvh so busts never consume half the screen like the desktop stage layout.
+ */
+export const MASCOT_VN_LAYOUT_COMPACT = {
+  spriteWidth: fluidWidthBounded(3.5, 24, 9),
+  spriteHeight: fluidHeight(5.5, 20, 11),
+  spriteSideInset: "0",
+  stageHeight: fluidHeight(5.5, 20, 11),
+  stageBottom: "0",
+} as const;
+
 /** Circular portraits when no explicit pixel size is passed */
 export const MASCOT_PORTRAIT_FLUID_SIZE = "clamp(4rem, 12vw, 6.375rem)";

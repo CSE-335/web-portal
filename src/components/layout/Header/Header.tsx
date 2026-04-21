@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Group, Burger, Drawer, Stack, Box } from "@mantine/core";
+import { useTranslations } from "next-intl";
+import { Group, Burger, Drawer, Stack, Box, Button, Divider } from "@mantine/core";
 import LogoBrand from "@/components/layout/LogoBrand";
 import SearchBar from "./SearchBar";
 import UtilityNav from "./UtilityNav/UtilityNav";
@@ -11,8 +12,15 @@ import { supabase } from "@/lib/supabase/client";
 import { ensureUserProfile } from "@/lib/supabase/auth";
 import type { User } from "@supabase/supabase-js";
 
+const MOBILE_MENU_LINKS = [
+  { key: "aboutUs" as const, href: "/about" },
+  { key: "contactUs" as const, href: "/contact" },
+  { key: "privacy" as const, href: "/privacy" },
+  { key: "feedback" as const, href: "/feedback" },
+];
 
 export default function Header() {
+  const tFooter = useTranslations("footer");
   const [searchValue, setSearchValue] = useState("");
   const [loginModalOpened, setLoginModalOpened] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -64,7 +72,16 @@ export default function Header() {
           </LogoBrand>
         </Link>
 
-        <Box hiddenFrom="md" style={{ position: "relative", zIndex: 2, pointerEvents: "auto" }}>
+        <Box hiddenFrom="md" flex={1} miw={0} mx="xs" style={{ position: "relative", zIndex: 2 }}>
+          <SearchBar
+            fullWidth
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onSelect={() => setSearchValue("")}
+          />
+        </Box>
+
+        <Box hiddenFrom="md" style={{ position: "relative", zIndex: 2, pointerEvents: "auto", flexShrink: 0 }}>
           <Burger
             opened={mobileNavOpened}
             onClick={() => setMobileNavOpened((opened) => !opened)}
@@ -98,21 +115,38 @@ export default function Header() {
         size="100%"
         hiddenFrom="md"
       >
-        <Stack gap="md">
-          <SearchBar
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            onSelect={() => {
-              setSearchValue("");
-              setMobileNavOpened(false);
-            }}
-          />
+        <Stack gap="lg">
           <UtilityNav
             loginModalOpened={loginModalOpened}
             setLoginModalOpened={setLoginModalOpened}
             user={user}
             compact
           />
+
+          <Divider styles={{ root: { borderColor: "var(--border-color)" } }} />
+
+          <Stack component="nav" gap="sm" aria-label="Site">
+            {MOBILE_MENU_LINKS.map((link) => (
+              <Button
+                key={link.key}
+                component={Link}
+                href={link.href}
+                variant="default"
+                fullWidth
+                size="md"
+                onClick={() => setMobileNavOpened(false)}
+                styles={{
+                  root: {
+                    background: "var(--surface-secondary)",
+                    color: "var(--text-primary)",
+                    border: "1px solid var(--border-color)",
+                  },
+                }}
+              >
+                {tFooter(`links.${link.key}`)}
+              </Button>
+            ))}
+          </Stack>
         </Stack>
       </Drawer>
 

@@ -57,24 +57,24 @@ function useTypewriter(text: string, speed: number = 25) {
 // Speaker name plate
 // ---------------------------------------------------------------------------
 
-function NamePlate({ speaker }: { speaker: Speaker }) {
+function NamePlate({ speaker, compact }: { speaker: Speaker; compact?: boolean }) {
   const c = SPEAKER_THEME[speaker];
 
   return (
     <Box
       style={{
         position: "absolute",
-        top: -16,
-        left: speaker === "Laurie" ? 20 : "auto",
-        right: speaker === "Livvy" ? 20 : "auto",
+        top: compact ? -12 : -16,
+        left: compact ? 12 : speaker === "Laurie" ? 20 : "auto",
+        right: compact ? "auto" : speaker === "Livvy" ? 20 : "auto",
         background: `linear-gradient(135deg, ${c.accent}, ${c.accent}cc)`,
-        padding: "4px 20px",
+        padding: compact ? "3px 14px" : "4px 20px",
         borderRadius: "8px 8px 0 0",
         boxShadow: `0 -4px 16px ${c.glow}`,
         zIndex: 2,
       }}
     >
-      <Text size="sm" fw={700} c="white" style={{ letterSpacing: "0.5px" }}>
+      <Text size={compact ? "xs" : "sm"} fw={700} c="white" style={{ letterSpacing: "0.5px" }}>
         {c.displayName}
       </Text>
     </Box>
@@ -112,7 +112,11 @@ function AdvanceIndicator() {
 // Main dialogue box
 // ---------------------------------------------------------------------------
 
-export default function VNDialogueBox() {
+export interface VNDialogueBoxProps {
+  compact?: boolean;
+}
+
+export default function VNDialogueBox({ compact }: VNDialogueBoxProps) {
   const { state, advanceLine, dismissDialogue } = useAssistant();
   const dialogue = state.currentDialogue;
 
@@ -168,7 +172,7 @@ export default function VNDialogueBox() {
           width: "100%",
           maxWidth: 680,
           margin: "0 auto",
-          padding: "24px 28px",
+          padding: compact ? "16px 14px" : "24px 28px",
           background: "var(--surface-primary)",
           border: "1px solid var(--overlay-border)",
           borderRadius: 12,
@@ -199,34 +203,35 @@ export default function VNDialogueBox() {
         margin: "0 auto",
         cursor: "pointer",
         userSelect: "none",
+        touchAction: "manipulation",
       }}
     >
       {/* Name plate */}
-      <NamePlate speaker={speaker} />
+      <NamePlate speaker={speaker} compact={compact} />
 
       {/* Dialogue box */}
       <Box
         style={{
           position: "relative",
           zIndex: 1,
-          padding: "24px 28px 28px",
+          padding: compact ? "14px 14px 16px" : "24px 28px 28px",
           background: "var(--surface-primary)",
           border: `2px solid ${SPEAKER_THEME[speaker].border}`,
           borderRadius: 12,
           backdropFilter: "blur(16px)",
           boxShadow: "var(--shadow-card)",
-          minHeight: 90,
+          minHeight: compact ? 72 : 90,
         }}
       >
         {/* Dialogue text */}
         <Text
-          size="md"
-          lh={1.7}
+          size={compact ? "sm" : "md"}
+          lh={1.65}
           style={{
             color: "var(--text-primary)",
             fontFamily: "'Geist', sans-serif",
             letterSpacing: "0.2px",
-            minHeight: "3em",
+            minHeight: compact ? "2.5em" : "3em",
           }}
         >
           {displayed}

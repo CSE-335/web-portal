@@ -39,7 +39,13 @@ export default function GameEmbed({
     async function loadGameData() {
       const authHeaders = await getAuthHeaders();
       if (!authHeaders) {
-        throw new Error("Failed to load game data: missing auth headers.");
+        // Guest or session not ready yet — skip cloud sync (no unhandled rejection).
+        latestGameData = {};
+        iframeRef.current?.contentWindow?.postMessage(
+          { type: "PORTAL_GAME_DATA_LOADED", payload: latestGameData },
+          gameOrigin
+        );
+        return;
       }
 
       const loadResponse = await fetch(`/api/game-data/${slug}`, {
@@ -69,7 +75,7 @@ export default function GameEmbed({
       if (loadJson.fallbackUsed) {
         const authHeaders = await getAuthHeaders();
         if (!authHeaders) {
-          throw new Error("Failed to initialize game data: missing auth headers.");
+          return;
         }
 
         await fetch(`/api/game-data/${slug}`, {
@@ -95,7 +101,7 @@ export default function GameEmbed({
         void (async () => {
           const authHeaders = await getAuthHeaders();
           if (!authHeaders) {
-            throw new Error("Failed to save game data: missing auth headers.");
+            return;
           }
 
           await fetch(`/api/game-data/${slug}`, {
