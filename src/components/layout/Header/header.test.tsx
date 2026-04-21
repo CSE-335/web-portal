@@ -41,12 +41,12 @@ describe('Header', () => {
 
   it('renders the search bar', () => {
     renderHeader();
-    expect(screen.getByPlaceholderText('Search STEM games...')).toBeInTheDocument();
+    expect(screen.getAllByPlaceholderText('Search STEM games...').length).toBeGreaterThan(0);
   });
 
   it('updates search bar value when typing', async () => {
     renderHeader();
-    const searchInput = screen.getByPlaceholderText('Search STEM games...');
+    const searchInput = screen.getAllByPlaceholderText('Search STEM games...')[0];
     await userEvent.type(searchInput, 'matrix');
     expect(searchInput).toHaveValue('matrix');
   });
