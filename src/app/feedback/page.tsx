@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations } from 'next-intl';
+import { useMantineColorScheme } from '@mantine/core';
 import { supabase } from "@/lib/supabase/client";
 import {
   Container,
@@ -16,55 +17,13 @@ import {
   Divider,
 } from "@mantine/core";
 
-const inputStyles = {
-  wrapper: {
-    borderRadius: "10px",
-    background:
-      "linear-gradient(#525b85, #525b85) padding-box, linear-gradient(to bottom, #7886bf, #6e91d0) border-box",
-    border: "2px solid transparent",
-  },
-  input: {
-    backgroundColor: "transparent",
-    color: "white",
-    border: "none",
-    height: "46px",
-    fontSize: "15px",
-    fontFamily: "var(--font-alexandria), sans-serif",
-    fontWeight: 400,
-    paddingLeft: "20px",
-  },
-};
-
-const textareaStyles = {
-  wrapper: {
-    borderRadius: "10px",
-    background:
-      "linear-gradient(#525b85, #525b85) padding-box, linear-gradient(to bottom, #7886bf, #6e91d0) border-box",
-    border: "2px solid transparent",
-  },
-  input: {
-    backgroundColor: "transparent",
-    color: "white",
-    border: "none",
-    fontSize: "15px",
-    fontFamily: "var(--font-alexandria), sans-serif",
-    fontWeight: 400,
-    padding: "14px 20px",
-  },
-};
-
-const labelStyle = {
-  fontFamily: "var(--font-alexandria), sans-serif",
-  fontWeight: 500,
-  fontSize: "16px",
-  color: "white",
-  marginBottom: "6px",
-};
-
 const likelihoodKeys = ['veryUnlikely', 'unlikely', 'notSure', 'likely', 'veryLikely'] as const;
 
 export default function FeedbackPage() {
   const t = useTranslations('feedback');
+  const { colorScheme } = useMantineColorScheme();
+  const isDark = colorScheme !== 'light';
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [issues, setIssues] = useState("");
@@ -126,12 +85,65 @@ export default function FeedbackPage() {
     }
   }
 
+  const inputStyles = {
+    wrapper: {
+      borderRadius: "10px",
+      background: isDark
+        ? "linear-gradient(#525b85, #525b85) padding-box, linear-gradient(to bottom, #7886bf, #6e91d0) border-box"
+        : "var(--input-wrapper-bg)",
+      border: isDark ? "2px solid transparent" : "var(--input-wrapper-border)",
+    },
+    input: {
+      backgroundColor: "transparent",
+      color: isDark ? "white" : "var(--text-primary)",
+      border: "none",
+      height: "46px",
+      fontSize: "15px",
+      fontFamily: "var(--font-alexandria), sans-serif",
+      fontWeight: 400,
+      paddingLeft: "20px",
+    },
+  };
+
+  const textareaStyles = {
+    wrapper: {
+      borderRadius: "10px",
+      background: isDark
+        ? "linear-gradient(#525b85, #525b85) padding-box, linear-gradient(to bottom, #7886bf, #6e91d0) border-box"
+        : "var(--input-wrapper-bg)",
+      border: isDark ? "2px solid transparent" : "var(--input-wrapper-border)",
+    },
+    input: {
+      backgroundColor: "transparent",
+      color: isDark ? "white" : "var(--text-primary)",
+      border: "none",
+      fontSize: "15px",
+      fontFamily: "var(--font-alexandria), sans-serif",
+      fontWeight: 400,
+      padding: "14px 20px",
+    },
+  };
+
+  const labelStyle = {
+    fontFamily: "var(--font-alexandria), sans-serif",
+    fontWeight: 500,
+    fontSize: "16px",
+    color: isDark ? "white" : "var(--text-primary)",
+    marginBottom: "6px",
+  };
+
+  const optionalStyle = {
+    color: isDark ? "#9CA3AF" : "var(--text-secondary)",
+    fontWeight: 400,
+    fontSize: "13px",
+  };
+
   return (
     <Container size="md" py={48}>
       <Box
         style={{
-          backgroundColor: "#1f2542",
-          border: "1px solid #6e90b6",
+          backgroundColor: isDark ? "#1f2542" : "var(--surface-primary)",
+          border: isDark ? "1px solid #6e90b6" : "1px solid var(--border-color)",
           borderRadius: "10px",
           padding: "40px 48px",
         }}
@@ -142,7 +154,7 @@ export default function FeedbackPage() {
               <Title
                 order={1}
                 style={{
-                  color: "white",
+                  color: isDark ? "white" : "var(--text-primary)",
                   fontSize: "28px",
                   fontWeight: 600,
                   fontFamily: "var(--font-alexandria), sans-serif",
@@ -154,14 +166,14 @@ export default function FeedbackPage() {
                 style={{
                   fontFamily: "var(--font-alexandria), sans-serif",
                   fontSize: "14px",
-                  color: "#9CA3AF",
+                  color: isDark ? "#9CA3AF" : "var(--text-secondary)",
                 }}
               >
                 {t('subtitle')}
               </Text>
             </Stack>
 
-            <Divider styles={{ root: { borderColor: "#344369" } }} />
+            <Divider styles={{ root: { borderColor: isDark ? "#344369" : "var(--border-color)" } }} />
 
             <Group grow gap="md">
               <TextInput
@@ -170,7 +182,7 @@ export default function FeedbackPage() {
                 placeholder={t('name')}
                 label={
                   <span style={labelStyle}>
-                    {t('name')} <span style={{ color: "#9CA3AF", fontWeight: 400, fontSize: "13px" }}>{t('optional')}</span>
+                    {t('name')} <span style={optionalStyle}>{t('optional')}</span>
                   </span>
                 }
                 styles={inputStyles}
@@ -182,7 +194,7 @@ export default function FeedbackPage() {
                 placeholder={t('email')}
                 label={
                   <span style={labelStyle}>
-                    {t('email')} <span style={{ color: "#9CA3AF", fontWeight: 400, fontSize: "13px" }}>{t('optional')}</span>
+                    {t('email')} <span style={optionalStyle}>{t('optional')}</span>
                   </span>
                 }
                 styles={inputStyles}
@@ -212,7 +224,7 @@ export default function FeedbackPage() {
               autosize
               label={
                 <span style={labelStyle}>
-                  {t('ideas')} <span style={{ color: "#9CA3AF", fontWeight: 400, fontSize: "13px" }}>{t('optional')}</span>
+                  {t('ideas')} <span style={optionalStyle}>{t('optional')}</span>
                 </span>
               }
               styles={textareaStyles}
@@ -233,17 +245,16 @@ export default function FeedbackPage() {
                       flex: 1,
                       padding: "10px 4px",
                       borderRadius: "10px",
-                      border: "none",
+                      border: returnLikelihood === key ? "none" : isDark ? "none" : "1px solid var(--border-color)",
                       cursor: "pointer",
                       textAlign: "center",
                       fontFamily: "var(--font-alexandria), sans-serif",
                       fontWeight: 500,
                       fontSize: "12px",
-                      color: returnLikelihood === key ? "white" : "#9CA3AF",
-                      background:
-                        returnLikelihood === key
-                          ? "linear-gradient(135deg, #1b41ff, #0054f0)"
-                          : "#525b85",
+                      color: returnLikelihood === key ? "white" : isDark ? "#9CA3AF" : "var(--text-secondary)",
+                      background: returnLikelihood === key
+                        ? "linear-gradient(135deg, #1b41ff, #0054f0)"
+                        : isDark ? "#525b85" : "var(--surface-secondary)",
                       transition: "all 0.2s ease",
                     }}
                   >
@@ -261,7 +272,7 @@ export default function FeedbackPage() {
               autosize
               label={
                 <span style={labelStyle}>
-                  {t('comments')} <span style={{ color: "#9CA3AF", fontWeight: 400, fontSize: "13px" }}>{t('optional')}</span>
+                  {t('comments')} <span style={optionalStyle}>{t('optional')}</span>
                 </span>
               }
               styles={textareaStyles}
