@@ -7,6 +7,7 @@
  *   3. Copies built files to public/staticGames/<game-id>/
  *   4. Copies thumbnails to public/gameThumbnails/<game-id>.png
  *   5. Generates src/data/games.ts from each repo's data/game.json
+ *   6. Seeds game metadata to Supabase via scripts/seed-games.js
  *
  * Run this after cloning, whenever games.config.mjs changes, or whenever a
  * game repo changes upstream.
@@ -14,7 +15,7 @@
  * Usage: node scripts/setup-games.mjs
  *
  * Flags:
- *   --force          Skip cache and rebuild all games
+ *   --force          Skip cache, rebuild all games, and force-reset seeded DB rows
  *   --metadata-only  Sync repos and generate games.ts without building
  */
 
