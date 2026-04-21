@@ -66,6 +66,10 @@ html[lang="ar"] button {
   --detail-card-bg: rgba(255,255,255,0.05);
   --detail-card-border: rgba(255,255,255,0.1);
   --detail-label: rgba(255,255,255,0.5);
+  --about-page-bg: #2A305B;
+  --about-wrapper-bg: #2f3566;
+  --about-container-bg: #353c71;
+  --about-text: #ffffff;
 }
 
 [data-mantine-color-scheme="light"] {
@@ -122,6 +126,10 @@ html[lang="ar"] button {
   --detail-card-bg: rgba(0, 48, 135, 0.05);
   --detail-card-border: rgba(0, 48, 135, 0.12);
   --detail-label: #718096;
+  --about-page-bg: #93949e;
+  --about-wrapper-bg: #e0e1e9;
+  --about-container-bg: #ffffff;
+  --about-text: #111827;
 }
 
 /* Light mode banner */

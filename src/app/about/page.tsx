@@ -32,19 +32,28 @@ export default function AboutPage() {
   return (
     <div
       style={{
-        backgroundColor: "#2A305B",
+        backgroundColor: "var(--about-wrapper-bg)",
+        borderRadius: "16px",
+        // backgroundColor: "var(--about-page-bg)",
         minHeight: "100vh",
         paddingTop: "40px",
         paddingBottom: "60px",
       }}
     >
       <Container size="lg">
+        <div
+          style={{
+            // backgroundColor: "var(--about-wrapper-bg)",
+            borderRadius: "16px",
+            padding: "32px",
+          }}
+        >
         <Stack gap="xl">
           <Box>
             <Title
               order={1}
               style={{
-                color: "#111827",
+                color: "var(--about-text)",
                 fontSize: "56px",
                 fontWeight: 500,
                 marginBottom: "8px",
@@ -64,17 +73,17 @@ export default function AboutPage() {
 
           <Paper
             shadow="none"
-            radius={0}
+            radius="lg"
             p="xl"
             style={{
-              backgroundColor: "#F3F4F6",
+              backgroundColor: "var(--about-container-bg)",
               border: "2px solid #374151",
             }}
           >
             <Stack gap="sm">
               <Text
                 style={{
-                  color: "#111827",
+                  color: "var(--about-text)",
                   fontSize: "20px",
                   fontWeight: 500,
                 }}
@@ -84,7 +93,7 @@ export default function AboutPage() {
 
               <Text
                 style={{
-                  color: "#111827",
+                  color: "var(--about-text)",
                   fontSize: "18px",
                   lineHeight: 1.7,
                 }}
@@ -105,7 +114,7 @@ export default function AboutPage() {
           <Stack gap="md">
             <Text
               style={{
-                color: "#white",
+                color: "var(--about-text)",
                 fontSize: "26px",
                 fontWeight: 500,
               }}
@@ -118,10 +127,10 @@ export default function AboutPage() {
                 <Paper
                   key={member.name}
                   shadow="none"
-                  radius={0}
+                  radius="lg"
                   p="lg"
                   style={{
-                    backgroundColor: "#F9FAFB",
+                    backgroundColor: "var(--about-container-bg)",
                     border: "2px solid #374151",
                     minHeight: "340px",
                     display: "flex",
@@ -157,7 +166,7 @@ export default function AboutPage() {
 
                   <Text
                     style={{
-                      color: "#111827",
+                      color: "var(--about-text)",
                       fontSize: "18px",
                       fontWeight: 500,
                       marginBottom: "14px",
@@ -171,7 +180,7 @@ export default function AboutPage() {
                       <Text
                         key={role}
                         style={{
-                          color: "#111827",
+                          color: "var(--about-text)",
                           fontSize: "16px",
                           lineHeight: 1.4,
                         }}
@@ -187,17 +196,17 @@ export default function AboutPage() {
 
           <Paper
             shadow="none"
-            radius={0}
+            radius="lg"
             p="xl"
             style={{
-              backgroundColor: "#F3F4F6",
+              backgroundColor: "var(--about-container-bg)",
               border: "2px solid #374151",
             }}
           >
             <Stack gap="sm">
               <Text
                 style={{
-                  color: "#111827",
+                  color: "var(--about-text)",
                   fontSize: "20px",
                   fontWeight: 500,
                 }}
@@ -207,7 +216,7 @@ export default function AboutPage() {
 
               <Text
                 style={{
-                  color: "#111827",
+                  color: "var(--about-text)",
                   fontSize: "18px",
                   lineHeight: 1.7,
                 }}
@@ -227,6 +236,7 @@ export default function AboutPage() {
             </Stack>
           </Paper>
         </Stack>
+        </div>
       </Container>
     </div>
   );
