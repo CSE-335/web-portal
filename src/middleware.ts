@@ -1,3 +1,17 @@
+/**
+ * IMPORTANT — DO NOT rename this file to proxy.ts
+ *
+ * Next.js 16 deprecated middleware.ts in favor of proxy.ts, but proxy.ts
+ * forces the Node.js runtime. Our deployment target (@opennextjs/cloudflare)
+ * only supports Edge middleware — it cannot run Node.js middleware/proxy yet.
+ * See: https://github.com/opennextjs/opennextjs-cloudflare/issues/1213
+ *
+ * Once @opennextjs/cloudflare ships Adapters API support for proxy.ts,
+ * this file can be renamed and the export changed from `middleware` to `proxy`.
+ *
+ * All dependencies here (jose, @upstash/*) are Edge-compatible by design.
+ */
+
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
@@ -44,7 +58,7 @@ function matchRouteLimit(pathname: string): RateLimitConfig | null {
   return routeLimits.find((r) => pathname.startsWith(r.path)) ?? null;
 }
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   // Skip all checks in development (unless ENABLE_RATE_LIMIT is set for testing)
   if (process.env.NODE_ENV === "development" && !process.env.ENABLE_RATE_LIMIT) {
     return NextResponse.next();
