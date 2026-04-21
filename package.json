@@ -15,6 +15,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "setup-games": "node scripts/setup-games.mjs",
+    "translate-games": "node scripts/translate-games.js",
     "build:bridge": "npm run build -w stem-assistant-bridge"
   },
   "dependencies": {

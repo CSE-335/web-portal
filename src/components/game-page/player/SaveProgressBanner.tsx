@@ -12,6 +12,7 @@ export default function SaveProgressBanner() {
   const [closing, setClosing] = useState(false);
   const [loginOpened, setLoginOpened] = useState(false);
   const t = useTranslations('saveBanner');
+  const logInLabel = t.has('logIn') ? t('logIn') : 'Log in';
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -66,7 +67,7 @@ export default function SaveProgressBanner() {
             className="banner-login-btn"
             onClick={() => setLoginOpened(true)}
           >
-            {t('logIn')}
+            {logInLabel}
           </Button>
 
           <Button

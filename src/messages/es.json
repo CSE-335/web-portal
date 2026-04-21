@@ -152,25 +152,5 @@
   },
   "gameDescription": {
     "title": "Descripción del juego"
-  },
-  "games": {
-    "matrix-meadow": {
-      "description": "Practica la multiplicación de matrices a través de desafíos interactivos de escalado de monstruos y retroalimentación asistida por IA.",
-      "long1": "Matrix Meadow Academy convierte la multiplicación de matrices en un desafío visual de escalado de monstruos donde los estudiantes aprenden transformando criaturas directamente en pantalla. En lugar de resolver problemas de forma aislada, los jugadores aplican matrices para coincidir con formas objetivo, haciendo que el álgebra lineal abstracta se sienta más concreta e intuitiva.",
-      "long2": "El juego se centra en ideas fundamentales como las transformaciones de escala, la estructura matricial y la relación entre la entrada numérica y la salida visual. Al vincular cada problema con un resultado visual inmediato, los estudiantes pueden comprender mejor cómo la multiplicación de matrices cambia el tamaño y la forma.",
-      "long3": "La retroalimentación asistida por IA apoya el proceso de aprendizaje ayudando a los jugadores a entender por qué una transformación funcionó o falló, reforzando el reconocimiento de patrones y fomentando la corrección a través de la práctica guiada."
-    },
-    "sonic-fingerprint-lab": {
-      "description": "Explora patrones de audio, frecuencias y análisis basado en la voz a través de un laboratorio de sonido interactivo.",
-      "long1": "Sonic Fingerprint Lab es un juego de ciencias interactivo donde los estudiantes exploran cómo el sonido puede ser visualizado, comparado y analizado a través de patrones basados en frecuencia. Al usar su propia voz y señales grabadas, los jugadores interactúan directamente con la idea de que cada sonido deja una firma acústica medible.",
-      "long2": "El juego introduce conceptos como el tono, el comportamiento de las ondas y las diferencias de frecuencia a través de la experimentación práctica en lugar de la memorización pasiva. Los estudiantes pueden observar cómo los cambios en la entrada de sonido afectan los patrones resultantes.",
-      "long3": "La retroalimentación asistida por IA ayuda a interpretar los resultados del jugador, señalar diferencias significativas en sus datos de sonido y guiarlos hacia una comprensión más sólida de cómo los patrones de frecuencia se relacionan con las características vocales y acústicas."
-    },
-    "biology-virus-outbreak-simulator": {
-      "description": "Explora brotes de virus y aprende sobre conceptos epidemiológicos a través de modelado interactivo y retroalimentación asistida por IA.",
-      "long1": "Biology Virus Outbreak Simulator es un juego de ciencias interactivo donde los estudiantes exploran cómo los brotes de virus se propagan y evolucionan. Al responder preguntas, los jugadores pueden observar el impacto de diferentes factores en la progresión de una epidemia.",
-      "long2": "El juego introduce conceptos como la dinámica de infección, la inmunidad y las intervenciones de salud pública a través de la experimentación práctica. Los estudiantes pueden analizar las consecuencias de sus decisiones y ajustar sus estrategias en consecuencia.",
-      "long3": "La retroalimentación asistida por IA brinda a los jugadores información sobre la efectividad de sus intervenciones, ayudándoles a comprender la compleja interacción de factores que influyen en la transmisión y el control de virus."
-    }
   }
 }
