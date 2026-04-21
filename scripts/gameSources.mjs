@@ -5,8 +5,8 @@ import { fileURLToPath } from 'url';
 import { gameRepos } from '../games.config.mjs';
 import { mkdirp, rmrf, run } from './osHelper.mjs';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-export const ROOT_DIR = path.join(__dirname, '..');
+const _scriptDir = path.dirname(fileURLToPath(import.meta.url));
+export const ROOT_DIR = path.join(_scriptDir, '..');
 export const CACHE_GAMES_DIR = path.join(ROOT_DIR, '.game-sources');
 export const DEFAULT_GAME_BRANCH = 'main';
 
@@ -35,20 +35,20 @@ export function getRepoDirName(repoUrl) {
   return repoName;
 }
 
-export function getRepoCacheDir(repoUrl) {
-  return path.join(CACHE_GAMES_DIR, getRepoDirName(repoUrl));
+export function getRepoCacheDir(repoUrl, cacheDir = CACHE_GAMES_DIR) {
+  return path.join(cacheDir, getRepoDirName(repoUrl));
 }
 
-export function getConfiguredGameEntries() {
+export function getConfiguredGameEntries(cacheDir = CACHE_GAMES_DIR) {
   return getConfiguredGameRepos().map((repoUrl) => ({
     repoUrl,
     repoName: getRepoDirName(repoUrl),
-    repoDir: getRepoCacheDir(repoUrl),
+    repoDir: getRepoCacheDir(repoUrl, cacheDir),
   }));
 }
 
-export function ensureGameCacheDir() {
-  mkdirp(CACHE_GAMES_DIR);
+export function ensureGameCacheDir(cacheDir = CACHE_GAMES_DIR) {
+  mkdirp(cacheDir);
 }
 
 export function getOriginUrl(repoDir) {
@@ -59,11 +59,11 @@ export function getOriginUrl(repoDir) {
   }
 }
 
-export function syncGameRepo(repoUrl) {
-  ensureGameCacheDir();
+export function syncGameRepo(repoUrl, { cacheDir = CACHE_GAMES_DIR } = {}) {
+  ensureGameCacheDir(cacheDir);
 
   const repoName = getRepoDirName(repoUrl);
-  const repoDir = getRepoCacheDir(repoUrl);
+  const repoDir = getRepoCacheDir(repoUrl, cacheDir);
 
   if (fs.existsSync(repoDir)) {
     const originUrl = getOriginUrl(repoDir);
