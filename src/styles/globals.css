@@ -52,6 +52,9 @@ html[lang="ar"] button {
   --locale-dropdown-bg: #1f2542;
   --locale-dropdown-border: rgba(255,255,255,0.1);
   --locale-dropdown-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  --search-popup-bg: #2a2f4e;
+  --search-popup-text: #ffffff;
+  --search-popup-hover: rgba(255,255,255,0.08);
   --player-bg: rgba(34, 38, 63, 0.95);
   --player-border: rgba(255,255,255,0.1);
   --player-embed-bg: linear-gradient(180deg, #2A2F56 0%, #202542 100%);
@@ -105,6 +108,9 @@ html[lang="ar"] button {
   --locale-dropdown-bg: #002570;
   --locale-dropdown-border: rgba(255, 255, 255, 0.15);
   --locale-dropdown-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --search-popup-bg: #eef0f5;
+  --search-popup-text: #0057a8;
+  --search-popup-hover: rgba(0,87,168,0.08);
   --player-bg: #ffffff;
   --player-border: rgba(0, 48, 135, 0.12);
   --player-embed-bg: #f0f2f6;
@@ -143,6 +149,17 @@ html[lang="ar"] button {
 }
 [data-mantine-color-scheme="light"] .site-header input::placeholder {
   color: rgba(255,255,255,0.6) !important;
+}
+
+/* Search popup theming */
+.search-popup-btn:hover {
+  background: var(--search-popup-hover) !important;
+}
+[data-mantine-color-scheme="light"] .search-popup {
+  background: var(--search-popup-bg) !important;
+}
+[data-mantine-color-scheme="light"] .search-popup-btn {
+  color: var(--search-popup-text) !important;
 }
 
 /* Dark mode search */
