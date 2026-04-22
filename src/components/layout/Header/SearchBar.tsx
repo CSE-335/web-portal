@@ -54,13 +54,13 @@ export default function SearchBar({ value, onChange, onSelect }: SearchBarProps)
         }}
       />
       {results.length > 0 && (
-        <div style={{
+        <div className="search-popup" style={{
           position: 'absolute',
           top: '100%',
           left: 0,
           right: 0,
           marginTop: 4,
-          background: '#2a2f4e',
+          background: 'var(--search-popup-bg)',
           border: "1px solid var(--overlay-border)",
           borderRadius: 12,
           overflow: 'hidden',
@@ -70,6 +70,7 @@ export default function SearchBar({ value, onChange, onSelect }: SearchBarProps)
           {results.map(game => (
             <button
               key={game.slug}
+              className="search-popup-btn"
               onClick={() => handleSelect(game.slug)}
               style={{
                 display: 'flex',
@@ -80,12 +81,10 @@ export default function SearchBar({ value, onChange, onSelect }: SearchBarProps)
                 textAlign: 'left',
                 background: 'transparent',
                 border: 'none',
-                color: 'white',
+                color: 'var(--search-popup-text)',
                 cursor: 'pointer',
                 fontSize: 18,
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
               <Image
                 src={game.thumbnailSrc}
