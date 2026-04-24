@@ -260,13 +260,6 @@ export default function VNDialogueBox({ compact }: VNDialogueBoxProps) {
           )}
         </Text>
 
-        {/* Summary (shown on last line after typing finishes) */}
-        {isLastLine && isDone && dialogue.summary && (
-          <Text size="xs" c="dimmed" fs="italic" mt="sm">
-            {dialogue.summary}
-          </Text>
-        )}
-
         {/* Advance indicator (mid-dialogue blinking chevron) */}
         {isDone && !isLastLine && <AdvanceIndicator />}
 

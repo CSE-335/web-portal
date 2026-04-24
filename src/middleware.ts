@@ -4,8 +4,20 @@ import { jwtVerify } from "jose";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
-const secret = new TextEncoder().encode(process.env.GAME_TOKEN_SECRET);
-const redis = Redis.fromEnv();
+const secretKey = process.env.GAME_TOKEN_SECRET ?? "";
+const secret = new TextEncoder().encode(secretKey);
+
+// Lazily construct the Redis client so a missing env var doesn't crash module init
+// (which would 500 every request before we can return a structured error).
+let _redis: Redis | null = null;
+function getRedis(): Redis | null {
+  if (_redis) return _redis;
+  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+    return null;
+  }
+  _redis = Redis.fromEnv();
+  return _redis;
+}
 
 type RateLimitConfig = {
   path: string;
@@ -23,10 +35,12 @@ const routeLimits: RateLimitConfig[] = [
   { path: "/api/tts", prefix: "rl:tts", auth: 10, anon: 5, window: "1m" }
 ];
 
-// Cache rate limiter instances so they're created once
 const limiterCache = new Map<string, Ratelimit>();
 
-function getLimiter(prefix: string, limit: number, window: RateLimitConfig["window"]): Ratelimit {
+function getLimiter(prefix: string, limit: number, window: RateLimitConfig["window"]): Ratelimit | null {
+  const redis = getRedis();
+  if (!redis) return null;
+
   const key = `${prefix}:${limit}:${window}`;
   const cached = limiterCache.get(key);
   if (cached) return cached;
@@ -44,37 +58,41 @@ function matchRouteLimit(pathname: string): RateLimitConfig | null {
   return routeLimits.find((r) => pathname.startsWith(r.path)) ?? null;
 }
 
-export async function proxy(request: NextRequest) {
-  // Skip all checks in development (unless ENABLE_RATE_LIMIT is set for testing)
+export async function middleware(request: NextRequest) {
   if (process.env.NODE_ENV === "development" && !process.env.ENABLE_RATE_LIMIT) {
     return NextResponse.next();
   }
 
-  // Optional local testing bypass to demo rate limiting without auth cookie setup.
+  // In production we require GAME_TOKEN_SECRET to be configured. Fail closed
+  // rather than silently letting all requests through if it's missing.
+  if (!secretKey) {
+    return NextResponse.json(
+      { error: "Server misconfiguration" },
+      { status: 503 },
+    );
+  }
+
   const allowMissingTokenInDev =
     process.env.NODE_ENV === "development" && process.env.ALLOW_MISSING_GAME_TOKEN === "1";
 
-  // Read token from cookie
   const token = request.cookies.get("game-token")?.value;
 
   if (!token && !allowMissingTokenInDev) {
     return NextResponse.json({ error: "Missing game token" }, { status: 403 });
   }
 
-  // Verify JWT signature and expiry
   let payload: { userId?: string | null };
   if (!token && allowMissingTokenInDev) {
     payload = { userId: null };
   } else {
-  try {
-    const { payload: verified } = await jwtVerify(token!, secret);
-    payload = verified as { userId?: string | null };
-  } catch {
-    return NextResponse.json({ error: "Invalid or expired token" }, { status: 403 });
-  }
+    try {
+      const { payload: verified } = await jwtVerify(token!, secret);
+      payload = verified as { userId?: string | null };
+    } catch {
+      return NextResponse.json({ error: "Invalid or expired token" }, { status: 403 });
+    }
   }
 
-  // Match route-specific limits or fall back to default
   const matched = matchRouteLimit(request.nextUrl.pathname);
   const limit = payload.userId
     ? (matched?.auth ?? defaultLimit.auth)
@@ -83,7 +101,22 @@ export async function proxy(request: NextRequest) {
   const prefix = matched?.prefix ?? "rl:default";
 
   const limiter = getLimiter(prefix, limit, window);
-  const key = payload.userId ?? request.headers.get("x-forwarded-for") ?? "unknown";
+
+  // If Upstash is not configured we still want auth to be enforced, but we
+  // can't impose a quota. Fail closed in production rather than silently
+  // disabling rate limiting on these paid endpoints.
+  if (!limiter) {
+    return NextResponse.json(
+      { error: "Server misconfiguration: rate limiter unavailable" },
+      { status: 503 },
+    );
+  }
+
+  // Use the first hop in X-Forwarded-For (the client), not the entire chain
+  // which an attacker could spoof to get a fresh bucket per request.
+  const forwardedFor = request.headers.get("x-forwarded-for") ?? "";
+  const clientIp = forwardedFor.split(",")[0]?.trim() || "unknown";
+  const key = payload.userId ?? clientIp;
   const { success, remaining } = await limiter.limit(key);
 
   if (!success) {

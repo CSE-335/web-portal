@@ -10,6 +10,10 @@ import { getStaticFallback } from "./lib/fallbacks";
 import { getAssistantGameIntegration } from "@/features/assistant/gameIntegration";
 
 const DEFAULT_MAX_LINES = 6;
+const MAX_BODY_BYTES = 32 * 1024;
+const MAX_USER_MESSAGE_CHARS = 4_000;
+const MAX_HISTORY_ITEMS = 20;
+const MAX_HISTORY_LINE_CHARS = 1_000;
 
 async function generateAssistantReply(systemPrompt: string, userPrompt: string) {
   const hasAnthropic = Boolean(process.env.ANTHROPIC_API_KEY);
@@ -61,7 +65,22 @@ async function generateAssistantReply(systemPrompt: string, userPrompt: string) 
 
 export async function POST(request: NextRequest) {
   try {
-    const body = (await request.json()) as AssistantAPIRequest;
+    const contentLength = Number(request.headers.get("content-length") ?? "0");
+    if (contentLength > MAX_BODY_BYTES) {
+      return NextResponse.json(
+        { success: false, error: "Request body too large" } satisfies AssistantAPIResponse,
+        { status: 413 },
+      );
+    }
+
+    const raw = await request.text();
+    if (raw.length > MAX_BODY_BYTES) {
+      return NextResponse.json(
+        { success: false, error: "Request body too large" } satisfies AssistantAPIResponse,
+        { status: 413 },
+      );
+    }
+    const body = JSON.parse(raw) as AssistantAPIRequest;
     const { event, conversationHistory, maxLines } = body;
 
     if (!event || !event.gameId || !event.eventType) {
@@ -70,6 +89,28 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
+
+    // Cap free-form student input length so it can't be used to push the
+    // model context size past our budget.
+    const rawUserMessage = event.additionalContext?.userMessage;
+    if (typeof rawUserMessage === "string" && rawUserMessage.length > MAX_USER_MESSAGE_CHARS) {
+      event.additionalContext = {
+        ...event.additionalContext,
+        userMessage: rawUserMessage.slice(0, MAX_USER_MESSAGE_CHARS),
+      };
+    }
+
+    // Trim and clip conversation history before it goes anywhere near the LLM
+    // or prompt builders.
+    const trimmedHistory = Array.isArray(conversationHistory)
+      ? conversationHistory.slice(-MAX_HISTORY_ITEMS).map((line) => ({
+          ...line,
+          text:
+            typeof line?.text === "string" && line.text.length > MAX_HISTORY_LINE_CHARS
+              ? line.text.slice(0, MAX_HISTORY_LINE_CHARS)
+              : line?.text,
+        }))
+      : conversationHistory;
 
     const hasAnthropic = Boolean(process.env.ANTHROPIC_API_KEY);
     const hasOpenAI = Boolean(process.env.OPENAI_API_KEY);
@@ -87,7 +128,7 @@ export async function POST(request: NextRequest) {
     const lineLimit = Math.min(maxLines || DEFAULT_MAX_LINES, 8);
     const gameProfile = getAssistantGameIntegration(event.gameId);
     const systemPrompt = buildSystemPrompt(lineLimit, gameProfile);
-    const userPrompt = buildUserPrompt(event, conversationHistory, gameProfile);
+    const userPrompt = buildUserPrompt(event, trimmedHistory, gameProfile);
 
     try {
       const data = await generateAssistantReply(systemPrompt, userPrompt);

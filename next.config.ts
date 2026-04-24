@@ -40,6 +40,21 @@ function getDevOrigins(): string[] {
   return [...hosts];
 }
 
+// Conservative defense-in-depth headers. We avoid setting a strict CSP here
+// because the app loads game iframes from external origins and uses inline
+// styles via Mantine — set CSP at the edge once you've enumerated allowed
+// sources for scripts/styles/frames.
+const SECURITY_HEADERS = [
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "X-Frame-Options", value: "SAMEORIGIN" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  {
+    key: "Permissions-Policy",
+    value: "camera=(), geolocation=(), payment=(), usb=(), microphone=(self)",
+  },
+  { key: "X-DNS-Prefetch-Control", value: "off" },
+];
+
 const nextConfig = {
   allowedDevOrigins: getDevOrigins(),
   images: {
@@ -47,6 +62,14 @@ const nextConfig = {
   },
   turbopack: {
     root: projectRoot,
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: SECURITY_HEADERS,
+      },
+    ];
   },
 };
 
