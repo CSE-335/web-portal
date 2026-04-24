@@ -1,5 +1,9 @@
 // ============================================================================
 // Text-to-speech: ElevenLabs (/api/tts/elevenlabs) → OpenAI (/api/tts/openai) → Web Speech API.
+//
+// Prefetch strategy: while line N is playing, we background-fetch the audio
+// for line N+1. When the user advances, the blob is already in memory and
+// plays instantly instead of waiting for a 1-2 s round-trip.
 // ============================================================================
 
 "use client";
@@ -7,7 +11,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { parseRetryAfterSeconds } from "@/lib/parseRetryAfter";
 import { useAssistant } from "../AssistantContext";
-import type { DialogueLine } from "../types";
+import type { AssistantResponse, DialogueLine } from "../types";
 
 interface TTSConfig {
   rate?: number;
@@ -41,6 +45,50 @@ type TtsHttpAudioOutcome = {
 };
 
 // ---------------------------------------------------------------------------
+// Audio prefetch cache
+// ---------------------------------------------------------------------------
+
+function audioCacheKey(line: DialogueLine): string {
+  return `${line.speaker}::${line.text}`;
+}
+
+const TTS_ENDPOINTS = ["/api/tts/elevenlabs", "/api/tts/openai"] as const;
+
+/**
+ * Fetches the audio blob for a line and stores it in `cache`. Tries each
+ * cloud TTS endpoint in order, stops at the first success. Purely
+ * background — errors are silently ignored.
+ */
+async function prefetchAudioBlob(
+  line: DialogueLine,
+  cache: Map<string, Blob>,
+  signal: AbortSignal,
+): Promise<void> {
+  const key = audioCacheKey(line);
+  if (cache.has(key)) return;
+
+  for (const apiPath of TTS_ENDPOINTS) {
+    if (signal.aborted) return;
+    try {
+      const res = await fetch(apiPath, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: line.text, speaker: line.speaker }),
+        signal,
+      });
+      if (signal.aborted) return;
+      if (res.ok) {
+        const blob = await res.blob();
+        if (!signal.aborted) cache.set(key, blob);
+        return;
+      }
+    } catch {
+      if (signal.aborted) return;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
 // MP3 from /api/tts/elevenlabs (ElevenLabs) or /api/tts/openai (OpenAI)
 // ---------------------------------------------------------------------------
 
@@ -51,16 +99,37 @@ function isStaleUtterance(
   return utteranceEpoch !== epochRef.current;
 }
 
+interface SpeakViaTtsHttpParams {
+  apiPath: string;
+  line: DialogueLine;
+  activeAudioRef: React.MutableRefObject<HTMLAudioElement | null>;
+  activeUrlRef: React.MutableRefObject<string | null>;
+  isPlayingRef: React.MutableRefObject<boolean>;
+  signal: AbortSignal;
+  utteranceEpoch: number;
+  epochRef: React.MutableRefObject<number>;
+  /** Fired exactly once when audio.play() actually begins producing sound. */
+  onAudioStarted?: () => void;
+  /** Pre-fetched blob — if provided the network fetch is skipped entirely. */
+  cachedBlob?: Blob;
+}
+
 async function speakViaTtsHttp(
-  apiPath: string,
-  line: DialogueLine,
-  activeAudioRef: React.MutableRefObject<HTMLAudioElement | null>,
-  activeUrlRef: React.MutableRefObject<string | null>,
-  isPlayingRef: React.MutableRefObject<boolean>,
-  signal: AbortSignal,
-  utteranceEpoch: number,
-  epochRef: React.MutableRefObject<number>,
+  params: SpeakViaTtsHttpParams,
 ): Promise<TtsHttpAudioOutcome> {
+  const {
+    apiPath,
+    line,
+    activeAudioRef,
+    activeUrlRef,
+    isPlayingRef,
+    signal,
+    utteranceEpoch,
+    epochRef,
+    onAudioStarted,
+    cachedBlob,
+  } = params;
+
   const fail = (
     rateLimited = false,
     skipSecondaryCloud = false,
@@ -73,29 +142,46 @@ async function speakViaTtsHttp(
   });
 
   try {
-    const res = await fetch(apiPath, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: line.text, speaker: line.speaker }),
-      signal,
-    });
+    let blob: Blob;
 
-    if (isStaleUtterance(utteranceEpoch, epochRef) || signal.aborted) {
-      return fail();
+    if (cachedBlob) {
+      // Fast path — blob was already prefetched.
+      if (isStaleUtterance(utteranceEpoch, epochRef) || signal.aborted) {
+        return fail();
+      }
+      if (!isPlayingRef.current) return fail();
+      blob = cachedBlob;
+    } else {
+      // Normal network path.
+      const res = await fetch(apiPath, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: line.text, speaker: line.speaker }),
+        signal,
+      });
+
+      if (isStaleUtterance(utteranceEpoch, epochRef) || signal.aborted) {
+        return fail();
+      }
+      if (!res.ok) {
+        const rateLimited = res.status === 429;
+        const skipSecondaryCloud =
+          rateLimited &&
+          res.headers.get("x-tts-limited-by")?.toLowerCase() === "upstash";
+        const retryAfterSeconds = rateLimited
+          ? parseRetryAfterSeconds(res)
+          : null;
+        return fail(rateLimited, skipSecondaryCloud, retryAfterSeconds);
+      }
+      if (!isPlayingRef.current) return fail();
+
+      blob = await res.blob();
+      if (isStaleUtterance(utteranceEpoch, epochRef) || signal.aborted) {
+        return fail();
+      }
     }
-    if (!res.ok) {
-      const rateLimited = res.status === 429;
-      const skipSecondaryCloud =
-        rateLimited
-        && res.headers.get("x-tts-limited-by")?.toLowerCase() === "upstash";
-      const retryAfterSeconds = rateLimited ? parseRetryAfterSeconds(res) : null;
-      return fail(rateLimited, skipSecondaryCloud, retryAfterSeconds);
-    }
-    if (!isPlayingRef.current) return fail();
 
-    const blob = await res.blob();
-    if (isStaleUtterance(utteranceEpoch, epochRef) || signal.aborted) return fail();
-
+    // Blob → Audio element → play.
     const url = URL.createObjectURL(blob);
     activeUrlRef.current = url;
 
@@ -122,9 +208,32 @@ async function speakViaTtsHttp(
         skipSecondaryCloud: false,
         retryAfterSeconds: null,
       });
-      audio.onended = () => { cleanup(); resolve(ok()); };
-      audio.onerror = () => { cleanup(); resolve(fail()); };
-      audio.play().catch(() => { cleanup(); resolve(fail()); });
+
+      let started = false;
+      const markStarted = () => {
+        if (started) return;
+        started = true;
+        onAudioStarted?.();
+      };
+
+      audio.onplaying = markStarted;
+      audio.onended = () => {
+        cleanup();
+        resolve(ok());
+      };
+      audio.onerror = () => {
+        cleanup();
+        resolve(fail());
+      };
+      audio
+        .play()
+        .then(() => {
+          markStarted();
+        })
+        .catch(() => {
+          cleanup();
+          resolve(fail());
+        });
     });
   } catch {
     return fail();
@@ -138,13 +247,18 @@ async function speakViaTtsHttp(
 function speakViaWebSpeech(
   line: DialogueLine,
   voices: SpeechSynthesisVoice[],
-  cfg: Required<TTSConfig>
+  cfg: Required<TTSConfig>,
+  onAudioStarted?: () => void,
 ): Promise<void> {
   return new Promise((resolve) => {
-    if (!("speechSynthesis" in window)) return resolve();
+    if (!("speechSynthesis" in window)) {
+      onAudioStarted?.();
+      return resolve();
+    }
     const u = new SpeechSynthesisUtterance(line.text);
 
-    const hint = line.speaker === "Laurie" ? cfg.laurieVoiceHint : cfg.livvyVoiceHint;
+    const hint =
+      line.speaker === "Laurie" ? cfg.laurieVoiceHint : cfg.livvyVoiceHint;
     const voice =
       voices.find((v) => v.name.includes(hint) && v.lang.startsWith("en")) ||
       voices.find((v) => v.lang.startsWith("en"));
@@ -152,8 +266,23 @@ function speakViaWebSpeech(
 
     u.rate = cfg.rate;
     u.pitch = line.speaker === "Laurie" ? cfg.lauriePitch : cfg.livvyPitch;
-    u.onend = () => resolve();
-    u.onerror = () => resolve();
+
+    let started = false;
+    const markStarted = () => {
+      if (started) return;
+      started = true;
+      onAudioStarted?.();
+    };
+
+    u.onstart = markStarted;
+    u.onend = () => {
+      markStarted();
+      resolve();
+    };
+    u.onerror = () => {
+      markStarted();
+      resolve();
+    };
     window.speechSynthesis.speak(u);
   });
 }
@@ -178,7 +307,14 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
   const cfg = useMemo(
     () => ({ ...DEFAULTS, ...config }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [config?.rate, config?.lauriePitch, config?.livvyPitch, config?.laurieVoiceHint, config?.livvyVoiceHint, config?.interLinePauseMs]
+    [
+      config?.rate,
+      config?.lauriePitch,
+      config?.livvyPitch,
+      config?.laurieVoiceHint,
+      config?.livvyVoiceHint,
+      config?.interLinePauseMs,
+    ],
   );
   const isPlayingRef = useRef(false);
   const activeAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -187,26 +323,60 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
   const utteranceEpochRef = useRef(0);
   const ttsFetchAbortRef = useRef<AbortController | null>(null);
 
+  // ---- Prefetch cache & controller ------------------------------------
+  const audioCacheRef = useRef(new Map<string, Blob>());
+  const prefetchAbortRef = useRef<AbortController | null>(null);
+
   useEffect(() => {
     const hasWebSpeech =
       typeof window !== "undefined" && "speechSynthesis" in window;
     setIsSupported(hasWebSpeech);
 
-    if (hasWebSpeech) {
-      const load = () => setVoices(window.speechSynthesis.getVoices());
-      load();
-      window.speechSynthesis.addEventListener("voiceschanged", load);
-      return () => window.speechSynthesis.removeEventListener("voiceschanged", load);
-    }
+    if (!hasWebSpeech) return;
+
+    const load = () => setVoices(window.speechSynthesis.getVoices());
+    load();
+    window.speechSynthesis.addEventListener("voiceschanged", load);
+    return () => {
+      window.speechSynthesis.removeEventListener("voiceschanged", load);
+    };
+  }, []);
+
+  /** Clear the audio-buffer flag exactly once per call site. */
+  const clearAudioBuffer = useCallback(() => {
+    dispatch({ type: "SET_AUDIO_BUFFERING", payload: false });
+  }, [dispatch]);
+
+  /** Kick off a background prefetch for a line (if not already cached). */
+  const prefetchLine = useCallback((line: DialogueLine) => {
+    prefetchAbortRef.current?.abort();
+    const ac = new AbortController();
+    prefetchAbortRef.current = ac;
+    prefetchAudioBlob(line, audioCacheRef.current, ac.signal);
   }, []);
 
   const speakLine = useCallback(
-    async (line: DialogueLine): Promise<void> => {
+    async (
+      line: DialogueLine,
+      options?: { onAudioStarted?: () => void },
+    ): Promise<void> => {
       setIsSpeaking(true);
 
       const utteranceEpoch = utteranceEpochRef.current;
       const ac = new AbortController();
       ttsFetchAbortRef.current = ac;
+
+      // Check prefetch cache — consume entry so stale blobs don't linger.
+      const cacheKey = audioCacheKey(line);
+      const cachedBlob = audioCacheRef.current.get(cacheKey);
+      if (cachedBlob) audioCacheRef.current.delete(cacheKey);
+
+      let signaledStart = false;
+      const onAudioStarted = () => {
+        if (signaledStart) return;
+        signaledStart = true;
+        options?.onAudioStarted?.();
+      };
 
       try {
         const {
@@ -214,44 +384,48 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
           rateLimited: primaryRateLimited,
           skipSecondaryCloud,
           retryAfterSeconds: primaryRetryAfter,
-        } = await speakViaTtsHttp(
-          "/api/tts/elevenlabs",
+        } = await speakViaTtsHttp({
+          apiPath: "/api/tts/elevenlabs",
           line,
           activeAudioRef,
           activeUrlRef,
           isPlayingRef,
-          ac.signal,
+          signal: ac.signal,
           utteranceEpoch,
-          utteranceEpochRef,
-        );
+          epochRef: utteranceEpochRef,
+          onAudioStarted,
+          cachedBlob,
+        });
 
         let success = primarySuccess;
         let secondaryRetryAfter: number | null = null;
         let secondaryRateLimited = false;
         if (
-          !success
-          && !skipSecondaryCloud
-          && isPlayingRef.current
-          && utteranceEpoch === utteranceEpochRef.current
+          !success &&
+          !skipSecondaryCloud &&
+          isPlayingRef.current &&
+          utteranceEpoch === utteranceEpochRef.current
         ) {
-          const second = await speakViaTtsHttp(
-            "/api/tts/openai",
+          const second = await speakViaTtsHttp({
+            apiPath: "/api/tts/openai",
             line,
             activeAudioRef,
             activeUrlRef,
             isPlayingRef,
-            ac.signal,
+            signal: ac.signal,
             utteranceEpoch,
-            utteranceEpochRef,
-          );
+            epochRef: utteranceEpochRef,
+            onAudioStarted,
+            // No cache for the secondary tier — the prefetch already tried both.
+          });
           success = second.success;
           secondaryRateLimited = second.rateLimited;
           secondaryRetryAfter = second.retryAfterSeconds;
         }
 
         if (
-          (primaryRateLimited || secondaryRateLimited)
-          && utteranceEpoch === utteranceEpochRef.current
+          (primaryRateLimited || secondaryRateLimited) &&
+          utteranceEpoch === utteranceEpochRef.current
         ) {
           const untilMs = [primaryRetryAfter, secondaryRetryAfter].flatMap(
             (sec) => {
@@ -271,21 +445,22 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
         }
 
         if (
-          !success
-          && isPlayingRef.current
-          && utteranceEpoch === utteranceEpochRef.current
+          !success &&
+          isPlayingRef.current &&
+          utteranceEpoch === utteranceEpochRef.current
         ) {
-          await speakViaWebSpeech(line, voices, cfg);
+          await speakViaWebSpeech(line, voices, cfg, onAudioStarted);
         }
       } finally {
         if (ttsFetchAbortRef.current === ac) ttsFetchAbortRef.current = null;
+        if (!signaledStart) onAudioStarted();
       }
 
       if (utteranceEpoch === utteranceEpochRef.current) {
         setIsSpeaking(false);
       }
     },
-    [voices, cfg, dispatch]
+    [voices, cfg, dispatch],
   );
 
   const playDialogue = useCallback(
@@ -294,6 +469,8 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
       isPlayingRef.current = true;
       for (let i = 0; i < lines.length; i++) {
         if (!isPlayingRef.current) break;
+        // Prefetch the upcoming line while we speak the current one.
+        if (i + 1 < lines.length) prefetchLine(lines[i + 1]);
         await speakLine(lines[i]);
         if (i < lines.length - 1) {
           advanceLine();
@@ -302,12 +479,17 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
       }
       isPlayingRef.current = false;
     },
-    [speakLine, advanceLine, cfg.interLinePauseMs]
+    [speakLine, advanceLine, cfg.interLinePauseMs, prefetchLine],
   );
 
   const stop = useCallback(() => {
+    // Abort the in-flight TTS fetch (for the current line being spoken).
     ttsFetchAbortRef.current?.abort();
     ttsFetchAbortRef.current = null;
+    // Abort any background prefetch but keep the cache — the already-fetched
+    // blob is still valid if the user paused/unpaused or changed lines.
+    prefetchAbortRef.current?.abort();
+    prefetchAbortRef.current = null;
     utteranceEpochRef.current += 1;
     isPlayingRef.current = false;
     const a = activeAudioRef.current;
@@ -331,17 +513,19 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
   }, []);
 
   const spokenLineRef = useRef<DialogueLine | undefined>(undefined);
+  const spokenDialogueRef = useRef<AssistantResponse | null>(null);
   const autoplayRef = useRef(state.autoplayEnabled);
   autoplayRef.current = state.autoplayEnabled;
 
   useEffect(() => {
     if (!state.voiceEnabled || !state.currentDialogue || !state.isOpen) {
       spokenLineRef.current = undefined;
+      spokenDialogueRef.current = null;
+      if (state.isAudioBuffering) clearAudioBuffer();
       return;
     }
 
     const line = state.currentDialogue.lines[state.currentLineIndex];
-    // Streaming / gear-switch clears lines before new content arrives — stop old audio.
     if (!line) {
       spokenLineRef.current = undefined;
       stop();
@@ -349,11 +533,30 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
     }
     if (line === spokenLineRef.current) return;
 
+    const isFirstLineOfNewDialogue =
+      spokenDialogueRef.current !== state.currentDialogue &&
+      state.currentLineIndex === 0;
+
+    // When the dialogue identity changes, invalidate the entire cache
+    // (the new exchange has different lines).
+    if (spokenDialogueRef.current !== state.currentDialogue) {
+      audioCacheRef.current.clear();
+    }
+
     spokenLineRef.current = line;
+    spokenDialogueRef.current = state.currentDialogue;
     stop();
     const epochAtStart = utteranceEpochRef.current;
     isPlayingRef.current = true;
-    speakLine(line).then(() => {
+
+    // Prefetch the NEXT line in the background while we speak this one.
+    const nextLine =
+      state.currentDialogue.lines[state.currentLineIndex + 1];
+    if (nextLine) prefetchLine(nextLine);
+
+    speakLine(line, {
+      onAudioStarted: isFirstLineOfNewDialogue ? clearAudioBuffer : undefined,
+    }).then(() => {
       if (epochAtStart !== utteranceEpochRef.current) return;
       isPlayingRef.current = false;
       if (autoplayRef.current) {
@@ -365,9 +568,12 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
     state.isOpen,
     state.currentDialogue,
     state.currentLineIndex,
+    state.isAudioBuffering,
     speakLine,
     stop,
     advanceLine,
+    clearAudioBuffer,
+    prefetchLine,
   ]);
 
   useEffect(() => {
@@ -375,7 +581,10 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
   }, [state.currentDialogue, isSpeaking, stop]);
 
   useEffect(() => {
-    return () => { stop(); };
+    return () => {
+      stop();
+      audioCacheRef.current.clear();
+    };
   }, [stop]);
 
   return { isSupported, isSpeaking, playDialogue, stop, voices };

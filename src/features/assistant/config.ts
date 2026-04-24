@@ -21,6 +21,7 @@ export const INITIAL_STATE: AssistantState = {
   isOpen: false,
   isMinimized: true,
   isGenerating: false,
+  isAudioBuffering: false,
   currentDialogue: null,
   currentLineIndex: 0,
   autoplayEnabled: false,
@@ -58,6 +59,7 @@ export function assistantReducer(
       return {
         ...state,
         isGenerating: false,
+        isAudioBuffering: false,
         currentDialogue: null,
         currentLineIndex: 0,
         history: [],
@@ -72,9 +74,14 @@ export function assistantReducer(
       return {
         ...state,
         isGenerating: action.payload,
+        // Stopping generation should also clear any pending audio-buffer flag.
+        isAudioBuffering: action.payload ? state.isAudioBuffering : false,
         error: null,
         errorCooldownUntilMs: null,
       };
+
+    case "SET_AUDIO_BUFFERING":
+      return { ...state, isAudioBuffering: action.payload };
 
     case "SET_DIALOGUE":
       return {
@@ -82,6 +89,7 @@ export function assistantReducer(
         currentDialogue: action.payload,
         currentLineIndex: 0,
         isGenerating: false,
+        isAudioBuffering: false,
         history: [...state.history, action.payload],
       };
 
@@ -89,6 +97,9 @@ export function assistantReducer(
       return {
         ...state,
         isGenerating: true,
+        // Preemptively buffer audio when voice is on so the dialogue overlay does
+        // not flash in for one render before the TTS hook has a chance to react.
+        isAudioBuffering: state.voiceEnabled,
         currentDialogue: { lines: [], summary: "" },
         currentLineIndex: 0,
         error: null,
@@ -131,14 +142,23 @@ export function assistantReducer(
     case "RESET_DIALOGUE":
       return {
         ...state,
+        isAudioBuffering: false,
         currentDialogue: null,
         currentLineIndex: 0,
         warning: null,
         warningCooldownUntilMs: null,
       };
 
-    case "TOGGLE_VOICE":
-      return { ...state, voiceEnabled: !state.voiceEnabled };
+    case "TOGGLE_VOICE": {
+      const nextVoiceEnabled = !state.voiceEnabled;
+      return {
+        ...state,
+        voiceEnabled: nextVoiceEnabled,
+        // Turning voice off mid-buffer must release the loader; turning it on
+        // does not retroactively add latency to an already-visible dialogue.
+        isAudioBuffering: nextVoiceEnabled ? state.isAudioBuffering : false,
+      };
+    }
 
     case "TOGGLE_AUTOPLAY":
       return { ...state, autoplayEnabled: !state.autoplayEnabled };
@@ -158,6 +178,7 @@ export function assistantReducer(
               ? null
               : cooldownUntilMs,
         isGenerating: false,
+        isAudioBuffering: false,
         currentDialogue: null,
         currentLineIndex: 0,
         warning: null,

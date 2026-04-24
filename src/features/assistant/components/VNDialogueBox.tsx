@@ -163,8 +163,16 @@ export default function VNDialogueBox({ compact }: VNDialogueBoxProps) {
     }
   }, [state.isOpen, state.isMinimized, dialogue, handleClick, dismissDialogue]);
 
-  // Loading state — either no dialogue yet, or streaming started with 0 lines
-  if (state.isGenerating && (!dialogue || dialogue.lines.length === 0)) {
+  // Loading state — three cases:
+  //   1. Streaming kicked off but no lines have arrived yet.
+  //   2. Lines arrived but we are still prefetching the first line's audio
+  //      (so the dialogue overlay does not flash up silently).
+  //   3. (Edge) something dispatched a manual SET_AUDIO_BUFFERING.
+  const hasNoLinesYet = !dialogue || dialogue.lines.length === 0;
+  const isLoading =
+    (state.isGenerating && hasNoLinesYet) || state.isAudioBuffering;
+
+  if (isLoading) {
     return (
       <Box
         style={{
@@ -259,10 +267,9 @@ export default function VNDialogueBox({ compact }: VNDialogueBoxProps) {
           </Text>
         )}
 
-        {/* Advance indicator */}
+        {/* Advance indicator (mid-dialogue blinking chevron) */}
         {isDone && !isLastLine && <AdvanceIndicator />}
 
-        {/* Advance indicator */}
         {/* Bottom row: shortcut hint left, click to close right */}
         <Box style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
           <Text

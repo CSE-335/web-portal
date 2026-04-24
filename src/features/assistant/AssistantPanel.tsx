@@ -68,16 +68,23 @@ export default function AssistantPanel() {
   }, [pathname, stop, dismissDialogue]);
 
   // Key distinction:
-  // - "isOpen" = the player opened the tutor via the toolbar (game events no longer auto-open)
-  // - "hasDialogue" = there's actual content to display
-  // The VN overlay only shows when BOTH are true.
-  // The chat input shows whenever the panel is open (even without dialogue).
+  // - "isOpen"          = the player opened the tutor via the toolbar
+  // - "hasDialogue"     = the assistant has content to show
+  // - "hasReadyDialogue"= content + first-line audio is ready to play
+  //
+  // The VN overlay only shows when content is READY, so the latency of
+  // fetching the first TTS clip stays inside the loading pill instead of
+  // creating a silent gap at the start of the spoken dialogue.
   const hasDialogue =
     state.currentDialogue !== null && state.currentDialogue.lines.length > 0;
-  const showOverlay = state.isOpen && !state.isMinimized && hasDialogue;
-  const showPill = state.isOpen && state.isMinimized && hasDialogue;
+  const isWaitingForAudio = state.isAudioBuffering;
+  const hasReadyDialogue = hasDialogue && !isWaitingForAudio;
+  const isLoading = state.isGenerating || isWaitingForAudio;
+
+  const showOverlay = state.isOpen && !state.isMinimized && hasReadyDialogue;
+  const showPill = state.isOpen && state.isMinimized && hasReadyDialogue;
   const showChatOnly =
-    state.isOpen && !state.isMinimized && !hasDialogue && !state.isGenerating;
+    state.isOpen && !state.isMinimized && !hasDialogue && !isLoading;
   const showErrorBanner = Boolean(state.error);
   const showWarningBanner = Boolean(state.warning);
   const voiceCooldownSeconds = useSecondsRemainingUntil(
@@ -93,12 +100,13 @@ export default function AssistantPanel() {
   if (
     !showOverlay &&
     !showPill &&
-    !(state.isGenerating && state.isOpen) &&
+    !(isLoading && state.isOpen) &&
     !showChatOnly &&
-    !showErrorBanner
-    && !showWarningBanner
-  )
+    !showErrorBanner &&
+    !showWarningBanner
+  ) {
     return null;
+  }
 
   // Figure out who's currently speaking
   const currentLine = state.currentDialogue?.lines[state.currentLineIndex];
@@ -135,18 +143,18 @@ export default function AssistantPanel() {
               styles={{ root: { width: "100%" } }}
             >
               {state.error}
-              {assistantCooldownSeconds != null
-                && assistantCooldownSeconds > 0 && (
-                <Text size="sm" mt={8} c="dimmed">
-                  Try again in {assistantCooldownSeconds}s
-                </Text>
-              )}
-              {assistantCooldownSeconds === 0
-                && state.errorCooldownUntilMs != null && (
-                <Text size="sm" mt={8} c="dimmed">
-                  You can send another message now.
-                </Text>
-              )}
+              {assistantCooldownSeconds != null &&
+                assistantCooldownSeconds > 0 && (
+                  <Text size="sm" mt={8} c="dimmed">
+                    Try again in {assistantCooldownSeconds}s
+                  </Text>
+                )}
+              {assistantCooldownSeconds === 0 &&
+                state.errorCooldownUntilMs != null && (
+                  <Text size="sm" mt={8} c="dimmed">
+                    You can send another message now.
+                  </Text>
+                )}
             </Alert>
           )}
 
@@ -170,13 +178,13 @@ export default function AssistantPanel() {
                   Cloud voice quota resets in {voiceCooldownSeconds}s
                 </Text>
               )}
-              {voiceCooldownSeconds === 0
-                && state.warningCooldownUntilMs != null && (
-                <Text size="sm" mt={8} c="dimmed">
-                  Cloud voice should be available again; new lines will try it
-                  automatically.
-                </Text>
-              )}
+              {voiceCooldownSeconds === 0 &&
+                state.warningCooldownUntilMs != null && (
+                  <Text size="sm" mt={8} c="dimmed">
+                    Cloud voice should be available again; new lines will try
+                    it automatically.
+                  </Text>
+                )}
             </Alert>
           )}
         </Box>
@@ -199,8 +207,11 @@ export default function AssistantPanel() {
         )}
       </Transition>
 
-      {/* Loading indicator (no overlay, just a small pill) */}
-      {state.isGenerating && !hasDialogue && state.isOpen && (
+      {/* Loading indicator (no overlay, just a small pill).
+          Stays visible while the assistant is streaming AND while we are
+          prefetching the first line's audio, so the dialogue overlay never
+          appears in awkward silence. */}
+      {isLoading && !hasReadyDialogue && state.isOpen && (
         <Box
           style={{
             position: "fixed",

@@ -65,6 +65,13 @@ export interface AssistantState {
   isOpen: boolean;
   isMinimized: boolean;
   isGenerating: boolean;
+  /**
+   * True while we are still fetching/decoding the audio for the FIRST line of a
+   * brand-new dialogue (and voice is enabled). The dialogue overlay stays hidden
+   * during this window so the latency lives in the "twins are discussing..."
+   * loading state instead of in awkward silence at the start of the dialogue.
+   */
+  isAudioBuffering: boolean;
   currentDialogue: AssistantResponse | null;
   currentLineIndex: number;
   autoplayEnabled: boolean;
@@ -87,6 +94,7 @@ export type AssistantAction =
   | { type: "MAXIMIZE" }
   | { type: "RESET_CONVERSATION" }
   | { type: "SET_GENERATING"; payload: boolean }
+  | { type: "SET_AUDIO_BUFFERING"; payload: boolean }
   | { type: "SET_DIALOGUE"; payload: AssistantResponse }
   | { type: "START_STREAMING" }
   | { type: "APPEND_LINES"; payload: DialogueLine[] }
