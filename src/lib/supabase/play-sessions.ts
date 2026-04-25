@@ -16,7 +16,7 @@ export async function recordPlaySession(
 
   const { data, error } = await supabase
     .from("play_sessions")
-    .insert({ user_id: user.id, game_slug: gameSlug } as never)
+    .insert({ user_id: user.id, game_slug: gameSlug })
     .select("id")
     .single();
 
@@ -43,7 +43,7 @@ export async function endPlaySession(
 
   const { error } = await supabase
     .from("play_sessions")
-    .update({ ended_at: now, duration_seconds: durationSeconds } as never)
+    .update({ ended_at: now, duration_seconds: durationSeconds })
     .eq("id", sessionId);
 
   return { error: error?.message ?? null };

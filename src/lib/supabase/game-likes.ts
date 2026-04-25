@@ -31,7 +31,7 @@ export async function toggleGameLike(
 
   const { error } = await supabase
     .from("game_likes")
-    .insert({ user_id: user.id, game_slug: gameSlug } as never);
+    .insert({ user_id: user.id, game_slug: gameSlug });
   return { liked: true, error: error?.message ?? null };
 }
 

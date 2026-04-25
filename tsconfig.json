@@ -27,8 +27,18 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    "**/*.mts",
+    ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "games", "packages"]
+  "exclude": [
+    "node_modules",
+    "games",
+    "packages",
+    ".game-sources",
+    ".next/dev",
+    "public/staticGames",
+    "public/gameThumbnails",
+    "coverage",
+    "storybook-static"
+  ]
 }

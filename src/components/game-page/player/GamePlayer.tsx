@@ -26,9 +26,9 @@ export default function GamePlayer({
   return (
     <Paper
       component="section"
-      radius={{ base: 16, md: 28 }}
       style={{
         overflow: "hidden",
+        borderRadius: "clamp(16px, 3vw, 28px)",
         background: "var(--player-bg)",
         border: "1px solid var(--player-border)",
         boxShadow: "var(--shadow-card)",
