@@ -34,6 +34,11 @@ export default async function GamePage({ params }: GamePageProps) {
     notFound();
   }
 
+  const embedHeight =
+    game.slug === "circuit-breaker"
+      ? "clamp(560px, 72dvh, 680px)"
+      : game.embedHeight ?? "clamp(360px, 68dvh, 800px)";
+
   return (
     <main>
       <GameTokenProvider />
@@ -44,7 +49,7 @@ export default async function GamePage({ params }: GamePageProps) {
         title={game.title}
         subject={game.subject}
         iframeSrc={game.iframeSrc}
-        embedHeight="clamp(360px, 68dvh, 800px)"
+        embedHeight={embedHeight}
       />
 
       <Stack component="section" gap="lg" mt="lg">
