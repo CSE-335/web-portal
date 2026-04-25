@@ -323,9 +323,14 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
   const utteranceEpochRef = useRef(0);
   const ttsFetchAbortRef = useRef<AbortController | null>(null);
 
-  // ---- Prefetch cache & controller ------------------------------------
+  // ---- Prefetch cache & in-flight tracking ----------------------------
+  // Audio blobs by line key, populated by background prefetches.
   const audioCacheRef = useRef(new Map<string, Blob>());
-  const prefetchAbortRef = useRef<AbortController | null>(null);
+  // In-flight prefetches by line key. We track each one independently so
+  // starting a prefetch for line N+2 does NOT abort the prefetch for N+1.
+  const inFlightPrefetchesRef = useRef(
+    new Map<string, { ac: AbortController; promise: Promise<void> }>(),
+  );
 
   useEffect(() => {
     const hasWebSpeech =
@@ -347,12 +352,47 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
     dispatch({ type: "SET_AUDIO_BUFFERING", payload: false });
   }, [dispatch]);
 
-  /** Kick off a background prefetch for a line (if not already cached). */
+  /**
+   * Kick off a background prefetch for a line. Multiple prefetches may run
+   * concurrently — we never abort an in-flight prefetch because of a sibling.
+   * Already-cached or already-in-flight lines are no-ops.
+   */
   const prefetchLine = useCallback((line: DialogueLine) => {
-    prefetchAbortRef.current?.abort();
+    const key = audioCacheKey(line);
+    if (audioCacheRef.current.has(key)) return;
+    if (inFlightPrefetchesRef.current.has(key)) return;
+
     const ac = new AbortController();
-    prefetchAbortRef.current = ac;
-    prefetchAudioBlob(line, audioCacheRef.current, ac.signal);
+    const promise = prefetchAudioBlob(
+      line,
+      audioCacheRef.current,
+      ac.signal,
+    ).finally(() => {
+      // Remove ourselves from the in-flight map only if we're still the
+      // entry for this key (defensive — never happens in practice because
+      // we early-return above on duplicate calls).
+      const entry = inFlightPrefetchesRef.current.get(key);
+      if (entry?.ac === ac) inFlightPrefetchesRef.current.delete(key);
+    });
+    inFlightPrefetchesRef.current.set(key, { ac, promise });
+  }, []);
+
+  /** Prefetch every upcoming line in a dialogue, in parallel. */
+  const prefetchUpcoming = useCallback(
+    (dialogue: AssistantResponse, fromIndex: number) => {
+      for (let i = fromIndex; i < dialogue.lines.length; i++) {
+        prefetchLine(dialogue.lines[i]);
+      }
+    },
+    [prefetchLine],
+  );
+
+  /** Abort and clear every in-flight prefetch (used on dialogue change / unmount). */
+  const cancelAllPrefetches = useCallback(() => {
+    for (const { ac } of inFlightPrefetchesRef.current.values()) {
+      ac.abort();
+    }
+    inFlightPrefetchesRef.current.clear();
   }, []);
 
   const speakLine = useCallback(
@@ -368,7 +408,21 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
 
       // Check prefetch cache — consume entry so stale blobs don't linger.
       const cacheKey = audioCacheKey(line);
-      const cachedBlob = audioCacheRef.current.get(cacheKey);
+      let cachedBlob = audioCacheRef.current.get(cacheKey);
+
+      // Cache miss but a prefetch IS in flight → wait for it instead of
+      // starting a duplicate fetch. This is the key fix for the click-fast
+      // lag: when the user advances before the prefetch finishes, we await
+      // the existing prefetch (almost done) rather than starting a fresh
+      // 1-2 s round trip.
+      if (!cachedBlob) {
+        const inFlight = inFlightPrefetchesRef.current.get(cacheKey);
+        if (inFlight) {
+          await inFlight.promise;
+          if (isStaleUtterance(utteranceEpoch, utteranceEpochRef)) return;
+          cachedBlob = audioCacheRef.current.get(cacheKey);
+        }
+      }
       if (cachedBlob) audioCacheRef.current.delete(cacheKey);
 
       let signaledStart = false;
@@ -486,10 +540,9 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
     // Abort the in-flight TTS fetch (for the current line being spoken).
     ttsFetchAbortRef.current?.abort();
     ttsFetchAbortRef.current = null;
-    // Abort any background prefetch but keep the cache — the already-fetched
-    // blob is still valid if the user paused/unpaused or changed lines.
-    prefetchAbortRef.current?.abort();
-    prefetchAbortRef.current = null;
+    // Do NOT abort the prefetch — it's fetching the NEXT line's audio. If the
+    // user is clicking quickly to advance, we want that blob to finish so the
+    // next line can play instantly from cache.
     utteranceEpochRef.current += 1;
     isPlayingRef.current = false;
     const a = activeAudioRef.current;
@@ -521,6 +574,8 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
     if (!state.voiceEnabled || !state.currentDialogue || !state.isOpen) {
       spokenLineRef.current = undefined;
       spokenDialogueRef.current = null;
+      cancelAllPrefetches();
+      audioCacheRef.current.clear();
       if (state.isAudioBuffering) clearAudioBuffer();
       return;
     }
@@ -538,8 +593,9 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
       state.currentLineIndex === 0;
 
     // When the dialogue identity changes, invalidate the entire cache
-    // (the new exchange has different lines).
+    // and cancel any in-flight prefetches from the previous exchange.
     if (spokenDialogueRef.current !== state.currentDialogue) {
+      cancelAllPrefetches();
       audioCacheRef.current.clear();
     }
 
@@ -549,10 +605,10 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
     const epochAtStart = utteranceEpochRef.current;
     isPlayingRef.current = true;
 
-    // Prefetch the NEXT line in the background while we speak this one.
-    const nextLine =
-      state.currentDialogue.lines[state.currentLineIndex + 1];
-    if (nextLine) prefetchLine(nextLine);
+    // Prefetch ALL upcoming lines in parallel (dialogues are short, ~2-6 lines).
+    // This means even if the player clicks rapidly through the dialogue, the
+    // audio for the line they jump to is almost always already cached.
+    prefetchUpcoming(state.currentDialogue, state.currentLineIndex + 1);
 
     speakLine(line, {
       onAudioStarted: isFirstLineOfNewDialogue ? clearAudioBuffer : undefined,
@@ -573,7 +629,8 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
     stop,
     advanceLine,
     clearAudioBuffer,
-    prefetchLine,
+    prefetchUpcoming,
+    cancelAllPrefetches,
   ]);
 
   useEffect(() => {
@@ -583,9 +640,10 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
   useEffect(() => {
     return () => {
       stop();
+      cancelAllPrefetches();
       audioCacheRef.current.clear();
     };
-  }, [stop]);
+  }, [stop, cancelAllPrefetches]);
 
   return { isSupported, isSpeaking, playDialogue, stop, voices };
 }

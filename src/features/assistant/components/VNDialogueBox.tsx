@@ -20,6 +20,7 @@ function useTypewriter(text: string, speed: number = 25) {
   const [displayed, setDisplayed] = useState("");
   const [isDone, setIsDone] = useState(false);
   const indexRef = useRef(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     setDisplayed("");
@@ -37,15 +38,28 @@ function useTypewriter(text: string, speed: number = 25) {
         setDisplayed(text);
         setIsDone(true);
         clearInterval(timer);
+        timerRef.current = null;
       } else {
         setDisplayed(text.slice(0, indexRef.current));
       }
     }, speed);
+    timerRef.current = timer;
 
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(timer);
+      timerRef.current = null;
+    };
   }, [text, speed]);
 
+  // CRITICAL: clear the interval AND advance indexRef to the end. Otherwise
+  // the next interval tick (~20 ms) would overwrite `displayed` with a
+  // partial slice and the skip would visually do nothing.
   const skipToEnd = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    indexRef.current = text.length;
     setDisplayed(text);
     setIsDone(true);
   }, [text]);
@@ -122,8 +136,12 @@ export default function VNDialogueBox({ compact }: VNDialogueBoxProps) {
 
   // Current line being displayed
   const currentLine = dialogue?.lines[state.currentLineIndex];
+  // During streaming, more lines may still arrive — the current "last" index
+  // is only truly final once streaming has finished.
   const isLastLine =
-    dialogue != null && state.currentLineIndex >= dialogue.lines.length - 1;
+    dialogue != null &&
+    !state.isGenerating &&
+    state.currentLineIndex >= dialogue.lines.length - 1;
 
   // Typewriter effect
   const { displayed, isDone, skipToEnd } = useTypewriter(
@@ -131,16 +149,25 @@ export default function VNDialogueBox({ compact }: VNDialogueBoxProps) {
     20
   );
 
-  // Click handler: if typing → skip to end, if done → advance or dismiss
+  // Click handler:
+  //   1. Typing in progress → skip typewriter to end of this line.
+  //   2. Typewriter done + more lines → advance to next line.
+  //   3. Typewriter done + last line (and not streaming) → dismiss.
+  //   4. Typewriter done + looks like last but streaming → just skip (no-op,
+  //      wait for next line to arrive).
   const handleClick = useCallback(() => {
     if (!isDone) {
       skipToEnd();
     } else if (isLastLine) {
       dismissDialogue();
-    } else {
+    } else if (
+      dialogue &&
+      state.currentLineIndex < dialogue.lines.length - 1
+    ) {
       advanceLine();
     }
-  }, [isDone, isLastLine, skipToEnd, advanceLine, dismissDialogue]);
+    // else: streaming but no next line yet — do nothing, wait for it.
+  }, [isDone, isLastLine, skipToEnd, advanceLine, dismissDialogue, dialogue, state.currentLineIndex]);
 
   // Keyboard: space/enter to advance (skip when user is typing in an input)
   useEffect(() => {
