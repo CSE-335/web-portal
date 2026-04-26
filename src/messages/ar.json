@@ -60,6 +60,7 @@
   },
   "profilePage": {
     "editProfile": "تعديل الملف الشخصي",
+    "locationUnknown": "الموقع غير معروف",
     "stats": "الإحصاءات",
     "memberFor": "عضو منذ",
     "today": "اليوم",

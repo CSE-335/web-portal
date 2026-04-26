@@ -60,6 +60,7 @@
   },
   "profilePage": {
     "editProfile": "Редактировать профиль",
+    "locationUnknown": "Местоположение неизвестно",
     "stats": "Статистика",
     "memberFor": "Участник",
     "today": "Сегодня",

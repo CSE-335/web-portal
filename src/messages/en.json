@@ -54,6 +54,7 @@
   },
   "profilePage": {
     "editProfile": "Edit profile",
+    "locationUnknown": "Location Unknown",
     "stats": "Stats",
     "memberFor": "Member for",
     "today": "Today",

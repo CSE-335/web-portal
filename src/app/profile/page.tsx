@@ -84,7 +84,8 @@ export default function ProfilePage() {
   const displayName = profile?.display_name || user.user_metadata?.display_name || generateUsername(user.id);
   const avatarUrl = profile?.avatar_url || user.user_metadata?.avatar_url || "/images/bobcat.png";
   const bannerUrl = profile?.banner_url || null;
-  const locale = profile?.locale || null;
+  const locale = profile?.locale?.trim() || null;
+  const locationLabel = locale || t('locationUnknown');
   const memberSince = user.created_at ? new Date(user.created_at) : new Date();
   const memberDays = Math.floor((now - memberSince.getTime()) / 86400000);
   const lastPlayed = recentActivity.length > 0 ? getGameBySlug(recentActivity[0].game_slug) : null;
@@ -142,20 +143,18 @@ export default function ProfilePage() {
           </Box>
 
           {/* User info */}
-          <Stack gap={3} pb={6}>
+          <Stack gap={4} pb={2} style={{ minWidth: 0, flex: "1 1 auto" }}>
             <Title order={2} style={{ ...font, color: "var(--text-primary)", fontWeight: 700, fontSize: 26, lineHeight: 1.1 }}>
               {displayName}
             </Title>
-            {locale && (
-              <Group gap={4}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ color: "var(--text-secondary)" }} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-                <Text style={{ ...font, color: "var(--text-secondary)", fontSize: 13 }}>{locale}</Text>
-              </Group>
-            )}
-            <Text style={{ ...font, color: "var(--text-muted)", fontSize: 12 }}>{user.email}</Text>
+            <Group gap={5} wrap="nowrap" style={{ color: "var(--text-secondary)", minWidth: 0 }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style={{ flexShrink: 0 }}>
+                <path d="M12 2C8.14 2 5 5.14 5 9c0 5.25 6.1 12.26 6.36 12.56a.86.86 0 0 0 1.28 0C12.9 21.26 19 14.25 19 9c0-3.86-3.14-7-7-7Zm0 9.8A2.8 2.8 0 1 1 12 6.2a2.8 2.8 0 0 1 0 5.6Z" />
+              </svg>
+              <Text style={{ ...font, color: "var(--text-secondary)", fontSize: 13, fontWeight: 500 }} lineClamp={1}>
+                {locationLabel}
+              </Text>
+            </Group>
           </Stack>
 
           {/* Edit button */}

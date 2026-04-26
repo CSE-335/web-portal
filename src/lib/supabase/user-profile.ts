@@ -37,7 +37,7 @@ export function getUsernameChecks(username: string): UsernameChecks {
   return {
     hasMinLength: username.length >= USERNAME_MIN,
     hasMaxLength: username.length <= USERNAME_MAX,
-    validChars: USERNAME_REGEX.test(username) || username.length === 0,
+    validChars: username.length > 0 && USERNAME_REGEX.test(username),
     appropriate: isUsernameAppropriate(username),
   };
 }

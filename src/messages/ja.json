@@ -60,6 +60,7 @@
   },
   "profilePage": {
     "editProfile": "プロフィールを編集",
+    "locationUnknown": "場所不明",
     "stats": "統計",
     "memberFor": "メンバー歴",
     "today": "今日",

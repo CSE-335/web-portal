@@ -1,4 +1,5 @@
 'use client';
+import { useEffect, useState } from "react";
 import { useComputedColorScheme, useMantineColorScheme } from "@mantine/core";
 
 function SunIcon({ active }: { active: boolean }) {
@@ -37,7 +38,11 @@ function MoonIcon({ active }: { active: boolean }) {
 export default function ThemeToggle() {
   const { setColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme("dark", { getInitialValueInEffect: true });
-  const isDark = computedColorScheme === "dark";
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  // Always render as dark on server/first paint to avoid hydration mismatch
+  const isDark = !mounted || computedColorScheme === "dark";
 
   return (
     <button

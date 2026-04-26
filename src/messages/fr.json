@@ -60,6 +60,7 @@
   },
   "profilePage": {
     "editProfile": "Modifier le profil",
+    "locationUnknown": "Lieu inconnu",
     "stats": "Statistiques",
     "memberFor": "Membre depuis",
     "today": "Aujourd'hui",
