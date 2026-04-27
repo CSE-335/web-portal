@@ -9,7 +9,6 @@ import { useAssistant } from "@/features/assistant";
 
 type ToolbarButtonsProps = {
   slug: string;
-  iframeSrc: string;
   embedRef: RefObject<HTMLDivElement | null>;
 };
 
@@ -44,12 +43,12 @@ function ToolbarAction({
   );
 }
 
-export default function ToolbarButtons({ slug, iframeSrc, embedRef }: ToolbarButtonsProps) {
+export default function ToolbarButtons({ slug, embedRef }: ToolbarButtonsProps) {
   const [liked, setLiked] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
   const { state, dispatch } = useAssistant();
+  const isMuted = !state.voiceEnabled;
 
   useEffect(() => {
     const onChange = () => setIsFullscreen(!!document.fullscreenElement);
@@ -100,7 +99,7 @@ export default function ToolbarButtons({ slug, iframeSrc, embedRef }: ToolbarBut
       </ToolbarAction>
       <ToolbarAction
         label={isMuted ? "Unmute" : "Mute"}
-        onClick={() => setIsMuted(!isMuted)}
+        onClick={() => dispatch({ type: "TOGGLE_VOICE" })}
         style={isMuted ? { background: "rgba(27, 65, 255, 0.4)", border: "1px solid rgba(27, 65, 255, 0.6)" } : undefined}
       >
         <Image src={isMuted ? "/images/mute.svg" : "/images/unmute.svg"} alt="" width={22} height={22} aria-hidden />

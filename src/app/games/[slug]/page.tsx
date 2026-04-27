@@ -36,7 +36,7 @@ export default async function GamePage({ params }: GamePageProps) {
 
   const embedHeight =
     game.slug === "circuit-breaker"
-      ? "clamp(560px, 72dvh, 680px)"
+      ? "clamp(620px, calc(100dvh - 132px), 820px)"
       : game.embedHeight ?? "clamp(360px, 68dvh, 800px)";
 
   return (

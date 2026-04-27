@@ -571,9 +571,21 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
   autoplayRef.current = state.autoplayEnabled;
 
   useEffect(() => {
-    if (!state.voiceEnabled || !state.currentDialogue || !state.isOpen) {
+    if (!state.currentDialogue || !state.isOpen) {
       spokenLineRef.current = undefined;
       spokenDialogueRef.current = null;
+      stop();
+      cancelAllPrefetches();
+      audioCacheRef.current.clear();
+      if (state.isAudioBuffering) clearAudioBuffer();
+      return;
+    }
+
+    if (!state.voiceEnabled) {
+      spokenDialogueRef.current = state.currentDialogue;
+      spokenLineRef.current =
+        state.currentDialogue.lines[state.currentLineIndex];
+      stop();
       cancelAllPrefetches();
       audioCacheRef.current.clear();
       if (state.isAudioBuffering) clearAudioBuffer();
@@ -638,10 +650,11 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
   }, [state.currentDialogue, isSpeaking, stop]);
 
   useEffect(() => {
+    const audioCache = audioCacheRef.current;
     return () => {
       stop();
       cancelAllPrefetches();
-      audioCacheRef.current.clear();
+      audioCache.clear();
     };
   }, [stop, cancelAllPrefetches]);
 

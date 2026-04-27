@@ -9,7 +9,6 @@ type GameToolbarProps = {
   slug: string;
   title: string;
   subject: string;
-  iframeSrc: string;
   embedRef: RefObject<HTMLDivElement | null>;
 };
 
@@ -17,7 +16,6 @@ export default function GameToolbar({
   slug,
   title,
   subject,
-  iframeSrc,
   embedRef,
 }: GameToolbarProps) {
   const t = useTranslations("common");
@@ -55,7 +53,7 @@ export default function GameToolbar({
         >
           {returnLabel}
         </Button>
-        <ToolbarButtons slug={slug} iframeSrc={iframeSrc} embedRef={embedRef} />
+        <ToolbarButtons slug={slug} embedRef={embedRef} />
       </Group>
     </Flex>
   );

@@ -49,7 +49,7 @@ export default function GamePlayer({
         </Box>
       </Box>
 
-      <GameToolbar slug={slug} title={title} subject={subject} iframeSrc={iframeSrc} embedRef={embedRef} />
+      <GameToolbar slug={slug} title={title} subject={subject} embedRef={embedRef} />
     </Paper>
   );
 }
