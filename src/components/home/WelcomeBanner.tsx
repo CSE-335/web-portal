@@ -5,7 +5,7 @@ import Image from "next/image";
 export default function WelcomeBanner() {
   const t = useTranslations('home');
   return (
-    <section className="llnl-banner mb-8 rounded-[20px] px-6 py-6" style={{ background: "var(--surface-banner)", border: "1px solid var(--card-border)", boxShadow: "var(--shadow-card)" }}>
+    <section className="llnl-banner mb-6 rounded-[20px] px-6 py-6" style={{ background: "var(--surface-banner)", border: "1px solid var(--card-border)", boxShadow: "var(--shadow-card)" }}>
       <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-4">
           <Image
