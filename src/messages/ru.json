@@ -2,7 +2,10 @@
   "nav": {
     "searchPlaceholder": "Поиск STEM-игр...",
     "logIn": "Войти",
-    "language": "Язык"
+    "language": "Язык",
+    "toggleTheme": "Переключить цветовую схему",
+    "favorites": "Избранное",
+    "account": "Аккаунт"
   },
   "footer": {
     "links": {
@@ -126,14 +129,18 @@
     "play": "Играть",
     "randomGame": "Случайная игра",
     "backToTop": "Наверх",
-    "educational": "Образовательный"
+    "educational": "Образовательный",
+    "returnToMain": "Вернуться на главную"
   },
   "home": {
     "welcome1": "Добро пожаловать в LLNL",
     "welcome2": "STEM-игры",
     "interactiveLearning": "Интерактивное обучение",
     "saveProgress": "Сохраняйте прогресс",
-    "playAnyDevice": "Играйте на любом устройстве"
+    "playAnyDevice": "Играйте на любом устройстве",
+    "quickPlayTitle": "Быстрая игра",
+    "quickPlayDescription": "Найдите игру по названию, затем выберите подходящий результат.",
+    "quickPlayNoResults": "Игры не найдены. Попробуйте другой запрос."
   },
   "gameCard": {
     "tags": "Теги",

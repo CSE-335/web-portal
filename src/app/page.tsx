@@ -1,5 +1,6 @@
 import { Stack } from "@mantine/core";
 import WelcomeBanner from "@/components/home/WelcomeBanner";
+import QuickPlaySearch from "@/components/home/QuickPlaySearch";
 import GameListCard from "@/components/home/GameListCard";
 import BottomButtons from "@/components/layout/BottomButtons";
 import { games } from "@/data/games";
@@ -18,6 +19,7 @@ export default async function HomePage() {
   return (
     <main>
       <WelcomeBanner />
+      <QuickPlaySearch games={localizedGames} />
 
       <Stack gap="lg" className="flex-1">
         {localizedGames.map((game) => (

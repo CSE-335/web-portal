@@ -1,5 +1,7 @@
 import { type RefObject } from "react";
-import { Flex } from "@mantine/core";
+import Link from "next/link";
+import { Button, Flex, Group } from "@mantine/core";
+import { useTranslations } from "next-intl";
 import ToolbarInfo from "./toolbar/ToolbarInfo";
 import ToolbarButtons from "./toolbar/ToolbarButtons";
 
@@ -18,6 +20,9 @@ export default function GameToolbar({
   iframeSrc,
   embedRef,
 }: GameToolbarProps) {
+  const t = useTranslations("common");
+  const returnLabel = t("returnToMain");
+
   return (
     <Flex
       direction={{ base: "column", md: "row" }}
@@ -32,7 +37,26 @@ export default function GameToolbar({
       }}
     >
       <ToolbarInfo title={title} subject={subject} />
-      <ToolbarButtons slug={slug} iframeSrc={iframeSrc} embedRef={embedRef} />
+      <Group gap="xs" wrap="wrap" justify="flex-end">
+        <Button
+          component={Link}
+          href="/"
+          variant="default"
+          radius="xl"
+          size="sm"
+          title={returnLabel}
+          styles={{
+            root: {
+              background: "var(--toolbar-btn-bg)",
+              border: "1px solid var(--toolbar-btn-border)",
+              color: "white",
+            },
+          }}
+        >
+          {returnLabel}
+        </Button>
+        <ToolbarButtons slug={slug} iframeSrc={iframeSrc} embedRef={embedRef} />
+      </Group>
     </Flex>
   );
 }

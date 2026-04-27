@@ -2,7 +2,10 @@
   "nav": {
     "searchPlaceholder": "Rechercher des jeux STEM...",
     "logIn": "Se connecter",
-    "language": "Langue"
+    "language": "Langue",
+    "toggleTheme": "Changer le thème",
+    "favorites": "Favoris",
+    "account": "Compte"
   },
   "footer": {
     "links": {
@@ -127,14 +130,18 @@
     "play": "Jouer",
     "randomGame": "Jeu aléatoire",
     "backToTop": "Haut de la page",
-    "educational": "Éducatif"
+    "educational": "Éducatif",
+    "returnToMain": "Retour à la page principale"
   },
   "home": {
     "welcome1": "Bienvenue sur LLNL",
     "welcome2": "Jeux STEM",
     "interactiveLearning": "Apprentissage interactif",
     "saveProgress": "Sauvegardez votre progression",
-    "playAnyDevice": "Jouez sur n'importe quel appareil"
+    "playAnyDevice": "Jouez sur n'importe quel appareil",
+    "quickPlayTitle": "Jeu rapide",
+    "quickPlayDescription": "Recherchez un jeu par nom, puis choisissez un résultat correspondant.",
+    "quickPlayNoResults": "Aucun jeu trouvé. Essayez une autre recherche."
   },
   "gameCard": {
     "tags": "Tags",

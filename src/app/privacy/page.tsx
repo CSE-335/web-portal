@@ -1,41 +1,39 @@
 import { Container, Stack, Title, Text, List, ListItem } from "@mantine/core";
+import { pageTheme } from "@/lib/theme/pageTheme";
 
 
 const sectionTitleStyle = {
-  color: "white",
+  ...pageTheme.sectionTitle,
   fontSize: "22px",
-  fontWeight: "bold" as const,
-  marginTop: "8px",
 };
 
 const subTitleStyle = {
-  color: "#D1D5DB",
+  ...pageTheme.subTitle,
   fontSize: "17px",
-  fontWeight: "bold" as const,
 };
 
 const bodyStyle = {
-  color: "#9CA3AF",
+  ...pageTheme.body,
   fontSize: "16px",
   lineHeight: "1.7",
 };
 
 const listStyle = {
-  color: "#9CA3AF",
+  ...pageTheme.list,
   fontSize: "16px",
 };
 
 const dividerStyle = {
-  borderColor: "#4B5563",
+  ...pageTheme.divider,
   margin: "8px 0",
 };
 
 export default function PrivacyPage() {
   return (
-    <div style={{ backgroundColor: "#3C4579", minHeight: "100vh", paddingTop: "40px", paddingBottom: "60px" }}>
+    <div style={pageTheme.shell}>
       <Container size="md">
         <Stack gap="xl">
-          <Title order={1} style={{ color: "white", fontSize: "32px", fontWeight: "bold", textAlign: "center" }}>
+          <Title order={1} style={{ ...pageTheme.title, fontSize: "32px", fontWeight: "bold", textAlign: "center" }}>
             Privacy Policy
           </Title>
 
@@ -123,7 +121,7 @@ export default function PrivacyPage() {
           <Stack gap="sm">
             <Title order={2} style={sectionTitleStyle}>5. Sharing of Information</Title>
             <Text style={bodyStyle}>
-              We do <strong style={{ color: "#D1D5DB" }}>not sell your personal information</strong>.
+              We do <strong style={pageTheme.strong}>not sell your personal information</strong>.
             </Text>
             <Text style={bodyStyle}>We may share your data only in the following cases:</Text>
             <List withPadding style={listStyle}>

@@ -2,7 +2,10 @@
   "nav": {
     "searchPlaceholder": "STEM गेम खोजें...",
     "logIn": "लॉग इन",
-    "language": "भाषा"
+    "language": "भाषा",
+    "toggleTheme": "रंग योजना बदलें",
+    "favorites": "पसंदीदा",
+    "account": "खाता"
   },
   "footer": {
     "links": {
@@ -126,14 +129,18 @@
     "play": "खेलें",
     "randomGame": "यादृच्छिक गेम",
     "backToTop": "शीर्ष पर वापस जाएं",
-    "educational": "शैक्षिक"
+    "educational": "शैक्षिक",
+    "returnToMain": "मुख्य पृष्ठ पर वापस जाएं"
   },
   "home": {
     "welcome1": "LLNL में आपका स्वागत है",
     "welcome2": "STEM गेम्स",
     "interactiveLearning": "इंटरैक्टिव लर्निंग",
     "saveProgress": "अपनी प्रगति सहेजें",
-    "playAnyDevice": "किसी भी उपकरण पर खेलें"
+    "playAnyDevice": "किसी भी उपकरण पर खेलें",
+    "quickPlayTitle": "त्वरित खेल",
+    "quickPlayDescription": "नाम से गेम खोजें, फिर खेलने के लिए कोई मिलान परिणाम चुनें।",
+    "quickPlayNoResults": "कोई गेम नहीं मिला। अलग खोज आज़माएं।"
   },
   "gameCard": {
     "tags": "टैग",

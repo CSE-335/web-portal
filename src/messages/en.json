@@ -2,7 +2,10 @@
   "nav": {
     "searchPlaceholder": "Search STEM games...",
     "logIn": "Log in",
-    "language": "Language"
+    "language": "Language",
+    "toggleTheme": "Toggle color scheme",
+    "favorites": "Favorites",
+    "account": "Account"
   },
   "footer": {
     "links": { "allGames": "ALL GAMES", "aboutUs": "ABOUT US", "contactUs": "CONTACT US", "privacy": "PRIVACY", "feedback": "FEEDBACK" },
@@ -121,14 +124,18 @@
     "play": "Play",
     "randomGame": "Random Game",
     "backToTop": "Back to the top",
-    "educational": "Educational"
+    "educational": "Educational",
+    "returnToMain": "Return to main page"
   },
   "home": {
     "welcome1": "Welcome to LLNL",
     "welcome2": "STEM Games",
     "interactiveLearning": "Interactive learning",
     "saveProgress": "Save your progress",
-    "playAnyDevice": "Play on any device"
+    "playAnyDevice": "Play on any device",
+    "quickPlayTitle": "Quick play",
+    "quickPlayDescription": "Search for a game by name, then pick a matching result to start playing.",
+    "quickPlayNoResults": "No games found. Try a different search."
   },
   "gameCard": {
     "tags": "Tags",

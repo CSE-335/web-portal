@@ -49,6 +49,10 @@ export default function UtilityNav({
     }
   }, []);
 
+  const languageLabel = t('language');
+  const favoritesLabel = t('favorites');
+  const accountLabel = t('account');
+
   return (
     <Group gap="sm" wrap={compact ? "wrap" : "nowrap"} ml={compact ? 0 : "auto"} justify={compact ? "center" : undefined}>
       <ThemeToggle />
@@ -63,17 +67,19 @@ export default function UtilityNav({
         width={220}
       >
         <Popover.Target>
-          <ActionIcon
-            variant="filled"
-            color="#585D92"
-            radius="xl"
-            size="xl"
-            className="btn-theme"
-            aria-label="Language"
-            onClick={() => setLangOpened((o) => !o)}
-          >
-            <FlagIcon locale={currentLocale} style={{ width: 24, borderRadius: 2, flexShrink: 0 }} />
-          </ActionIcon>
+          <span className="nav-tooltip" data-tooltip={languageLabel}>
+            <ActionIcon
+              variant="filled"
+              color="#585D92"
+              radius="xl"
+              size="xl"
+              className="btn-theme"
+              aria-label={languageLabel}
+              onClick={() => setLangOpened((o) => !o)}
+            >
+              <FlagIcon locale={currentLocale} style={{ width: 24, borderRadius: 2, flexShrink: 0 }} />
+            </ActionIcon>
+          </span>
         </Popover.Target>
         <Popover.Dropdown
           style={{
@@ -87,38 +93,42 @@ export default function UtilityNav({
         </Popover.Dropdown>
       </Popover>
 
-      <ActionIcon
-        variant="filled"
-        color="#585D92"
-        radius="xl"
-        size="xl"
-        className="btn-theme"
-        aria-label="Favorites"
-        onClick={() => router.push("/profile?tab=liked")}
-      >
-        <Image src="/images/like.svg" alt="" width={20} height={20} aria-hidden />
-      </ActionIcon>
+      <span className="nav-tooltip" data-tooltip={favoritesLabel}>
+        <ActionIcon
+          variant="filled"
+          color="#585D92"
+          radius="xl"
+          size="xl"
+          className="btn-theme"
+          aria-label={favoritesLabel}
+          onClick={() => router.push("/profile?tab=liked")}
+        >
+          <Image src="/images/like.svg" alt="" width={20} height={20} aria-hidden />
+        </ActionIcon>
+      </span>
 
       {user ? (
         <>
-          <ActionIcon
-            variant="filled"
-            color="#585D92"
-            radius="xl"
-            size="xl"
-            className="btn-theme"
-            aria-label="Account"
-            onClick={() => setProfileOpened(true)}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={avatarUrl}
-              alt="Profile"
-              width={50}
-              height={50}
-              style={{ borderRadius: "50%", objectFit: "cover" }}
-            />
-          </ActionIcon>
+          <span className="nav-tooltip" data-tooltip={accountLabel}>
+            <ActionIcon
+              variant="filled"
+              color="#585D92"
+              radius="xl"
+              size="xl"
+              className="btn-theme"
+              aria-label={accountLabel}
+              onClick={() => setProfileOpened(true)}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={avatarUrl}
+                alt="Profile"
+                width={50}
+                height={50}
+                style={{ borderRadius: "50%", objectFit: "cover" }}
+              />
+            </ActionIcon>
+          </span>
           <ProfilePopup
             opened={profileOpened}
             onClose={() => setProfileOpened(false)}
@@ -126,14 +136,17 @@ export default function UtilityNav({
           />
         </>
       ) : (
-        <Button
-          onClick={() => setLoginModalOpened(true)}
-          size="md"
-          style={{ background: BLUE_RADIAL_GRADIENT }}
-          fullWidth={compact}
-        >
-          {t('logIn')}
-        </Button>
+        <span className="nav-tooltip" data-tooltip={t('logIn')} style={compact ? { width: "100%" } : undefined}>
+          <Button
+            onClick={() => setLoginModalOpened(true)}
+            size="md"
+            className="nav-login-btn"
+            style={{ background: BLUE_RADIAL_GRADIENT }}
+            fullWidth={compact}
+          >
+            {t('logIn')}
+          </Button>
+        </span>
       )}
     </Group>
   );

@@ -2,7 +2,10 @@
   "nav": {
     "searchPlaceholder": "搜索STEM游戏...",
     "logIn": "登录",
-    "language": "语言"
+    "language": "语言",
+    "toggleTheme": "切换配色方案",
+    "favorites": "收藏",
+    "account": "账户"
   },
   "footer": {
     "links": {
@@ -126,14 +129,18 @@
     "play": "游玩",
     "randomGame": "随机游戏",
     "backToTop": "返回顶部",
-    "educational": "教育性"
+    "educational": "教育性",
+    "returnToMain": "返回主页"
   },
   "home": {
     "welcome1": "欢迎来到LLNL",
     "welcome2": "STEM游戏",
     "interactiveLearning": "互动学习",
     "saveProgress": "保存你的进度",
-    "playAnyDevice": "在任何设备上游玩"
+    "playAnyDevice": "在任何设备上游玩",
+    "quickPlayTitle": "快速游玩",
+    "quickPlayDescription": "按名称搜索游戏，然后选择匹配结果开始游玩。",
+    "quickPlayNoResults": "未找到游戏。请尝试其他搜索。"
   },
   "gameCard": {
     "tags": "标签",

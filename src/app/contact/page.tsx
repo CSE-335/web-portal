@@ -1,4 +1,5 @@
 import { Container, Stack, Title, Text, Paper, Box } from "@mantine/core";
+import { pageTheme } from "@/lib/theme/pageTheme";
 
 const contacts = [
   { name: "Arielle Talania", email: "atalania@ucmerced.edu" },
@@ -12,8 +13,7 @@ export default function ContactPage() {
   return (
     <div
       style={{
-        background: "linear-gradient(180deg, #2F356B 0%, #29315F 100%)",
-        minHeight: "100vh",
+        ...pageTheme.shell,
         paddingTop: "48px",
         paddingBottom: "72px",
       }}
@@ -24,11 +24,9 @@ export default function ContactPage() {
             <Title
               order={1}
               style={{
-                color: "white",
+                ...pageTheme.title,
                 fontSize: "48px",
-                fontWeight: 700,
                 marginBottom: "10px",
-                letterSpacing: "-0.5px",
               }}
             >
               Contact Us
@@ -38,7 +36,7 @@ export default function ContactPage() {
               style={{
                 width: "100%",
                 height: "1px",
-                backgroundColor: "rgba(255,255,255,0.22)",
+                backgroundColor: "var(--app-divider-color)",
               }}
             />
           </Box>
@@ -47,15 +45,14 @@ export default function ContactPage() {
             shadow="sm"
             radius="md"
             style={{
-              backgroundColor: "#F8FAFC",
-              border: "1px solid #D1D5DB",
+              ...pageTheme.card,
               padding: "24px 28px",
             }}
           >
             <Stack gap="md">
               <Text
                 style={{
-                  color: "#111827",
+                  color: "var(--text-primary)",
                   fontSize: "20px",
                   fontWeight: 700,
                 }}
@@ -65,9 +62,8 @@ export default function ContactPage() {
 
               <Text
                 style={{
-                  color: "#374151",
+                  ...pageTheme.body,
                   fontSize: "16px",
-                  lineHeight: 1.8,
                 }}
               >
                 Feel free to reach out to any of us for questions or concerns!
@@ -78,19 +74,14 @@ export default function ContactPage() {
                   <Text
                     key={person.email}
                     style={{
-                      color: "#374151",
+                      ...pageTheme.body,
                       fontSize: "16px",
-                      lineHeight: 1.7,
                     }}
                   >
-                    <strong style={{ color: "#111827" }}>{person.name}:</strong>{" "}
+                    <strong style={pageTheme.strong}>{person.name}:</strong>{" "}
                     <a
                       href={`mailto:${person.email}`}
-                      style={{
-                        color: "#2F5DCC",
-                        textDecoration: "none",
-                        fontWeight: 500,
-                      }}
+                      style={pageTheme.link}
                     >
                       {person.email}
                     </a>

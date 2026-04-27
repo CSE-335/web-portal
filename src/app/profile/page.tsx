@@ -26,6 +26,7 @@ import { getGameBySlug } from "@/data/games";
 import type { User } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
 import ProfilePopup from "@/components/ProfilePopup";
+import { pageTheme } from "@/lib/theme/pageTheme";
 import classes from "./profile.module.css";
 
 type UserProfileRow = Database["public"]["Tables"]["user_profiles"]["Row"];
@@ -103,7 +104,7 @@ export default function ProfilePage() {
       >
         {bannerUrl
           ? <Image src={bannerUrl} alt="Banner" fill style={{ objectFit: "cover" }} />
-          : <Box style={{ width: "100%", height: "100%", background: "linear-gradient(135deg, #1b41ff 0%, #0054f0 50%, #1a2060 100%)" }} />
+          : <Box style={{ width: "100%", height: "100%", background: "var(--profile-banner-bg)" }} />
         }
         {bannerHovered && (
           <Box style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -162,7 +163,7 @@ export default function ProfilePage() {
           <Box ml="auto" pb={8}>
             <UnstyledButton
               onClick={() => setEditDrawerOpened(true)}
-              style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 18px", borderRadius: 20, background: "linear-gradient(135deg, #2B5FFF 0%, #1B41FF 40%, #0054F0 100%)", border: "none", color: "white", boxShadow: "0 2px 8px rgba(27, 65, 255, 0.35)", ...font, fontWeight: 500, fontSize: 13, transition: "transform 0.1s ease" }}
+              style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 18px", ...pageTheme.primaryButton, boxShadow: "0 2px 8px rgba(27, 65, 255, 0.35)", ...font, fontWeight: 500, fontSize: 13, transition: "transform 0.1s ease" }}
               onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.95)")}
               onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
               onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}

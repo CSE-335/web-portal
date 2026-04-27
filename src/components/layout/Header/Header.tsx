@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Group, Burger, Drawer, Stack, Box, Button, Divider } from "@mantine/core";
 import LogoBrand from "@/components/layout/LogoBrand";
-import SearchBar from "./SearchBar";
 import UtilityNav from "./UtilityNav/UtilityNav";
 import LoginPopup from "@/components/LoginPopup";
 import { supabase } from "@/lib/supabase/client";
@@ -21,7 +20,6 @@ const MOBILE_MENU_LINKS = [
 
 export default function Header() {
   const tFooter = useTranslations("footer");
-  const [searchValue, setSearchValue] = useState("");
   const [loginModalOpened, setLoginModalOpened] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [mobileNavOpened, setMobileNavOpened] = useState(false);
@@ -72,15 +70,6 @@ export default function Header() {
           </LogoBrand>
         </Link>
 
-        <Box hiddenFrom="md" flex={1} miw={0} mx="xs" style={{ position: "relative", zIndex: 2 }}>
-          <SearchBar
-            fullWidth
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            onSelect={() => setSearchValue("")}
-          />
-        </Box>
-
         <Box hiddenFrom="md" style={{ position: "relative", zIndex: 2, pointerEvents: "auto", flexShrink: 0 }}>
           <Burger
             opened={mobileNavOpened}
@@ -92,12 +81,6 @@ export default function Header() {
         </Box>
 
         <Group visibleFrom="md" flex={1} wrap="nowrap" gap="md">
-          <SearchBar
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            onSelect={() => setSearchValue("")}
-          />
-
           <UtilityNav
             loginModalOpened={loginModalOpened}
             setLoginModalOpened={setLoginModalOpened}

@@ -24,13 +24,14 @@ export default function GameListCard({
   return (
     <article className="rounded-[20px] p-4" style={{ background: "var(--surface-card-game)", border: "1px solid var(--card-border)", boxShadow: "var(--shadow-card)" }}>
       <div className="grid gap-4 md:grid-cols-[1.05fr_1fr]">
-        <div className="relative aspect-video w-full overflow-hidden rounded-[20px] md:h-[260px] md:aspect-auto" style={{ background: "var(--card-img-bg)" }}>
+        <div className="relative h-[210px] w-full overflow-hidden rounded-[20px] md:h-[260px]" style={{ background: "var(--card-img-bg)" }}>
           <Image
             src={thumbnailSrc}
             alt={`${title} cover`}
-            fill
-            sizes="(min-width: 768px) 50vw, 100vw"
-            className="object-cover"
+            width={640}
+            height={360}
+            sizes="(min-width: 768px) 640px, 100vw"
+            className="h-full w-full object-cover"
           />
         </div>
 

@@ -2,7 +2,10 @@
   "nav": {
     "searchPlaceholder": "STEMゲームを検索...",
     "logIn": "ログイン",
-    "language": "言語"
+    "language": "言語",
+    "toggleTheme": "配色を切り替え",
+    "favorites": "お気に入り",
+    "account": "アカウント"
   },
   "footer": {
     "links": {
@@ -126,14 +129,18 @@
     "play": "プレイ",
     "randomGame": "ランダムゲーム",
     "backToTop": "トップへ戻る",
-    "educational": "教育的"
+    "educational": "教育的",
+    "returnToMain": "メインページに戻る"
   },
   "home": {
     "welcome1": "LLNLへようこそ",
     "welcome2": "STEMゲーム",
     "interactiveLearning": "インタラクティブ学習",
     "saveProgress": "進捗を保存",
-    "playAnyDevice": "どのデバイスでもプレイ"
+    "playAnyDevice": "どのデバイスでもプレイ",
+    "quickPlayTitle": "クイックプレイ",
+    "quickPlayDescription": "ゲーム名で検索し、一致する結果を選んで開始します。",
+    "quickPlayNoResults": "ゲームが見つかりません。別の検索を試してください。"
   },
   "gameCard": {
     "tags": "タグ",

@@ -35,6 +35,7 @@ function ToolbarAction({
       radius="xl"
       size={44}
       aria-label={label}
+      title={label}
       style={{ ...actionButtonStyle, ...style }}
       onClick={onClick}
     >

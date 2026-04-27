@@ -1,5 +1,6 @@
 'use client';
 import { useComputedColorScheme, useMantineColorScheme } from "@mantine/core";
+import { useTranslations } from "next-intl";
 
 function SunIcon({ active }: { active: boolean }) {
   return (
@@ -35,30 +36,33 @@ function MoonIcon({ active }: { active: boolean }) {
 }
 
 export default function ThemeToggle() {
+  const t = useTranslations("nav");
   const { setColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme("dark", { getInitialValueInEffect: true });
   const isDark = computedColorScheme === "dark";
+  const label = t("toggleTheme");
 
   return (
-    <button
-      onClick={() => setColorScheme(isDark ? "light" : "dark")}
-      aria-label="Toggle color scheme"
-      style={{
-        position: "relative",
-        width: "68px",
-        height: "34px",
-        borderRadius: "17px",
-        border: "none",
-        cursor: "pointer",
-        padding: 0,
-        background: isDark
-          ? "rgba(0,0,0,0.35)"
-          : "rgba(0,0,0,0.2)",
-        boxShadow: "inset 0 2px 4px rgba(0,0,0,0.3), 0 1px 2px rgba(255,255,255,0.1)",
-        transition: "background 0.3s ease",
-        flexShrink: 0,
-      }}
-    >
+    <span className="nav-tooltip" data-tooltip={label}>
+      <button
+        onClick={() => setColorScheme(isDark ? "light" : "dark")}
+        aria-label={label}
+        style={{
+          position: "relative",
+          width: "68px",
+          height: "34px",
+          borderRadius: "17px",
+          border: "none",
+          cursor: "pointer",
+          padding: 0,
+          background: isDark
+            ? "rgba(0,0,0,0.35)"
+            : "rgba(0,0,0,0.2)",
+          boxShadow: "inset 0 2px 4px rgba(0,0,0,0.3), 0 1px 2px rgba(255,255,255,0.1)",
+          transition: "background 0.3s ease",
+          flexShrink: 0,
+        }}
+      >
       {/* Sun icon */}
       <span style={{
         position: "absolute",
@@ -88,18 +92,19 @@ export default function ThemeToggle() {
       </span>
 
       {/* Knob */}
-      <span style={{
-        position: "absolute",
-        top: "3px",
-        left: isDark ? "calc(100% - 31px)" : "3px",
-        width: "28px",
-        height: "28px",
-        borderRadius: "50%",
-        background: "#ffffff",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1)",
-        transition: "left 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
-        zIndex: 2,
-      }} />
-    </button>
+        <span style={{
+          position: "absolute",
+          top: "3px",
+          left: isDark ? "calc(100% - 31px)" : "3px",
+          width: "28px",
+          height: "28px",
+          borderRadius: "50%",
+          background: "#ffffff",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1)",
+          transition: "left 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+          zIndex: 2,
+        }} />
+      </button>
+    </span>
   );
 }

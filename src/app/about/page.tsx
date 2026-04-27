@@ -1,4 +1,6 @@
 import { Container, Stack, Title, Text, Paper, SimpleGrid, Box } from "@mantine/core";
+import Image from "next/image";
+import { pageTheme } from "@/lib/theme/pageTheme";
 
 const teamMembers = [
   {
@@ -32,10 +34,7 @@ export default function AboutPage() {
   return (
     <div
       style={{
-        backgroundColor: "#2A305B",
-        minHeight: "100vh",
-        paddingTop: "40px",
-        paddingBottom: "60px",
+        ...pageTheme.shell,
       }}
     >
       <Container size="lg">
@@ -44,9 +43,8 @@ export default function AboutPage() {
             <Title
               order={1}
               style={{
-                color: "#111827",
+                ...pageTheme.title,
                 fontSize: "56px",
-                fontWeight: 500,
                 marginBottom: "8px",
               }}
             >
@@ -57,7 +55,7 @@ export default function AboutPage() {
               style={{
                 width: "100%",
                 height: "1px",
-                backgroundColor: "#4B5563",
+                backgroundColor: "var(--app-divider-color)",
               }}
             />
           </Box>
@@ -67,16 +65,14 @@ export default function AboutPage() {
             radius={0}
             p="xl"
             style={{
-              backgroundColor: "#F3F4F6",
-              border: "2px solid #374151",
+              ...pageTheme.card,
             }}
           >
             <Stack gap="sm">
               <Text
                 style={{
-                  color: "#111827",
+                  ...pageTheme.sectionTitle,
                   fontSize: "20px",
-                  fontWeight: 500,
                 }}
               >
                 Project Overview
@@ -84,9 +80,8 @@ export default function AboutPage() {
 
               <Text
                 style={{
-                  color: "#111827",
+                  ...pageTheme.body,
                   fontSize: "18px",
-                  lineHeight: 1.7,
                 }}
               >
                 Welcome to LLNL STEM Games! Explore short, interactive mini-games that turn core STEM ideas
@@ -105,7 +100,7 @@ export default function AboutPage() {
           <Stack gap="md">
             <Text
               style={{
-                color: "#white",
+                ...pageTheme.title,
                 fontSize: "26px",
                 fontWeight: 500,
               }}
@@ -121,8 +116,7 @@ export default function AboutPage() {
                   radius={0}
                   p="lg"
                   style={{
-                    backgroundColor: "#F9FAFB",
-                    border: "2px solid #374151",
+                    ...pageTheme.card,
                     minHeight: "340px",
                     display: "flex",
                     flexDirection: "column",
@@ -131,16 +125,18 @@ export default function AboutPage() {
                   }}
                 >
                   {member.image ? (
-                    <img
+                    <Image
                       src={member.image}
                       alt={member.name}
+                      width={110}
+                      height={110}
                       style={{
                         width: "110px",
                         height: "110px",
                         objectFit: "cover",
-                        border: "2px solid #374151",
+                        border: "2px solid var(--card-border)",
                         marginBottom: "20px",
-                        backgroundColor: "#D1D5DB",
+                        backgroundColor: "var(--card-img-bg)",
                       }}
                     />
                   ) : (
@@ -148,8 +144,8 @@ export default function AboutPage() {
                       style={{
                         width: "110px",
                         height: "110px",
-                        backgroundColor: "#D1D5DB",
-                        border: "2px solid #374151",
+                        backgroundColor: "var(--card-img-bg)",
+                        border: "2px solid var(--card-border)",
                         marginBottom: "20px",
                       }}
                     />
@@ -157,7 +153,7 @@ export default function AboutPage() {
 
                   <Text
                     style={{
-                      color: "#111827",
+                      color: "var(--text-primary)",
                       fontSize: "18px",
                       fontWeight: 500,
                       marginBottom: "14px",
@@ -171,7 +167,7 @@ export default function AboutPage() {
                       <Text
                         key={role}
                         style={{
-                          color: "#111827",
+                          color: "var(--text-body)",
                           fontSize: "16px",
                           lineHeight: 1.4,
                         }}
@@ -190,16 +186,14 @@ export default function AboutPage() {
             radius={0}
             p="xl"
             style={{
-              backgroundColor: "#F3F4F6",
-              border: "2px solid #374151",
+              ...pageTheme.card,
             }}
           >
             <Stack gap="sm">
               <Text
                 style={{
-                  color: "#111827",
+                  ...pageTheme.sectionTitle,
                   fontSize: "20px",
-                  fontWeight: 500,
                 }}
               >
                 Client Company
@@ -207,9 +201,8 @@ export default function AboutPage() {
 
               <Text
                 style={{
-                  color: "#111827",
+                  ...pageTheme.body,
                   fontSize: "18px",
-                  lineHeight: 1.7,
                 }}
               >
                 Lawrence Livermore National Laboratory (LLNL) is a federally

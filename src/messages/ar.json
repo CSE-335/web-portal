@@ -2,7 +2,10 @@
   "nav": {
     "searchPlaceholder": "ابحث عن ألعاب STEM...",
     "logIn": "تسجيل الدخول",
-    "language": "اللغة"
+    "language": "اللغة",
+    "toggleTheme": "تبديل نظام الألوان",
+    "favorites": "المفضلة",
+    "account": "الحساب"
   },
   "footer": {
     "links": {
@@ -126,14 +129,18 @@
     "play": "العب",
     "randomGame": "لعبة عشوائية",
     "backToTop": "العودة للأعلى",
-    "educational": "تعليمي"
+    "educational": "تعليمي",
+    "returnToMain": "العودة إلى الصفحة الرئيسية"
   },
   "home": {
     "welcome1": "مرحبًا بك في LLNL",
     "welcome2": "ألعاب STEM",
     "interactiveLearning": "تعلم تفاعلي",
     "saveProgress": "احفظ تقدمك",
-    "playAnyDevice": "العب على أي جهاز"
+    "playAnyDevice": "العب على أي جهاز",
+    "quickPlayTitle": "لعب سريع",
+    "quickPlayDescription": "ابحث عن لعبة بالاسم، ثم اختر نتيجة مطابقة للبدء.",
+    "quickPlayNoResults": "لم يتم العثور على ألعاب. جرّب بحثًا آخر."
   },
   "gameCard": {
     "tags": "العلامات",
