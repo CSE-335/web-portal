@@ -60,6 +60,7 @@
   },
   "profilePage": {
     "editProfile": "编辑资料",
+    "locationUnknown": "位置未知",
     "stats": "统计",
     "memberFor": "加入时间",
     "today": "今天",

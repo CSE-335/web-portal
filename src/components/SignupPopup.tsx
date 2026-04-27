@@ -14,12 +14,13 @@ import {
   Box,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { signUpNewUser, signInWithGoogle } from "@/lib/supabase/auth";
+import { signUpNewUser, signInWithGoogle, signInUser } from "@/lib/supabase/auth";
 import { validateUsername, isUsernameTaken, getUsernameChecks } from "@/lib/supabase/user-profile";
 
 interface SignupPopupProps {
   opened: boolean;
   onClose: () => void;
+  onSignupComplete?: () => void;
 }
 
 const inputWrapperStyle = {
@@ -66,10 +67,9 @@ const passwordInputStyles = {
   },
 };
 
-export default function SignupPopup({ opened, onClose }: SignupPopupProps) {
+export default function SignupPopup({ opened, onClose, onSignupComplete }: SignupPopupProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const t = useTranslations('signup');
 
   const form = useForm({
@@ -104,7 +104,6 @@ export default function SignupPopup({ opened, onClose }: SignupPopupProps) {
   const handleSubmit = async (values: typeof form.values) => {
     setIsLoading(true);
     setError(null);
-    setSuccess(null);
     try {
       // Check username uniqueness before creating account
       const taken = await isUsernameTaken(values.username);
@@ -118,10 +117,10 @@ export default function SignupPopup({ opened, onClose }: SignupPopupProps) {
       });
 
       if (result.success) {
-        // Profile is created automatically on first sign-in by ensureUserProfile(),
-        // which reads the display_name from auth user metadata set by signUpNewUser.
-        setSuccess("Account created successfully.");
+        await signInUser(values.email, values.password);
         form.reset();
+        onClose();
+        onSignupComplete?.();
       } else {
         setError(result.error ?? "Something went wrong.");
       }
@@ -187,7 +186,7 @@ export default function SignupPopup({ opened, onClose }: SignupPopupProps) {
               styles={sharedInputStyles}
             />
 
-            <Group gap={6} wrap="nowrap">
+            <Group gap={6} wrap="wrap">
               {[
                 { met: usernameChecks.hasMinLength, label: "6+ chars" },
                 { met: usernameChecks.validChars, label: "Letters, numbers, . and _" },
@@ -271,11 +270,6 @@ export default function SignupPopup({ opened, onClose }: SignupPopupProps) {
               </Text>
             )}
 
-            {success && (
-              <Text c="green.4" fz="sm">
-                {success}
-              </Text>
-            )}
           </Stack>
         </form>
 
