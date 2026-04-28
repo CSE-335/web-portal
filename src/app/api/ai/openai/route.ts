@@ -23,6 +23,7 @@ export async function POST(req: Request) {
       messages: body.messages,
       max_tokens: body.max_tokens,
       temperature: body.temperature,
+      response_format: body.response_format,
     });
 
     return NextResponse.json(completion);

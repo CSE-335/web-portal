@@ -39,7 +39,7 @@ export default function GameEmbed({
     async function loadGameData() {
       const authHeaders = await getAuthHeaders();
       if (!authHeaders) {
-        throw new Error("Failed to load game data: missing auth headers.");
+        return;
       }
 
       const loadResponse = await fetch(`/api/game-data/${slug}`, {
@@ -69,7 +69,7 @@ export default function GameEmbed({
       if (loadJson.fallbackUsed) {
         const authHeaders = await getAuthHeaders();
         if (!authHeaders) {
-          throw new Error("Failed to initialize game data: missing auth headers.");
+          return;
         }
 
         await fetch(`/api/game-data/${slug}`, {
@@ -95,7 +95,7 @@ export default function GameEmbed({
         void (async () => {
           const authHeaders = await getAuthHeaders();
           if (!authHeaders) {
-            throw new Error("Failed to save game data: missing auth headers.");
+            return;
           }
 
           await fetch(`/api/game-data/${slug}`, {
@@ -177,6 +177,36 @@ export default function GameEmbed({
             },
             gameOrigin
           );
+        })();
+      }
+
+      // AI proxy: games can request OpenAI completions through the portal
+      if (data.type === "PORTAL_AI_REQUEST" && data.requestId != null) {
+        void (async () => {
+          try {
+            const res = await fetch('/api/ai/openai', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data.payload),
+            });
+            const json = await res.json();
+            if (!res.ok) {
+              iframeRef.current?.contentWindow?.postMessage(
+                { source: data.source, requestId: data.requestId, error: json.error || 'AI request failed' },
+                gameOrigin
+              );
+              return;
+            }
+            iframeRef.current?.contentWindow?.postMessage(
+              { source: data.source, requestId: data.requestId, payload: json },
+              gameOrigin
+            );
+          } catch (err) {
+            iframeRef.current?.contentWindow?.postMessage(
+              { source: data.source, requestId: data.requestId, error: (err as Error).message },
+              gameOrigin
+            );
+          }
         })();
       }
     }
