@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useTranslations } from 'next-intl';
 import { useMantineColorScheme } from '@mantine/core';
 import { supabase } from "@/lib/supabase/client";
@@ -18,6 +19,7 @@ import {
 } from "@mantine/core";
 
 const likelihoodKeys = ['veryUnlikely', 'unlikely', 'notSure', 'likely', 'veryLikely'] as const;
+const CONTACT_TEAM_ERROR_SUFFIX = "Please contact the team for further help.";
 
 export default function FeedbackPage() {
   const t = useTranslations('feedback');
@@ -137,6 +139,8 @@ export default function FeedbackPage() {
     fontWeight: 400,
     fontSize: "13px",
   };
+
+  const showContactTeamLink = error.includes(CONTACT_TEAM_ERROR_SUFFIX);
 
   return (
     <Container size="md" py={48}>
@@ -280,7 +284,20 @@ export default function FeedbackPage() {
 
             {error && (
               <Text c="red.4" fz="sm" style={{ fontFamily: "var(--font-alexandria), sans-serif" }}>
-                {error}
+                {showContactTeamLink ? (
+                  <>
+                    {"There was an error submitting your feedback. Please contact the "}
+                    <Link
+                      href="/contact"
+                      style={{ color: "inherit", textDecoration: "underline", fontWeight: 600 }}
+                    >
+                      team
+                    </Link>
+                    {" for further help."}
+                  </>
+                ) : (
+                  error
+                )}
               </Text>
             )}
 

@@ -11,6 +11,9 @@ const feedbackSchema = z.object({
   comments: z.string().trim().max(8000).optional().default(""),
 });
 
+const EMAIL_FAILURE_MESSAGE =
+  "There was an error submitting your feedback. Please contact the team for further help.";
+
 function toReadableLikelihood(value: string) {
   if (!value) return "Not provided";
   return value
@@ -167,9 +170,20 @@ export async function POST(req: Request) {
       comments,
     });
 
+    if (!emailResult.sent) {
+      return NextResponse.json(
+        {
+          success: false,
+          emailSent: false,
+          error: EMAIL_FAILURE_MESSAGE,
+        },
+        { status: 502 }
+      );
+    }
+
     return NextResponse.json({
       success: true,
-      emailSent: emailResult.sent,
+      emailSent: true,
       message: "Feedback submitted successfully.",
     });
   } catch (error) {
