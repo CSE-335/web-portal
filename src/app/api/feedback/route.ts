@@ -1,31 +1,104 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
+
+const feedbackSchema = z.object({
+  name: z.string().trim().max(120).optional().default(""),
+  email: z.string().trim().email().max(320).optional().or(z.literal("")).default(""),
+  issues: z.string().trim().min(1).max(8000),
+  futureIdeas: z.string().trim().max(8000).optional().default(""),
+  returnLikelihood: z.string().trim().max(100).optional().default(""),
+  comments: z.string().trim().max(8000).optional().default(""),
+});
+
+function toReadableLikelihood(value: string) {
+  if (!value) return "Not provided";
+  return value
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (char) => char.toUpperCase());
+}
+
+async function resolveFeedbackRecipientEmail() {
+  const admin = getSupabaseAdmin();
+
+  const settingsKey = process.env.FEEDBACK_SETTINGS_KEY || "feedback_recipient_email";
+  const fallbackRecipient = process.env.FEEDBACK_RECIPIENT_EMAIL || "";
+
+  try {
+    const { data, error } = await admin
+      .from("app_settings")
+      .select("value")
+      .eq("key", settingsKey)
+      .maybeSingle();
+
+    if (!error && typeof data?.value === "string" && data.value.trim()) {
+      return data.value.trim();
+    }
+  } catch (error) {
+    console.warn("[feedback] failed to read recipient email from Supabase settings", error);
+  }
+
+  return fallbackRecipient.trim();
+}
+
+async function sendFeedbackEmail(payload: {
+  name: string;
+  email: string;
+  answer: string;
+  features: string;
+  returnLikelihood: string;
+  comments: string;
+}) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const fromEmail = process.env.FEEDBACK_FROM_EMAIL || "no-reply@example.com";
+  const toEmail = await resolveFeedbackRecipientEmail();
+
+  if (!apiKey || !toEmail) {
+    console.warn("[feedback] email not sent - missing RESEND_API_KEY or recipient email");
+    return { sent: false as const };
+  }
+
+  const submittedAt = new Date().toISOString();
+  const text = [
+    "New feedback submission",
+    `Submitted at: ${submittedAt}`,
+    "",
+    `Name: ${payload.name || "Not provided"}`,
+    `Email: ${payload.email || "Not provided"}`,
+    `Answer: ${payload.answer || "Not provided"}`,
+    `Features: ${payload.features || "Not provided"}`,
+    `Return likelihood: ${toReadableLikelihood(payload.returnLikelihood)}`,
+    `Comments: ${payload.comments || "Not provided"}`,
+  ].join("\n");
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: fromEmail,
+      to: [toEmail],
+      subject: "New feedback submission",
+      text,
+    }),
+  });
+
+  if (!response.ok) {
+    const details = await response.text();
+    console.error("[feedback] failed to send email", details);
+    return { sent: false as const };
+  }
+
+  return { sent: true as const };
+}
 
 const MAX_BODY_BYTES = 16 * 1024;
-const MAX_NAME_CHARS = 200;
-const MAX_EMAIL_CHARS = 254;
-const MAX_FREEFORM_CHARS = 4_000;
-const RETURN_LIKELIHOOD_VALUES = new Set([
-  "very_likely",
-  "likely",
-  "neutral",
-  "unlikely",
-  "very_unlikely",
-]);
-// Pragmatic email shape check — server side validation only, the user-facing
-// form should still validate too.
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-function clean(value: unknown, max: number): string | null {
-  if (value === undefined || value === null || value === "") return null;
-  if (typeof value !== "string") return null;
-  const trimmed = value.trim();
-  if (trimmed.length === 0) return null;
-  if (trimmed.length > max) return null;
-  return trimmed;
-}
 
 export async function POST(req: Request) {
   try {
+    // Security: validate body size before parsing
     const contentLength = Number(req.headers.get("content-length") ?? "0");
     if (contentLength > MAX_BODY_BYTES) {
       return NextResponse.json({ error: "Request body too large" }, { status: 413 });
@@ -43,57 +116,64 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
     }
 
-    if (!body || typeof body !== "object") {
-      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    const parsed = feedbackSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid feedback payload." }, { status: 400 });
     }
 
-    const {
-      name,
-      email,
-      issues,
-      futureIdeas,
-      returnLikelihood,
-      comments,
-    } = body as Record<string, unknown>;
-
-    const cleanName = clean(name, MAX_NAME_CHARS);
-    const cleanEmail = clean(email, MAX_EMAIL_CHARS);
-    const cleanIssues = clean(issues, MAX_FREEFORM_CHARS);
-    const cleanFutureIdeas = clean(futureIdeas, MAX_FREEFORM_CHARS);
-    const cleanComments = clean(comments, MAX_FREEFORM_CHARS);
-
-    if (cleanEmail !== null && !EMAIL_RE.test(cleanEmail)) {
-      return NextResponse.json({ error: "Invalid email" }, { status: 400 });
-    }
-
-    let cleanReturn: string | null = null;
-    if (returnLikelihood !== undefined && returnLikelihood !== null && returnLikelihood !== "") {
-      if (typeof returnLikelihood !== "string" || !RETURN_LIKELIHOOD_VALUES.has(returnLikelihood)) {
-        return NextResponse.json({ error: "Invalid returnLikelihood" }, { status: 400 });
-      }
-      cleanReturn = returnLikelihood;
-    }
+    const { name, email, issues, futureIdeas, returnLikelihood, comments } = parsed.data;
 
     // Don't log raw PII (name/email) — log a redacted summary instead so an
     // operator can see that something came in without persisting personal
     // data in plaintext logs.
     console.log("[feedback] submission received", {
-      hasName: cleanName !== null,
-      hasEmail: cleanEmail !== null,
-      hasIssues: cleanIssues !== null,
-      hasFutureIdeas: cleanFutureIdeas !== null,
-      hasComments: cleanComments !== null,
-      returnLikelihood: cleanReturn,
+      hasName: !!name,
+      hasEmail: !!email,
+      hasIssues: !!issues,
+      hasFutureIdeas: !!futureIdeas,
+      hasComments: !!comments,
+      returnLikelihood: returnLikelihood || null,
       submittedAt: new Date().toISOString(),
+    });
+
+    const admin = getSupabaseAdmin();
+
+    const insertPayload = {
+      name,
+      email,
+      answer: issues,
+      features: futureIdeas,
+      return_likelihood: returnLikelihood,
+      comments,
+    };
+
+    const { error: insertError } = await admin.from("feedback").insert(insertPayload);
+
+    if (insertError) {
+      console.error("[feedback] failed to insert submission", insertError);
+      return NextResponse.json(
+        { error: "Failed to save feedback to database." },
+        { status: 500 }
+      );
+    }
+
+    const emailResult = await sendFeedbackEmail({
+      name,
+      email,
+      answer: issues,
+      features: futureIdeas,
+      returnLikelihood,
+      comments,
     });
 
     return NextResponse.json({
       success: true,
+      emailSent: emailResult.sent,
       message: "Feedback submitted successfully.",
     });
   } catch (error) {
-    console.error("Feedback submission error:", error);
-
+    console.error("[feedback] submission error", error);
     return NextResponse.json(
       { error: "Failed to process feedback submission." },
       { status: 500 }

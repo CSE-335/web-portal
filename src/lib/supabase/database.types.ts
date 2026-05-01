@@ -1,6 +1,6 @@
 /**
  * Supabase database types — manually maintained.
- * Tables: games, game_translations, user_profiles, game_likes, play_sessions
+ * Tables: games, game_translations, user_profiles, game_likes, play_sessions, game_data, feedback, app_settings
  * See supabase-migration.sql for the full schema DDL.
  */
 export type Json =
@@ -210,6 +210,63 @@ export interface Database {
           user_id?: string;
           game_id?: number;
           data_json?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      feedback: {
+        Row: {
+          id: number;
+          name: string | null;
+          email: string | null;
+          answer: string;
+          features: string | null;
+          return_likelihood: string | null;
+          comments: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          name?: string | null;
+          email?: string | null;
+          answer: string;
+          features?: string | null;
+          return_likelihood?: string | null;
+          comments?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: number;
+          name?: string | null;
+          email?: string | null;
+          answer?: string;
+          features?: string | null;
+          return_likelihood?: string | null;
+          comments?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      app_settings: {
+        Row: {
+          id: number;
+          key: string;
+          value: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          key: string;
+          value: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: number;
+          key?: string;
+          value?: string;
           created_at?: string;
           updated_at?: string;
         };
