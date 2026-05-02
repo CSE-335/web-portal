@@ -63,6 +63,7 @@
   },
   "profilePage": {
     "editProfile": "Editar perfil",
+    "locationUnknown": "Localização desconhecida",
     "stats": "Estatísticas",
     "memberFor": "Membro há",
     "today": "Hoje",

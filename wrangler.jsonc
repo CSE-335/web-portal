@@ -39,7 +39,10 @@
 					"binding": "WORKER_SELF_REFERENCE",
 					"service": "s26-cse-335-dev"
 				}
-			]
+			],
+			"images": {
+				"binding": "IMAGES"
+			}
 		}
 	}
 }

@@ -16,6 +16,7 @@ import {
 import { useForm } from "@mantine/form";
 import SignupPopup from "./SignupPopup";
 import RecoverPasswordPopup from "./RecoverPasswordPopup";
+import OnboardingPopup from "./OnboardingPopup";
 import { signInUser, signInWithGoogle } from "@/lib/supabase/auth";
 
 interface LoginPopupProps {
@@ -57,6 +58,7 @@ export default function LoginPopup({ opened, onClose }: LoginPopupProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [signupModalOpened, setSignupModalOpened] = useState(false);
   const [recoverModalOpened, setRecoverModalOpened] = useState(false);
+  const [onboardingOpened, setOnboardingOpened] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const t = useTranslations('login');
 
@@ -305,11 +307,17 @@ export default function LoginPopup({ opened, onClose }: LoginPopupProps) {
       <SignupPopup
         opened={signupModalOpened}
         onClose={() => setSignupModalOpened(false)}
+        onSignupComplete={() => setOnboardingOpened(true)}
       />
 
       <RecoverPasswordPopup
         opened={recoverModalOpened}
         onClose={() => setRecoverModalOpened(false)}
+      />
+
+      <OnboardingPopup
+        opened={onboardingOpened}
+        onClose={() => setOnboardingOpened(false)}
       />
     </>
   );

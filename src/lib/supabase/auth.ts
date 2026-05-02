@@ -130,6 +130,6 @@ export async function ensureUserProfile(): Promise<void> {
       auth_user_id: user.id,
       display_name: displayName,
       avatar_url: user.user_metadata?.avatar_url ?? null,
-    } as never);
+    });
   }
 }

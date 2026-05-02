@@ -1,6 +1,4 @@
 import { Container, Stack, Title, Text, Paper, SimpleGrid, Box } from "@mantine/core";
-import Image from "next/image";
-import { pageTheme } from "@/lib/theme/pageTheme";
 
 const teamMembers = [
   {
@@ -15,7 +13,7 @@ const teamMembers = [
   },
   {
     name: "Natalie Parker",
-    roles: ["Full-Stack", "Database Designer"],
+    roles: ["Team Lead", "Full-Stack", "Database Designer"],
     image: "/teampics/natalie.png",
   },
   {
@@ -25,7 +23,7 @@ const teamMembers = [
   },
   {
     name: "Ethan Reed",
-    roles: ["Team Lead/Coordinator", "Full-Stack"],
+    roles: ["Team Coordinator", "Full-Stack"],
     image: "/teampics/ethan.png",
   },
 ];
@@ -34,23 +32,31 @@ export default function AboutPage() {
   return (
     <div
       style={{
-        ...pageTheme.shell,
-        paddingTop: "clamp(24px, 6vw, 40px)",
-        paddingBottom: "clamp(40px, 8vw, 60px)",
-        paddingLeft: "clamp(12px, 4vw, 16px)",
-        paddingRight: "clamp(12px, 4vw, 16px)",
+        backgroundColor: "var(--about-wrapper-bg)",
+        borderRadius: "16px",
+        // backgroundColor: "var(--about-page-bg)",
+        minHeight: "100vh",
+        paddingTop: "40px",
+        paddingBottom: "60px",
       }}
     >
-      <Container size="lg" px={0}>
+      <Container size="lg">
+        <div
+          style={{
+            // backgroundColor: "var(--about-wrapper-bg)",
+            borderRadius: "16px",
+            padding: "32px",
+          }}
+        >
         <Stack gap="xl">
           <Box>
             <Title
               order={1}
               style={{
-                ...pageTheme.title,
+                color: "var(--about-text)",
+                fontSize: "56px",
+                fontWeight: 500,
                 marginBottom: "8px",
-                fontSize: "clamp(1.75rem, 5vw + 0.5rem, 3.5rem)",
-                lineHeight: 1.15,
               }}
             >
               About Us
@@ -60,24 +66,26 @@ export default function AboutPage() {
               style={{
                 width: "100%",
                 height: "1px",
-                backgroundColor: "var(--app-divider-color)",
+                backgroundColor: "#4B5563",
               }}
             />
           </Box>
 
           <Paper
             shadow="none"
-            radius={0}
-            p={{ base: "md", sm: "lg", md: "xl" }}
+            radius="lg"
+            p="xl"
             style={{
-              ...pageTheme.card,
+              backgroundColor: "var(--about-container-bg)",
+              border: "2px solid #374151",
             }}
           >
             <Stack gap="sm">
               <Text
                 style={{
-                  ...pageTheme.sectionTitle,
-                  fontSize: "clamp(17px, 2.5vw, 20px)",
+                  color: "var(--about-text)",
+                  fontSize: "20px",
+                  fontWeight: 500,
                 }}
               >
                 Project Overview
@@ -85,8 +93,9 @@ export default function AboutPage() {
 
               <Text
                 style={{
-                  ...pageTheme.body,
-                  fontSize: "clamp(15px, 1.5vw + 0.65rem, 18px)",
+                  color: "var(--about-text)",
+                  fontSize: "18px",
+                  lineHeight: 1.7,
                 }}
               >
                 Welcome to LLNL STEM Games! Explore short, interactive mini-games that turn core STEM ideas
@@ -105,28 +114,25 @@ export default function AboutPage() {
           <Stack gap="md">
             <Text
               style={{
-                ...pageTheme.title,
-                fontSize: "clamp(1.125rem, 2vw + 0.75rem, 1.625rem)",
+                color: "var(--about-text)",
+                fontSize: "26px",
                 fontWeight: 500,
-                lineHeight: 1.25,
               }}
             >
               Meet the Team
             </Text>
 
-            <SimpleGrid
-              cols={{ base: 1, sm: 2, md: 3, lg: 5 }}
-              spacing={{ base: "md", sm: "lg" }}
-              verticalSpacing={{ base: "md", sm: "lg" }}
-            >
+            <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 5 }} spacing="lg">
               {teamMembers.map((member) => (
                 <Paper
                   key={member.name}
                   shadow="none"
-                  radius={0}
-                  p={{ base: "md", sm: "lg" }}
+                  radius="lg"
+                  p="lg"
                   style={{
-                    ...pageTheme.card,
+                    backgroundColor: "var(--about-container-bg)",
+                    border: "2px solid #374151",
+                    minHeight: "340px",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
@@ -134,58 +140,51 @@ export default function AboutPage() {
                   }}
                 >
                   {member.image ? (
-                    <Image
+                    <img
                       src={member.image}
                       alt={member.name}
-                      width={110}
-                      height={110}
-                      sizes="(max-width: 768px) 96px, 110px"
                       style={{
-                        width: "clamp(96px, 28vw, 110px)",
-                        height: "clamp(96px, 28vw, 110px)",
-                        maxWidth: "100%",
+                        width: "110px",
+                        height: "110px",
                         objectFit: "cover",
-                        border: "2px solid var(--card-border)",
-                        marginBottom: "16px",
-                        backgroundColor: "var(--card-img-bg)",
+                        borderRadius: "12px",
+                        border: "2px solid #374151",
+                        marginBottom: "20px",
+                        backgroundColor: "#D1D5DB",
                       }}
                     />
                   ) : (
                     <div
                       style={{
-                        width: "clamp(96px, 28vw, 110px)",
-                        height: "clamp(96px, 28vw, 110px)",
-                        backgroundColor: "var(--card-img-bg)",
-                        border: "2px solid var(--card-border)",
-                        marginBottom: "16px",
-                        flexShrink: 0,
+                        width: "110px",
+                        height: "110px",
+                        backgroundColor: "#D1D5DB",
+                        borderRadius: "12px",
+                        border: "2px solid #374151",
+                        marginBottom: "20px",
                       }}
                     />
                   )}
 
                   <Text
                     style={{
-                      color: "var(--text-primary)",
-                      fontSize: "clamp(16px, 2.5vw, 18px)",
+                      color: "var(--about-text)",
+                      fontSize: "18px",
                       fontWeight: 500,
-                      marginBottom: "12px",
-                      wordBreak: "break-word",
-                      maxWidth: "100%",
+                      marginBottom: "14px",
                     }}
                   >
                     {member.name}
                   </Text>
 
-                  <Stack gap={2} align="center" style={{ maxWidth: "100%" }}>
+                  <Stack gap={2} align="center">
                     {member.roles.map((role) => (
                       <Text
                         key={role}
                         style={{
-                          color: "var(--text-body)",
-                          fontSize: "clamp(14px, 2vw, 16px)",
-                          lineHeight: 1.45,
-                          wordBreak: "break-word",
-                          paddingInline: "4px",
+                          color: "var(--about-text)",
+                          fontSize: "16px",
+                          lineHeight: 1.4,
                         }}
                       >
                         {role}
@@ -199,17 +198,19 @@ export default function AboutPage() {
 
           <Paper
             shadow="none"
-            radius={0}
-            p={{ base: "md", sm: "lg", md: "xl" }}
+            radius="lg"
+            p="xl"
             style={{
-              ...pageTheme.card,
+              backgroundColor: "var(--about-container-bg)",
+              border: "2px solid #374151",
             }}
           >
             <Stack gap="sm">
               <Text
                 style={{
-                  ...pageTheme.sectionTitle,
-                  fontSize: "clamp(17px, 2.5vw, 20px)",
+                  color: "var(--about-text)",
+                  fontSize: "20px",
+                  fontWeight: 500,
                 }}
               >
                 Client Company
@@ -217,8 +218,9 @@ export default function AboutPage() {
 
               <Text
                 style={{
-                  ...pageTheme.body,
-                  fontSize: "clamp(15px, 1.5vw + 0.65rem, 18px)",
+                  color: "var(--about-text)",
+                  fontSize: "18px",
+                  lineHeight: 1.7,
                 }}
               >
                 Lawrence Livermore National Laboratory (LLNL) is a federally
@@ -236,6 +238,7 @@ export default function AboutPage() {
             </Stack>
           </Paper>
         </Stack>
+        </div>
       </Container>
     </div>
   );

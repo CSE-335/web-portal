@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations } from 'next-intl';
+import { useMantineColorScheme } from '@mantine/core';
 import { supabase } from "@/lib/supabase/client";
 import {
   Container,
@@ -11,25 +12,18 @@ import {
   TextInput,
   Textarea,
   Button,
+  Group,
   Box,
   Divider,
-  SimpleGrid,
 } from "@mantine/core";
-import { pageTheme, themedInputStyles, themedTextareaStyles } from "@/lib/theme/pageTheme";
 
 const likelihoodKeys = ['veryUnlikely', 'unlikely', 'notSure', 'likely', 'veryLikely'] as const;
 
-/** Values expected by `POST /api/feedback` (see `RETURN_LIKELIHOOD_VALUES` on the server). */
-const likelihoodApiValue: Record<(typeof likelihoodKeys)[number], string> = {
-  veryUnlikely: "very_unlikely",
-  unlikely: "unlikely",
-  notSure: "neutral",
-  likely: "likely",
-  veryLikely: "very_likely",
-};
-
 export default function FeedbackPage() {
   const t = useTranslations('feedback');
+  const { colorScheme } = useMantineColorScheme();
+  const isDark = colorScheme !== 'light';
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [issues, setIssues] = useState("");
@@ -64,11 +58,7 @@ export default function FeedbackPage() {
           email,
           issues,
           futureIdeas,
-          returnLikelihood:
-            returnLikelihood &&
-            (likelihoodKeys as readonly string[]).includes(returnLikelihood)
-              ? likelihoodApiValue[returnLikelihood as (typeof likelihoodKeys)[number]]
-              : "",
+          returnLikelihood,
           comments,
         }),
       });
@@ -95,32 +85,77 @@ export default function FeedbackPage() {
     }
   }
 
+  const inputStyles = {
+    wrapper: {
+      borderRadius: "10px",
+      background: isDark
+        ? "linear-gradient(#525b85, #525b85) padding-box, linear-gradient(to bottom, #7886bf, #6e91d0) border-box"
+        : "var(--input-wrapper-bg)",
+      border: isDark ? "2px solid transparent" : "var(--input-wrapper-border)",
+    },
+    input: {
+      backgroundColor: "transparent",
+      color: isDark ? "white" : "var(--text-primary)",
+      border: "none",
+      height: "46px",
+      fontSize: "15px",
+      fontFamily: "var(--font-alexandria), sans-serif",
+      fontWeight: 400,
+      paddingLeft: "20px",
+    },
+  };
+
+  const textareaStyles = {
+    wrapper: {
+      borderRadius: "10px",
+      background: isDark
+        ? "linear-gradient(#525b85, #525b85) padding-box, linear-gradient(to bottom, #7886bf, #6e91d0) border-box"
+        : "var(--input-wrapper-bg)",
+      border: isDark ? "2px solid transparent" : "var(--input-wrapper-border)",
+    },
+    input: {
+      backgroundColor: "transparent",
+      color: isDark ? "white" : "var(--text-primary)",
+      border: "none",
+      fontSize: "15px",
+      fontFamily: "var(--font-alexandria), sans-serif",
+      fontWeight: 400,
+      padding: "14px 20px",
+    },
+  };
+
+  const labelStyle = {
+    fontFamily: "var(--font-alexandria), sans-serif",
+    fontWeight: 500,
+    fontSize: "16px",
+    color: isDark ? "white" : "var(--text-primary)",
+    marginBottom: "6px",
+  };
+
+  const optionalStyle = {
+    color: isDark ? "#9CA3AF" : "var(--text-secondary)",
+    fontWeight: 400,
+    fontSize: "13px",
+  };
+
   return (
-    <div
-      style={{
-        ...pageTheme.shell,
-        paddingTop: "clamp(24px, 6vw, 48px)",
-        paddingBottom: "clamp(40px, 8vw, 72px)",
-        paddingLeft: "clamp(12px, 4vw, 16px)",
-        paddingRight: "clamp(12px, 4vw, 16px)",
-      }}
-    >
-      <Container size="md" px={0}>
-        <Box
-          style={{
-            ...pageTheme.panel,
-            padding: "clamp(16px, 4vw, 40px) clamp(16px, 5vw, 48px)",
-          }}
-        >
+    <Container size="md" py={48}>
+      <Box
+        style={{
+          backgroundColor: isDark ? "#1f2542" : "var(--surface-primary)",
+          border: isDark ? "1px solid #6e90b6" : "1px solid var(--border-color)",
+          borderRadius: "10px",
+          padding: "40px 48px",
+        }}
+      >
         <form onSubmit={handleSubmit}>
           <Stack gap="lg">
             <Stack gap={4}>
               <Title
                 order={1}
                 style={{
-                  color: "var(--text-primary)",
-                  fontSize: "clamp(1.35rem, 4vw + 0.5rem, 1.75rem)",
-                  lineHeight: 1.2,
+                  color: isDark ? "white" : "var(--text-primary)",
+                  fontSize: "28px",
                   fontWeight: 600,
                   fontFamily: "var(--font-alexandria), sans-serif",
                 }}
@@ -130,28 +165,27 @@ export default function FeedbackPage() {
               <Text
                 style={{
                   fontFamily: "var(--font-alexandria), sans-serif",
-                  fontSize: "clamp(13px, 2.5vw, 14px)",
-                  color: "var(--text-secondary)",
-                  lineHeight: 1.5,
+                  fontSize: "14px",
+                  color: isDark ? "#9CA3AF" : "var(--text-secondary)",
                 }}
               >
                 {t('subtitle')}
               </Text>
             </Stack>
 
-            <Divider styles={{ root: { borderColor: "var(--app-divider-color)" } }} />
+            <Divider styles={{ root: { borderColor: isDark ? "#344369" : "var(--border-color)" } }} />
 
-            <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+            <Group grow gap="md">
               <TextInput
                 value={name}
                 onChange={(e) => setName(e.currentTarget.value)}
                 placeholder={t('name')}
                 label={
-                  <span style={pageTheme.inputLabel}>
-                    {t('name')} <span style={pageTheme.optionalText}>{t('optional')}</span>
+                  <span style={labelStyle}>
+                    {t('name')} <span style={optionalStyle}>{t('optional')}</span>
                   </span>
                 }
-                styles={themedInputStyles}
+                styles={inputStyles}
               />
               <TextInput
                 type="email"
@@ -159,13 +193,13 @@ export default function FeedbackPage() {
                 onChange={(e) => setEmail(e.currentTarget.value)}
                 placeholder={t('email')}
                 label={
-                  <span style={pageTheme.inputLabel}>
-                    {t('email')} <span style={pageTheme.optionalText}>{t('optional')}</span>
+                  <span style={labelStyle}>
+                    {t('email')} <span style={optionalStyle}>{t('optional')}</span>
                   </span>
                 }
-                styles={themedInputStyles}
+                styles={inputStyles}
               />
-            </SimpleGrid>
+            </Group>
 
             <Textarea
               value={issues}
@@ -175,11 +209,11 @@ export default function FeedbackPage() {
               autosize
               required
               label={
-                <span style={pageTheme.inputLabel}>
+                <span style={labelStyle}>
                   {t('issues')}
                 </span>
               }
-              styles={themedTextareaStyles}
+              styles={textareaStyles}
             />
 
             <Textarea
@@ -189,66 +223,45 @@ export default function FeedbackPage() {
               minRows={5}
               autosize
               label={
-                <span style={pageTheme.inputLabel}>
-                  {t('ideas')} <span style={pageTheme.optionalText}>{t('optional')}</span>
+                <span style={labelStyle}>
+                  {t('ideas')} <span style={optionalStyle}>{t('optional')}</span>
                 </span>
               }
-              styles={themedTextareaStyles}
+              styles={textareaStyles}
             />
 
             <Stack gap="sm">
-              <Text id="feedback-return-likelihood-label" style={pageTheme.inputLabel}>
+              <Text style={labelStyle}>
                 {t('likelihood')}
               </Text>
-              <Box
-                role="group"
-                aria-labelledby="feedback-return-likelihood-label"
-                style={{
-                  display: "flex",
-                  width: "100%",
-                  borderRadius: "10px",
-                  overflow: "hidden",
-                  border: "1px solid var(--card-border)",
-                  background: "var(--option-bg)",
-                }}
-              >
-                {likelihoodKeys.map((key, i) => (
+              <Group gap={8} wrap="nowrap">
+                {likelihoodKeys.map((key) => (
                   <Box
                     key={key}
                     component="button"
                     type="button"
-                    aria-pressed={returnLikelihood === key}
                     onClick={() => setReturnLikelihood(key)}
                     style={{
                       flex: 1,
-                      minWidth: 0,
-                      minHeight: 48,
-                      padding: "10px 6px",
-                      border: "none",
-                      borderRight:
-                        i < likelihoodKeys.length - 1
-                          ? "1px solid var(--app-divider-color)"
-                          : undefined,
+                      padding: "10px 4px",
+                      borderRadius: "10px",
+                      border: returnLikelihood === key ? "none" : isDark ? "none" : "1px solid var(--border-color)",
                       cursor: "pointer",
                       textAlign: "center",
-                      wordBreak: "break-word",
-                      hyphens: "auto",
                       fontFamily: "var(--font-alexandria), sans-serif",
                       fontWeight: 500,
-                      fontSize: "clamp(10px, 2.1vw, 13px)",
-                      lineHeight: 1.25,
-                      color: returnLikelihood === key ? "var(--button-primary-text)" : "var(--text-secondary)",
-                      background:
-                        returnLikelihood === key
-                          ? "var(--button-primary-bg)"
-                          : "transparent",
-                      transition: "background 0.15s ease, color 0.15s ease",
+                      fontSize: "12px",
+                      color: returnLikelihood === key ? "white" : isDark ? "#9CA3AF" : "var(--text-secondary)",
+                      background: returnLikelihood === key
+                        ? "linear-gradient(135deg, #1b41ff, #0054f0)"
+                        : isDark ? "#525b85" : "var(--surface-secondary)",
+                      transition: "all 0.2s ease",
                     }}
                   >
                     {t(key)}
                   </Box>
                 ))}
-              </Box>
+              </Group>
             </Stack>
 
             <Textarea
@@ -258,11 +271,11 @@ export default function FeedbackPage() {
               minRows={4}
               autosize
               label={
-                <span style={pageTheme.inputLabel}>
-                  {t('comments')} <span style={pageTheme.optionalText}>{t('optional')}</span>
+                <span style={labelStyle}>
+                  {t('comments')} <span style={optionalStyle}>{t('optional')}</span>
                 </span>
               }
-              styles={themedTextareaStyles}
+              styles={textareaStyles}
             />
 
             {error && (
@@ -277,27 +290,28 @@ export default function FeedbackPage() {
               </Text>
             )}
 
-            <Box
-              style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                width: "100%",
-              }}
-            >
+            <Group justify="flex-end">
               <Button
                 type="submit"
                 loading={loading}
-                w={{ base: "100%", sm: 200 }}
+                w={200}
                 h={42}
-                style={pageTheme.primaryButton}
+                style={{
+                  background: "linear-gradient(to bottom, #1b41ff 0%, #0054f0 100%)",
+                  borderRadius: "20px",
+                  color: "#fbe6e6",
+                  fontFamily: "var(--font-alexandria), sans-serif",
+                  fontWeight: 700,
+                  fontSize: "15px",
+                  border: "none",
+                }}
               >
                 {t('submit')}
               </Button>
-            </Box>
+            </Group>
           </Stack>
         </form>
-        </Box>
-      </Container>
-    </div>
+      </Box>
+    </Container>
   );
 }
