@@ -62,15 +62,19 @@ jest.mock('next/navigation', () => ({
   notFound: jest.fn(),
 }));
 
-jest.mock('../lib/supabase/server', () => ({
-  createServerSupabaseClient: () => ({
+jest.mock('../lib/supabase/server', () => {
+  const mockClient = () => ({
     from: () => ({
       select: () => ({
         limit: () => Promise.resolve({ data: [], error: null }),
       }),
     }),
-  }),
-}));
+  });
+  return {
+    createAnonymousSupabaseServerClient: mockClient,
+    createServerSupabaseClient: mockClient,
+  };
+});
 
 async function renderHomePage() {
   const Page = await HomePage();

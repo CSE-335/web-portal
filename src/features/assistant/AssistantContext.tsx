@@ -36,6 +36,21 @@ function isAbortError(err: unknown): boolean {
   return false;
 }
 
+/** Iframe/game events can arrive in bursts; coalesce those. Chat and toolbar actions should not wait. */
+function eventDebounceMsFor(
+  event: GameEvent,
+  defaultMs: number,
+): number {
+  switch (event.eventType) {
+    case "user_message":
+    case "hint_request":
+    case "recap_request":
+      return 0;
+    default:
+      return defaultMs;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Context shape
 // ---------------------------------------------------------------------------
@@ -191,7 +206,7 @@ export function AssistantProvider({
           const msg = err instanceof Error ? err.message : "Network error";
           dispatch({ type: "SET_ERROR", payload: { message: msg } });
         });
-      }, config.eventDebounceMs);
+      }, eventDebounceMsFor(event, config.eventDebounceMs));
     },
     [
       config.apiEndpoint,

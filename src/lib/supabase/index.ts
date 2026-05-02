@@ -1,6 +1,9 @@
 // Central exports for all Supabase modules
 export { supabase } from "./client";
-export { createServerSupabaseClient } from "./server";
+export {
+  createAnonymousSupabaseServerClient,
+  createServerSupabaseClient,
+} from "./server";
 export {
   signUpNewUser,
   
