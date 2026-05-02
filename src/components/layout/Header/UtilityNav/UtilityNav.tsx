@@ -10,21 +10,30 @@ import ProfilePopup from "@/components/ProfilePopup";
 import { getUserProfile } from "@/lib/supabase/user-profile";
 import ThemeToggle from "@/components/layout/Header/ThemeToggle";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
+import FlagIcon from "@/components/FlagIcon";
+import { locales, LOCALE_COOKIE, type Locale } from "@/i18n/routing";
 
+
+export type UtilityNavDensity = "desktop" | "mobile";
 
 interface UtilityNavProps {
   loginModalOpened: boolean;
   setLoginModalOpened: (opened: boolean) => void;
   user: User | null;
+  /** Mobile top bar: tighter controls; desktop uses full-size controls */
+  density?: UtilityNavDensity;
 }
 
 export default function UtilityNav({
   setLoginModalOpened,
   user,
+  density = "desktop",
 }: UtilityNavProps) {
+  const isMobile = density === "mobile";
   const [profileOpened, setProfileOpened] = useState(false);
   const [langOpened, setLangOpened] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("/images/bobcat.png");
+  const [currentLocale, setCurrentLocale] = useState<Locale>('en');
   const router = useRouter();
   const t = useTranslations('nav');
 
@@ -36,9 +45,28 @@ export default function UtilityNav({
     }
   }, [user]);
 
+  useEffect(() => {
+    const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${LOCALE_COOKIE}=([^;]+)`));
+    const raw = match?.[1];
+    if (raw && locales.includes(raw as Locale)) {
+      setCurrentLocale(raw as Locale);
+    }
+  }, []);
+
+  const languageLabel = t('language');
+  const favoritesLabel = t('favorites');
+  const accountLabel = t('account');
+
   return (
-    <Group gap="sm" wrap="nowrap" ml="auto">
-      <ThemeToggle />
+    <Group
+      gap={isMobile ? "xs" : "sm"}
+      wrap="nowrap"
+      ml={isMobile ? 0 : "auto"}
+      justify={isMobile ? "flex-end" : undefined}
+      align="center"
+      style={isMobile ? { flexShrink: 0 } : undefined}
+    >
+      <ThemeToggle compact={isMobile} />
 
       <Popover
         opened={langOpened}
@@ -50,17 +78,22 @@ export default function UtilityNav({
         width={220}
       >
         <Popover.Target>
-          <ActionIcon
-            variant="filled"
-            color="#585D92"
-            radius="xl"
-            size="xl"
-            className="btn-theme"
-            aria-label="Language"
-            onClick={() => setLangOpened((o) => !o)}
-          >
-            <Image src="/images/language.svg" alt="" width={24} height={24} aria-hidden style={{ filter: 'brightness(0) invert(1)' }} />
-          </ActionIcon>
+          <span className="nav-tooltip" data-tooltip={languageLabel}>
+            <ActionIcon
+              variant="filled"
+              color="#585D92"
+              radius="xl"
+              size={isMobile ? "md" : "xl"}
+              className="btn-theme"
+              aria-label={languageLabel}
+              onClick={() => setLangOpened((o) => !o)}
+            >
+              <FlagIcon
+                locale={currentLocale}
+                style={{ width: isMobile ? 20 : 24, borderRadius: 2, flexShrink: 0 }}
+              />
+            </ActionIcon>
+          </span>
         </Popover.Target>
         <Popover.Dropdown
           style={{
@@ -74,38 +107,42 @@ export default function UtilityNav({
         </Popover.Dropdown>
       </Popover>
 
-      <ActionIcon
-        variant="filled"
-        color="#585D92"
-        radius="xl"
-        size="xl"
-        className="btn-theme"
-        aria-label="Favorites"
-        onClick={() => router.push("/profile?tab=liked")}
-      >
-        <Image src="/images/like.svg" alt="" width={20} height={20} aria-hidden />
-      </ActionIcon>
+      <span className="nav-tooltip" data-tooltip={favoritesLabel}>
+        <ActionIcon
+          variant="filled"
+          color="#585D92"
+          radius="xl"
+          size={isMobile ? "md" : "xl"}
+          className="btn-theme"
+          aria-label={favoritesLabel}
+          onClick={() => router.push("/profile?tab=liked")}
+        >
+          <Image src="/images/like.svg" alt="" width={isMobile ? 18 : 20} height={isMobile ? 18 : 20} aria-hidden />
+        </ActionIcon>
+      </span>
 
       {user ? (
         <>
-          <ActionIcon
-            variant="filled"
-            color="#585D92"
-            radius="xl"
-            size="xl"
-            className="btn-theme"
-            aria-label="Account"
-            onClick={() => setProfileOpened(true)}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={avatarUrl}
-              alt="Profile"
-              width={50}
-              height={50}
-              style={{ borderRadius: "50%", objectFit: "cover" }}
-            />
-          </ActionIcon>
+          <span className="nav-tooltip" data-tooltip={accountLabel}>
+            <ActionIcon
+              variant="filled"
+              color="#585D92"
+              radius="xl"
+              size={isMobile ? "md" : "xl"}
+              className="btn-theme"
+              aria-label={accountLabel}
+              onClick={() => setProfileOpened(true)}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={avatarUrl}
+                alt="Profile"
+                width={isMobile ? 32 : 50}
+                height={isMobile ? 32 : 50}
+                style={{ borderRadius: "50%", objectFit: "cover" }}
+              />
+            </ActionIcon>
+          </span>
           <ProfilePopup
             opened={profileOpened}
             onClose={() => setProfileOpened(false)}
@@ -113,13 +150,17 @@ export default function UtilityNav({
           />
         </>
       ) : (
-        <Button
-          onClick={() => setLoginModalOpened(true)}
-          size="md"
-          style={{ background: BLUE_RADIAL_GRADIENT }}
-        >
-          {t('logIn')}
-        </Button>
+        <span className="nav-tooltip" data-tooltip={t('logIn')}>
+          <Button
+            onClick={() => setLoginModalOpened(true)}
+            size={isMobile ? "xs" : "md"}
+            className="nav-login-btn"
+            style={{ background: BLUE_RADIAL_GRADIENT }}
+            px={isMobile ? 10 : undefined}
+          >
+            {t('logIn')}
+          </Button>
+        </span>
       )}
     </Group>
   );

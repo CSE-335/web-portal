@@ -6,9 +6,10 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import { Box, Textarea, ActionIcon, Text, Loader, Group } from "@mantine/core";
+import { Box, Textarea, ActionIcon, Text, Loader, Group, Tooltip } from "@mantine/core";
 import { useAssistant } from "../AssistantContext";
-import { SendIcon } from "./icons";
+import { useHoldToTalkSpeechRecognition } from "../hooks/useHoldToTalkSpeechRecognition";
+import { MicIcon, SendIcon } from "./icons";
 
 const MAX_MESSAGE_LENGTH = 500;
 const RATE_LIMIT_MS = 3000;
@@ -40,8 +41,41 @@ export default function ChatInput() {
   const [cooldown, setCooldown] = useState(false);
   const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const holdBaseRef = useRef("");
 
   const isDisabled = state.isGenerating || cooldown;
+
+  const { supported: voiceSupported, listening, lastError, holdHandlers } =
+    useHoldToTalkSpeechRecognition({
+      disabled: isDisabled,
+      onDictationSegment: (segment) => {
+        const combined = (holdBaseRef.current + segment).slice(0, MAX_MESSAGE_LENGTH);
+        setValue(combined);
+      },
+    });
+
+  const onMicPointerDown = useCallback(
+    (e: React.PointerEvent<HTMLButtonElement>) => {
+      if (!voiceSupported || isDisabled) return;
+      holdBaseRef.current = value;
+      holdHandlers.onPointerDown(e);
+    },
+    [voiceSupported, isDisabled, value, holdHandlers],
+  );
+
+  const onMicPointerUp = useCallback(
+    (e: React.PointerEvent<HTMLButtonElement>) => {
+      holdHandlers.onPointerUp(e);
+    },
+    [holdHandlers],
+  );
+
+  const onMicPointerCancel = useCallback(
+    (e: React.PointerEvent<HTMLButtonElement>) => {
+      holdHandlers.onPointerCancel(e);
+    },
+    [holdHandlers],
+  );
 
   const handleSubmit = useCallback(() => {
     const cleaned = sanitizeInput(value);
@@ -97,13 +131,16 @@ export default function ChatInput() {
           onChange={(e) => setValue(e.currentTarget.value.slice(0, MAX_MESSAGE_LENGTH))}
           onKeyDown={handleKeyDown}
           placeholder={
-            cooldown
-              ? "Wait a moment..."
-              : state.isGenerating
-                ? "The twins are responding..."
-                : "Ask Laurie & Livvy a question..."
+            listening
+              ? "Listening…"
+              : cooldown
+                ? "Wait a moment..."
+                : state.isGenerating
+                  ? "The twins are responding..."
+                  : "Ask Laurie & Livvy a question..."
           }
           disabled={isDisabled}
+          readOnly={listening}
           autosize
           minRows={1}
           maxRows={3}
@@ -121,6 +158,37 @@ export default function ChatInput() {
             },
           }}
         />
+
+        {voiceSupported && (
+          <Tooltip
+            label="Hold to talk — live captions appear as you speak"
+            zIndex={1000}
+            disabled={isDisabled}
+          >
+            <ActionIcon
+              variant={listening ? "filled" : "subtle"}
+              size="lg"
+              radius="md"
+              aria-label="Hold to talk"
+              aria-pressed={listening}
+              disabled={isDisabled}
+              onPointerDown={onMicPointerDown}
+              onPointerUp={onMicPointerUp}
+              onPointerCancel={onMicPointerCancel}
+              style={{
+                flexShrink: 0,
+                touchAction: "none",
+                color: listening ? "white" : "rgba(200, 220, 255, 0.85)",
+                background: listening
+                  ? "linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)"
+                  : "rgba(255,255,255,0.12)",
+                border: listening ? "none" : "1px solid rgba(255,255,255,0.2)",
+              }}
+            >
+              <MicIcon size={18} />
+            </ActionIcon>
+          </Tooltip>
+        )}
 
         <ActionIcon
           variant="filled"
@@ -148,6 +216,7 @@ export default function ChatInput() {
       <Group justify="space-between" px={4} mt={2}>
         <Text size="10px" style={{ color: "rgba(160, 200, 255, 0.5)" }}>
           Enter to send &middot; Shift+Enter for newline
+          {voiceSupported ? " · Hold mic to dictate" : ""}
         </Text>
         {value.length > 0 && (
           <Text
@@ -159,6 +228,11 @@ export default function ChatInput() {
           </Text>
         )}
       </Group>
+      {lastError && (
+        <Text size="10px" px={4} mt={2} c="red" style={{ opacity: 0.85 }}>
+          {lastError}
+        </Text>
+      )}
     </Box>
   );
 }

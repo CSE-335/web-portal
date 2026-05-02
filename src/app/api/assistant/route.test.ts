@@ -10,10 +10,6 @@ jest.mock("ai", () => ({
   generateObject: jest.fn(),
 }));
 
-jest.mock("@ai-sdk/anthropic", () => ({
-  anthropic: jest.fn(() => "anthropic-model"),
-}));
-
 jest.mock("@ai-sdk/openai", () => ({
   openai: jest.fn((model: string) => `openai:${model}`),
 }));
@@ -74,12 +70,10 @@ function validEvent(overrides: Partial<Record<string, unknown>> = {}) {
 
 describe("POST /api/assistant", () => {
   const originalOpenAIKey = process.env.OPENAI_API_KEY;
-  const originalAnthropicKey = process.env.ANTHROPIC_API_KEY;
 
   beforeEach(() => {
     jest.clearAllMocks();
     delete process.env.OPENAI_API_KEY;
-    delete process.env.ANTHROPIC_API_KEY;
 
     mockedGetStaticFallback.mockReturnValue({
       lines: [
@@ -99,7 +93,6 @@ describe("POST /api/assistant", () => {
 
   afterAll(() => {
     process.env.OPENAI_API_KEY = originalOpenAIKey;
-    process.env.ANTHROPIC_API_KEY = originalAnthropicKey;
   });
 
   it("returns 400 when required event fields are missing", async () => {
@@ -270,52 +263,9 @@ describe("POST /api/assistant", () => {
     );
   });
 
-  it("succeeds with Anthropic only when OpenAI key is absent", async () => {
+  it("uses static fallback when OpenAI key is absent even if Anthropic key exists", async () => {
     delete process.env.OPENAI_API_KEY;
     process.env.ANTHROPIC_API_KEY = "anthropic-only";
-    mockedGenerateObject.mockResolvedValue({
-      object: {
-        lines: [{ speaker: "Laurie", text: "Claude line", emotion: "speaking" }],
-        summary: "Via Anthropic",
-      },
-    } as Awaited<ReturnType<typeof generateObject>>);
-
-    const response = await POST(makeRequest({ event: validEvent() }));
-    const json = await response.json();
-
-    expect(response.status).toBe(200);
-    expect(json.success).toBe(true);
-    expect(json.data?.summary).toBe("Via Anthropic");
-    expect(mockedGenerateObject).toHaveBeenCalledTimes(1);
-  });
-
-  it("uses Anthropic when OpenAI fails but Anthropic is configured", async () => {
-    process.env.OPENAI_API_KEY = "openai";
-    process.env.ANTHROPIC_API_KEY = "anthropic";
-    mockedGenerateObject
-      .mockRejectedValueOnce(new Error("OpenAI down"))
-      .mockResolvedValueOnce({
-        object: {
-          lines: [{ speaker: "Livvy", text: "Anthropic recovered", emotion: "happy" }],
-          summary: "Recovered via Anthropic",
-        },
-      } as Awaited<ReturnType<typeof generateObject>>);
-
-    const response = await POST(makeRequest({ event: validEvent() }));
-    const json = await response.json();
-
-    expect(response.status).toBe(200);
-    expect(json.success).toBe(true);
-    expect(json.data?.summary).toBe("Recovered via Anthropic");
-    expect(mockedGenerateObject).toHaveBeenCalledTimes(2);
-  });
-
-  it("falls back when both OpenAI and Anthropic calls fail", async () => {
-    process.env.OPENAI_API_KEY = "o";
-    process.env.ANTHROPIC_API_KEY = "a";
-    mockedGenerateObject
-      .mockRejectedValueOnce(new Error("openai failed"))
-      .mockRejectedValueOnce(new Error("anthropic failed"));
 
     const response = await POST(makeRequest({ event: validEvent() }));
     const json = await response.json();
@@ -323,7 +273,35 @@ describe("POST /api/assistant", () => {
     expect(response.status).toBe(200);
     expect(json.success).toBe(true);
     expect(json.data?.summary).toBe("Fallback summary");
-    expect(mockedGenerateObject).toHaveBeenCalledTimes(2);
+    expect(mockedGenerateObject).not.toHaveBeenCalled();
+  });
+
+  it("falls back when OpenAI fails even if Anthropic key is configured", async () => {
+    process.env.OPENAI_API_KEY = "openai";
+    process.env.ANTHROPIC_API_KEY = "anthropic";
+    mockedGenerateObject.mockRejectedValueOnce(new Error("OpenAI down"));
+
+    const response = await POST(makeRequest({ event: validEvent() }));
+    const json = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(json.success).toBe(true);
+    expect(json.data?.summary).toBe("Fallback summary");
+    expect(mockedGenerateObject).toHaveBeenCalledTimes(1);
+  });
+
+  it("falls back when OpenAI call fails", async () => {
+    process.env.OPENAI_API_KEY = "o";
+    process.env.ANTHROPIC_API_KEY = "a";
+    mockedGenerateObject.mockRejectedValueOnce(new Error("openai failed"));
+
+    const response = await POST(makeRequest({ event: validEvent() }));
+    const json = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(json.success).toBe(true);
+    expect(json.data?.summary).toBe("Fallback summary");
+    expect(mockedGenerateObject).toHaveBeenCalledTimes(1);
     expect(mockedGetStaticFallback).toHaveBeenCalledTimes(1);
   });
 

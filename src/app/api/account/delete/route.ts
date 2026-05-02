@@ -21,7 +21,8 @@ export async function POST(request: Request) {
   try {
     const admin = getSupabaseAdmin();
 
-    // Delete profile data then auth user
+    // Delete user-scoped rows (game_data uses auth user id like /api/game-data)
+    await admin.from("game_data").delete().eq("user_id", user.id);
     await admin.from("play_sessions").delete().eq("user_id", user.id);
     await admin.from("game_likes").delete().eq("user_id", user.id);
     await admin.from("user_profiles").delete().eq("auth_user_id", user.id);
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (e) {
-    const message = e instanceof Error ? e.message : "Internal error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error("[account/delete]", e);
+    return NextResponse.json({ error: "Failed to delete account" }, { status: 500 });
   }
 }

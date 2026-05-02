@@ -2,7 +2,10 @@
   "nav": {
     "searchPlaceholder": "STEM-Spiele suchen...",
     "logIn": "Anmelden",
-    "language": "Sprache"
+    "language": "Sprache",
+    "toggleTheme": "Farbschema umschalten",
+    "favorites": "Favoriten",
+    "account": "Konto"
   },
   "footer": {
     "links": {
@@ -127,14 +130,17 @@
     "play": "Spielen",
     "randomGame": "Zufälliges Spiel",
     "backToTop": "Nach oben",
-    "educational": "Lehrreich"
+    "returnToMain": "Zur Hauptseite zurückkehren"
   },
   "home": {
     "welcome1": "Willkommen bei LLNL",
     "welcome2": "STEM-Spiele",
     "interactiveLearning": "Interaktives Lernen",
     "saveProgress": "Speichere deinen Fortschritt",
-    "playAnyDevice": "Spiele auf jedem Gerät"
+    "playAnyDevice": "Spiele auf jedem Gerät",
+    "quickPlayTitle": "Schnellstart",
+    "quickPlayDescription": "Suche ein Spiel nach Namen und wähle dann ein passendes Ergebnis aus.",
+    "quickPlayNoResults": "Keine Spiele gefunden. Versuche eine andere Suche."
   },
   "gameCard": {
     "tags": "Tags",
@@ -153,25 +159,5 @@
   },
   "gameDescription": {
     "title": "Spielbeschreibung"
-  },
-  "games": {
-    "matrix-meadow": {
-      "description": "Übe Matrixmultiplikation durch interaktive Monster-Skalierungsherausforderungen und KI-gestütztes Feedback.",
-      "long1": "Matrix Meadow Academy verwandelt Matrixmultiplikation in eine visuelle Monster-Skalierungsherausforderung, bei der Schüler durch das direkte Transformieren von Kreaturen auf dem Bildschirm lernen. Anstatt Aufgaben isoliert zu lösen, wenden Spieler Matrizen an, um Zielformen zu erreichen, wodurch abstrakte lineare Algebra konkreter und intuitiver wird.",
-      "long2": "Das Spiel konzentriert sich auf Kernkonzepte wie Skalierungstransformationen, Matrixstruktur und die Beziehung zwischen numerischer Eingabe und visueller Ausgabe. Durch die Verknüpfung jedes Problems mit einem sofortigen visuellen Ergebnis können Schüler besser verstehen, wie Matrixmultiplikation Größe und Form verändert.",
-      "long3": "KI-gestütztes Feedback unterstützt den Lernprozess, indem es den Spielern hilft zu verstehen, warum eine Transformation funktioniert hat oder fehlgeschlagen ist, Mustererkennung stärkt und Korrektur durch angeleitete Übung fördert."
-    },
-    "sonic-fingerprint-lab": {
-      "description": "Erkunde Audiomuster, Frequenzen und stimmbasierte Analyse durch ein interaktives Klanglab.",
-      "long1": "Sonic Fingerprint Lab ist ein interaktives Wissenschaftsspiel, in dem Schüler erkunden, wie Klang durch frequenzbasierte Muster visualisiert, verglichen und analysiert werden kann. Durch die Verwendung ihrer eigenen Stimme und aufgezeichneter Signale beschäftigen sich Spieler direkt mit der Idee, dass jeder Klang eine messbare akustische Signatur hinterlässt.",
-      "long2": "Das Spiel führt Konzepte wie Tonhöhe, Wellenformverhalten und Frequenzunterschiede durch praktisches Experimentieren statt passives Auswendiglernen ein. Schüler können beobachten, wie Änderungen der Klangeingabe die resultierenden Muster beeinflussen.",
-      "long3": "KI-gestütztes Feedback hilft bei der Interpretation der Spielerergebnisse, weist auf bedeutsame Unterschiede in ihren Klangdaten hin und führt sie zu einem besseren Verständnis der Beziehung zwischen Frequenzmustern und stimmlichen sowie akustischen Eigenschaften."
-    },
-    "biology-virus-outbreak-simulator": {
-      "description": "Erkunde Virusausbrüche und lerne epidemiologische Konzepte durch interaktive Modellierung und KI-gestütztes Feedback.",
-      "long1": "Biology Virus Outbreak Simulator ist ein interaktives Wissenschaftsspiel, in dem Schüler erkunden, wie sich Virusausbrüche ausbreiten und entwickeln. Durch das Beantworten von Fragen können Spieler die Auswirkungen verschiedener Faktoren auf den Verlauf einer Epidemie beobachten.",
-      "long2": "Das Spiel führt Konzepte wie Infektionsdynamik, Immunität und öffentliche Gesundheitsinterventionen durch praktisches Experimentieren ein. Schüler können die Folgen ihrer Entscheidungen analysieren und ihre Strategien entsprechend anpassen.",
-      "long3": "KI-gestütztes Feedback gibt Spielern Einblicke in die Wirksamkeit ihrer Interventionen und hilft ihnen, das komplexe Zusammenspiel der Faktoren zu verstehen, die die Virusübertragung und -kontrolle beeinflussen."
-    }
   }
 }

@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { MantineProvider } from '@mantine/core';
 import Header from './Header';
@@ -39,16 +38,9 @@ describe('Header', () => {
     expect(homeLink).toHaveAttribute('href', '/');
   });
 
-  it('renders the search bar', () => {
+  it('renders the mobile navigation toggle', () => {
     renderHeader();
-    expect(screen.getByPlaceholderText('Search STEM games...')).toBeInTheDocument();
-  });
-
-  it('updates search bar value when typing', async () => {
-    renderHeader();
-    const searchInput = screen.getByPlaceholderText('Search STEM games...');
-    await userEvent.type(searchInput, 'matrix');
-    expect(searchInput).toHaveValue('matrix');
+    expect(screen.getByRole('button', { name: 'Toggle navigation' })).toBeInTheDocument();
   });
 
   it('renders the favorites button', () => {

@@ -39,6 +39,12 @@ export default function GameEmbed({
     async function loadGameData() {
       const authHeaders = await getAuthHeaders();
       if (!authHeaders) {
+        // Guest or session not ready yet — skip cloud sync (no unhandled rejection).
+        latestGameData = {};
+        iframeRef.current?.contentWindow?.postMessage(
+          { type: "PORTAL_GAME_DATA_LOADED", payload: latestGameData },
+          gameOrigin
+        );
         return;
       }
 
@@ -177,36 +183,6 @@ export default function GameEmbed({
             },
             gameOrigin
           );
-        })();
-      }
-
-      // AI proxy: games can request OpenAI completions through the portal
-      if (data.type === "PORTAL_AI_REQUEST" && data.requestId != null) {
-        void (async () => {
-          try {
-            const res = await fetch('/api/ai/openai', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(data.payload),
-            });
-            const json = await res.json();
-            if (!res.ok) {
-              iframeRef.current?.contentWindow?.postMessage(
-                { source: data.source, requestId: data.requestId, error: json.error || 'AI request failed' },
-                gameOrigin
-              );
-              return;
-            }
-            iframeRef.current?.contentWindow?.postMessage(
-              { source: data.source, requestId: data.requestId, payload: json },
-              gameOrigin
-            );
-          } catch (err) {
-            iframeRef.current?.contentWindow?.postMessage(
-              { source: data.source, requestId: data.requestId, error: (err as Error).message },
-              gameOrigin
-            );
-          }
         })();
       }
     }

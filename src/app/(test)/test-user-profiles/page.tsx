@@ -1,7 +1,13 @@
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { notFound } from "next/navigation";
+import { createAnonymousSupabaseServerClient } from "@/lib/supabase/server";
 
 export default async function TestUserProfilesPage() {
-  const supabase = createServerSupabaseClient();
+  const allowedInProd = process.env.ALLOW_TEST_USER_PROFILES_PAGE === "1";
+  if (process.env.NODE_ENV === "production" && !allowedInProd) {
+    notFound();
+  }
+
+  const supabase = createAnonymousSupabaseServerClient();
   const { data, error } = await supabase.from("user_profiles").select("*");
 
   return (

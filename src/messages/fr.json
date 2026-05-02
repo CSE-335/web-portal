@@ -2,7 +2,10 @@
   "nav": {
     "searchPlaceholder": "Rechercher des jeux STEM...",
     "logIn": "Se connecter",
-    "language": "Langue"
+    "language": "Langue",
+    "toggleTheme": "Changer le thème",
+    "favorites": "Favoris",
+    "account": "Compte"
   },
   "footer": {
     "links": {
@@ -80,6 +83,7 @@
   "saveBanner": {
     "dontLose": "Ne perdez pas votre progression",
     "signUp": "S'inscrire",
+    "logIn": "Se connecter",
     "close": "Fermer"
   },
   "accountSettings": {
@@ -127,14 +131,17 @@
     "play": "Jouer",
     "randomGame": "Jeu aléatoire",
     "backToTop": "Haut de la page",
-    "educational": "Éducatif"
+    "returnToMain": "Retour à la page principale"
   },
   "home": {
     "welcome1": "Bienvenue sur LLNL",
     "welcome2": "Jeux STEM",
     "interactiveLearning": "Apprentissage interactif",
     "saveProgress": "Sauvegardez votre progression",
-    "playAnyDevice": "Jouez sur n'importe quel appareil"
+    "playAnyDevice": "Jouez sur n'importe quel appareil",
+    "quickPlayTitle": "Jeu rapide",
+    "quickPlayDescription": "Recherchez un jeu par nom, puis choisissez un résultat correspondant.",
+    "quickPlayNoResults": "Aucun jeu trouvé. Essayez une autre recherche."
   },
   "gameCard": {
     "tags": "Tags",
@@ -153,25 +160,5 @@
   },
   "gameDescription": {
     "title": "Description du jeu"
-  },
-  "games": {
-    "matrix-meadow": {
-      "description": "Pratiquez la multiplication matricielle à travers des défis interactifs de mise à l'échelle de monstres et des retours assistés par IA.",
-      "long1": "Matrix Meadow Academy transforme la multiplication matricielle en un défi visuel de mise à l'échelle de monstres où les étudiants apprennent en transformant des créatures directement à l'écran. Au lieu de résoudre des problèmes isolément, les joueurs appliquent des matrices pour correspondre aux formes cibles, rendant l'algèbre linéaire abstraite plus concrète et intuitive.",
-      "long2": "Le jeu se concentre sur des idées fondamentales comme les transformations d'échelle, la structure matricielle et la relation entre l'entrée numérique et la sortie visuelle. En liant chaque problème à un résultat visuel immédiat, les étudiants peuvent mieux comprendre comment la multiplication matricielle change la taille et la forme.",
-      "long3": "Les retours assistés par IA soutiennent le processus d'apprentissage en aidant les joueurs à comprendre pourquoi une transformation a fonctionné ou échoué, renforçant la reconnaissance de motifs et encourageant la correction par la pratique guidée."
-    },
-    "sonic-fingerprint-lab": {
-      "description": "Explorez les motifs audio, les fréquences et l'analyse vocale à travers un laboratoire sonore interactif.",
-      "long1": "Sonic Fingerprint Lab est un jeu scientifique interactif où les étudiants explorent comment le son peut être visualisé, comparé et analysé à travers des motifs basés sur la fréquence. En utilisant leur propre voix et des signaux enregistrés, les joueurs s'engagent directement avec l'idée que chaque son laisse une signature acoustique mesurable.",
-      "long2": "Le jeu introduit des concepts tels que la hauteur, le comportement des formes d'onde et les différences de fréquence par l'expérimentation pratique plutôt que la mémorisation passive. Les étudiants peuvent observer comment les changements d'entrée sonore affectent les motifs résultants.",
-      "long3": "Les retours assistés par IA aident à interpréter les résultats du joueur, à signaler les différences significatives dans leurs données sonores et à les guider vers une meilleure compréhension de la relation entre les motifs de fréquence et les caractéristiques vocales et acoustiques."
-    },
-    "biology-virus-outbreak-simulator": {
-      "description": "Explorez les épidémies virales et apprenez les concepts épidémiologiques à travers la modélisation interactive et les retours assistés par IA.",
-      "long1": "Biology Virus Outbreak Simulator est un jeu scientifique interactif où les étudiants explorent comment les épidémies virales se propagent et évoluent. En répondant aux questions, les joueurs peuvent observer l'impact de différents facteurs sur la progression d'une épidémie.",
-      "long2": "Le jeu introduit des concepts tels que la dynamique d'infection, l'immunité et les interventions de santé publique par l'expérimentation pratique. Les étudiants peuvent analyser les conséquences de leurs décisions et ajuster leurs stratégies en conséquence.",
-      "long3": "Les retours assistés par IA donnent aux joueurs des informations sur l'efficacité de leurs interventions, les aidant à comprendre l'interaction complexe des facteurs qui influencent la transmission et le contrôle des virus."
-    }
   }
 }

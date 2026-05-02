@@ -17,6 +17,11 @@ interface VNSpriteProps {
   isActive: boolean;
   /** Override default side positioning */
   side?: "left" | "right";
+  /**
+   * When set, sprite is a normal flex child (e.g. beside the dialogue box) instead of
+   * an absolute stage element — avoids overlapping page content on narrow viewports.
+   */
+  inlineSize?: { width: string; height: string };
 }
 
 export default function VNSprite({
@@ -24,6 +29,7 @@ export default function VNSprite({
   emotion = "idle",
   isActive,
   side,
+  inlineSize,
 }: VNSpriteProps) {
   const { config } = useAssistant();
 
@@ -35,14 +41,28 @@ export default function VNSprite({
   const imageSrc = `${basePath}/${emotion}.${ext}`;
   const fallbackSrc = `${basePath}/idle.${ext}`;
 
+  const width = inlineSize?.width ?? MASCOT_VN_LAYOUT.spriteWidth;
+  const height = inlineSize?.height ?? MASCOT_VN_LAYOUT.spriteHeight;
+
+  const stagePositionStyles = inlineSize
+    ? {
+        position: "relative" as const,
+        flexShrink: 0,
+        width,
+        height,
+      }
+    : {
+        position: "absolute" as const,
+        bottom: 0,
+        [placement]: MASCOT_VN_LAYOUT.spriteSideInset,
+        width,
+        height,
+      };
+
   return (
     <Box
       style={{
-        position: "absolute",
-        bottom: 0,
-        [placement]: MASCOT_VN_LAYOUT.spriteSideInset,
-        width: MASCOT_VN_LAYOUT.spriteWidth,
-        height: MASCOT_VN_LAYOUT.spriteHeight,
+        ...stagePositionStyles,
         display: "flex",
         alignItems: "flex-end",
         justifyContent: placement === "left" ? "flex-start" : "flex-end",

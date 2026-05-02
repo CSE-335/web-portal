@@ -8,6 +8,14 @@ export function canSkipGame(forceRebuild, commit, cached, outputDir) {
 
 export function buildAndCopy(label, gameDir, gameId, outputDir, thumbsDir) {
   console.log(`\nBuilding ${label}...`);
+
+  // Copy thumbnail first so a failed npm build still updates the portal cover art.
+  const thumbPath = path.join(gameDir, 'data', 'thumbnail.png');
+  if (fs.existsSync(thumbPath)) {
+    fs.copyFileSync(thumbPath, path.join(thumbsDir, `${gameId}.png`));
+    console.log(`Copied thumbnail for ${gameId}`);
+  }
+
   run('npm ci', gameDir);
   run('npm run build', gameDir);
 
@@ -19,12 +27,5 @@ export function buildAndCopy(label, gameDir, gameId, outputDir, thumbsDir) {
     copyDir(distDir, outputDir);
   } else {
     console.warn(`Warning: ${label} built but no dist/ folder found, skipping.`);
-  }
-
-  // Copy thumbnail if present
-  const thumbPath = path.join(gameDir, 'data', 'thumbnail.png');
-  if (fs.existsSync(thumbPath)) {
-    fs.copyFileSync(thumbPath, path.join(thumbsDir, `${gameId}.png`));
-    console.log(`Copied thumbnail for ${gameId}`);
   }
 }

@@ -48,7 +48,7 @@ export default async function RootLayout({
         <NextIntlClientProvider locale={locale} messages={messages}>
           <MantineProvider theme={defaultTheme} defaultColorScheme="dark">
             <Header />
-            <Container mih="100vh">
+            <Container mih="100dvh" px={{ base: "xs", sm: "md" }} py={{ base: "sm", md: "md" }}>
               {children}
             </Container>
             <Footer />

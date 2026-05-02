@@ -20,6 +20,7 @@ function useTypewriter(text: string, speed: number = 25) {
   const [displayed, setDisplayed] = useState("");
   const [isDone, setIsDone] = useState(false);
   const indexRef = useRef(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     setDisplayed("");
@@ -37,15 +38,28 @@ function useTypewriter(text: string, speed: number = 25) {
         setDisplayed(text);
         setIsDone(true);
         clearInterval(timer);
+        timerRef.current = null;
       } else {
         setDisplayed(text.slice(0, indexRef.current));
       }
     }, speed);
+    timerRef.current = timer;
 
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(timer);
+      timerRef.current = null;
+    };
   }, [text, speed]);
 
+  // CRITICAL: clear the interval AND advance indexRef to the end. Otherwise
+  // the next interval tick (~20 ms) would overwrite `displayed` with a
+  // partial slice and the skip would visually do nothing.
   const skipToEnd = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    indexRef.current = text.length;
     setDisplayed(text);
     setIsDone(true);
   }, [text]);
@@ -57,24 +71,24 @@ function useTypewriter(text: string, speed: number = 25) {
 // Speaker name plate
 // ---------------------------------------------------------------------------
 
-function NamePlate({ speaker }: { speaker: Speaker }) {
+function NamePlate({ speaker, compact }: { speaker: Speaker; compact?: boolean }) {
   const c = SPEAKER_THEME[speaker];
 
   return (
     <Box
       style={{
         position: "absolute",
-        top: -16,
-        left: speaker === "Laurie" ? 20 : "auto",
-        right: speaker === "Livvy" ? 20 : "auto",
+        top: compact ? -12 : -16,
+        left: compact ? 12 : speaker === "Laurie" ? 20 : "auto",
+        right: compact ? "auto" : speaker === "Livvy" ? 20 : "auto",
         background: `linear-gradient(135deg, ${c.accent}, ${c.accent}cc)`,
-        padding: "4px 20px",
+        padding: compact ? "3px 14px" : "4px 20px",
         borderRadius: "8px 8px 0 0",
         boxShadow: `0 -4px 16px ${c.glow}`,
         zIndex: 2,
       }}
     >
-      <Text size="sm" fw={700} c="white" style={{ letterSpacing: "0.5px" }}>
+      <Text size={compact ? "xs" : "sm"} fw={700} c="white" style={{ letterSpacing: "0.5px" }}>
         {c.displayName}
       </Text>
     </Box>
@@ -112,14 +126,22 @@ function AdvanceIndicator() {
 // Main dialogue box
 // ---------------------------------------------------------------------------
 
-export default function VNDialogueBox() {
+export interface VNDialogueBoxProps {
+  compact?: boolean;
+}
+
+export default function VNDialogueBox({ compact }: VNDialogueBoxProps) {
   const { state, advanceLine, dismissDialogue } = useAssistant();
   const dialogue = state.currentDialogue;
 
   // Current line being displayed
   const currentLine = dialogue?.lines[state.currentLineIndex];
+  // During streaming, more lines may still arrive — the current "last" index
+  // is only truly final once streaming has finished.
   const isLastLine =
-    dialogue != null && state.currentLineIndex >= dialogue.lines.length - 1;
+    dialogue != null &&
+    !state.isGenerating &&
+    state.currentLineIndex >= dialogue.lines.length - 1;
 
   // Typewriter effect
   const { displayed, isDone, skipToEnd } = useTypewriter(
@@ -127,16 +149,25 @@ export default function VNDialogueBox() {
     20
   );
 
-  // Click handler: if typing → skip to end, if done → advance or dismiss
+  // Click handler:
+  //   1. Typing in progress → skip typewriter to end of this line.
+  //   2. Typewriter done + more lines → advance to next line.
+  //   3. Typewriter done + last line (and not streaming) → dismiss.
+  //   4. Typewriter done + looks like last but streaming → just skip (no-op,
+  //      wait for next line to arrive).
   const handleClick = useCallback(() => {
     if (!isDone) {
       skipToEnd();
     } else if (isLastLine) {
       dismissDialogue();
-    } else {
+    } else if (
+      dialogue &&
+      state.currentLineIndex < dialogue.lines.length - 1
+    ) {
       advanceLine();
     }
-  }, [isDone, isLastLine, skipToEnd, advanceLine, dismissDialogue]);
+    // else: streaming but no next line yet — do nothing, wait for it.
+  }, [isDone, isLastLine, skipToEnd, advanceLine, dismissDialogue, dialogue, state.currentLineIndex]);
 
   // Keyboard: space/enter to advance (skip when user is typing in an input)
   useEffect(() => {
@@ -159,8 +190,16 @@ export default function VNDialogueBox() {
     }
   }, [state.isOpen, state.isMinimized, dialogue, handleClick, dismissDialogue]);
 
-  // Loading state — either no dialogue yet, or streaming started with 0 lines
-  if (state.isGenerating && (!dialogue || dialogue.lines.length === 0)) {
+  // Loading state — three cases:
+  //   1. Streaming kicked off but no lines have arrived yet.
+  //   2. Lines arrived but we are still prefetching the first line's audio
+  //      (so the dialogue overlay does not flash up silently).
+  //   3. (Edge) something dispatched a manual SET_AUDIO_BUFFERING.
+  const hasNoLinesYet = !dialogue || dialogue.lines.length === 0;
+  const isLoading =
+    (state.isGenerating && hasNoLinesYet) || state.isAudioBuffering;
+
+  if (isLoading) {
     return (
       <Box
         style={{
@@ -168,7 +207,7 @@ export default function VNDialogueBox() {
           width: "100%",
           maxWidth: 680,
           margin: "0 auto",
-          padding: "24px 28px",
+          padding: compact ? "16px 14px" : "24px 28px",
           background: "var(--surface-primary)",
           border: "1px solid var(--overlay-border)",
           borderRadius: 12,
@@ -199,34 +238,35 @@ export default function VNDialogueBox() {
         margin: "0 auto",
         cursor: "pointer",
         userSelect: "none",
+        touchAction: "manipulation",
       }}
     >
       {/* Name plate */}
-      <NamePlate speaker={speaker} />
+      <NamePlate speaker={speaker} compact={compact} />
 
       {/* Dialogue box */}
       <Box
         style={{
           position: "relative",
           zIndex: 1,
-          padding: "24px 28px 28px",
+          padding: compact ? "14px 14px 16px" : "24px 28px 28px",
           background: "var(--surface-primary)",
           border: `2px solid ${SPEAKER_THEME[speaker].border}`,
           borderRadius: 12,
           backdropFilter: "blur(16px)",
           boxShadow: "var(--shadow-card)",
-          minHeight: 90,
+          minHeight: compact ? 72 : 90,
         }}
       >
         {/* Dialogue text */}
         <Text
-          size="md"
-          lh={1.7}
+          size={compact ? "sm" : "md"}
+          lh={1.65}
           style={{
             color: "var(--text-primary)",
             fontFamily: "'Geist', sans-serif",
             letterSpacing: "0.2px",
-            minHeight: "3em",
+            minHeight: compact ? "2.5em" : "3em",
           }}
         >
           {displayed}
@@ -247,17 +287,9 @@ export default function VNDialogueBox() {
           )}
         </Text>
 
-        {/* Summary (shown on last line after typing finishes) */}
-        {isLastLine && isDone && dialogue.summary && (
-          <Text size="xs" c="dimmed" fs="italic" mt="sm">
-            {dialogue.summary}
-          </Text>
-        )}
-
-        {/* Advance indicator */}
+        {/* Advance indicator (mid-dialogue blinking chevron) */}
         {isDone && !isLastLine && <AdvanceIndicator />}
 
-        {/* Advance indicator */}
         {/* Bottom row: shortcut hint left, click to close right */}
         <Box style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
           <Text

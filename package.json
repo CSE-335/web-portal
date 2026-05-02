@@ -15,6 +15,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "setup-games": "node scripts/setup-games.mjs",
+    "translate-games": "node scripts/translate-games.js",
     "build:bridge": "npm run build -w stem-assistant-bridge"
   },
   "dependencies": {
@@ -30,6 +31,7 @@
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.37.0",
     "ai": "^6.0.142",
+    "country-flag-icons": "^1.6.16",
     "jose": "^6.2.2",
     "next": "^16.2.3",
     "next-intl": "^4.9.0",

@@ -29,21 +29,52 @@ jest.mock('../data/games', () => ({
   ],
   getGameBySlug: (slug: string) => undefined,
 }));
+jest.mock('next-intl/server', () => ({
+  getLocale: () => Promise.resolve('en'),
+}));
+jest.mock('@/lib/supabase/game-translations', () => ({
+  getLocalizedGames: async (_locale: string, _slugs: string[]) => ([
+    {
+      slug: 'test-game-1',
+      title: 'Test Game One',
+      subject: 'Science',
+      description: 'A test game',
+      longDescription: [],
+      iframeSrc: '/games/test-game-1/index.html',
+      thumbnailSrc: '/images/test-game-1-thumb.png',
+      featured: true,
+    },
+    {
+      slug: 'test-game-2',
+      title: 'Test Game Two',
+      subject: 'Technology',
+      description: 'Another test game',
+      longDescription: [],
+      iframeSrc: '/games/test-game-2/index.html',
+      thumbnailSrc: '/images/test-game-2-thumb.png',
+      featured: true,
+    },
+  ]),
+}));
 
 jest.mock('next/navigation', () => ({
   useRouter: () => ({ push: jest.fn(), replace: jest.fn(), back: jest.fn() }),
   notFound: jest.fn(),
 }));
 
-jest.mock('../lib/supabase/server', () => ({
-  createServerSupabaseClient: () => ({
+jest.mock('../lib/supabase/server', () => {
+  const mockClient = () => ({
     from: () => ({
       select: () => ({
         limit: () => Promise.resolve({ data: [], error: null }),
       }),
     }),
-  }),
-}));
+  });
+  return {
+    createAnonymousSupabaseServerClient: mockClient,
+    createServerSupabaseClient: mockClient,
+  };
+});
 
 async function renderHomePage() {
   const Page = await HomePage();

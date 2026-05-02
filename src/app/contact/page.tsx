@@ -1,19 +1,13 @@
 import { Container, Stack, Title, Text, Paper, Box } from "@mantine/core";
+import { pageTheme } from "@/lib/theme/pageTheme";
 
-const contacts = [
-  { name: "Arielle Talania", email: "atalania@ucmerced.edu" },
-  { name: "Djeinabou Bah", email: "dbah@ucmerced.edu" },
-  { name: "Natalie Parker", email: "nparker2@ucmerced.edu" },
-  { name: "Sergio Gonzalez", email: "sgonzalezborbon@ucmerced.edu" },
-  { name: "Ethan Reed", email: "ethanreed@ucmerced.edu" },
-];
+const CONTACT_EMAIL = "llnlcoolstemgames@gmail.com";
 
 export default function ContactPage() {
   return (
     <div
       style={{
-        backgroundColor: "var(--about-wrapper-bg)",
-        minHeight: "100vh",
+        ...pageTheme.shell,
         paddingTop: "48px",
         paddingBottom: "72px",
       }}
@@ -24,11 +18,9 @@ export default function ContactPage() {
             <Title
               order={1}
               style={{
-                color: "var(--about-text)",
+                ...pageTheme.title,
                 fontSize: "48px",
-                fontWeight: 700,
                 marginBottom: "10px",
-                letterSpacing: "-0.5px",
               }}
             >
               Contact Us
@@ -47,56 +39,45 @@ export default function ContactPage() {
             shadow="sm"
             radius="md"
             style={{
-              backgroundColor: "var(--about-container-bg)",
-              border: "1px solid var(--border-color)",
+              ...pageTheme.card,
               padding: "24px 28px",
             }}
           >
             <Stack gap="md">
               <Text
                 style={{
-                  color: "var(--about-text)",
+                  color: "var(--text-primary)",
                   fontSize: "20px",
                   fontWeight: 700,
                 }}
               >
-                Team Contact Information
+                Reach LLNL STEM Games
               </Text>
 
               <Text
                 style={{
-                  color: "var(--about-text)",
+                  ...pageTheme.body,
                   fontSize: "16px",
-                  lineHeight: 1.8,
                 }}
               >
-                Feel free to reach out to any of us for questions or concerns!
+                For questions, support, or anything else about this site and
+                our games, please contact us at the email below!
               </Text>
 
-              <Stack gap="sm" mt="sm">
-                {contacts.map((person) => (
-                  <Text
-                    key={person.email}
-                    style={{
-                      color: "var(--about-text)",
-                      fontSize: "16px",
-                      lineHeight: 1.7,
-                    }}
-                  >
-                    <strong style={{ color: "var(--about-text)" }}>{person.name}:</strong>{" "}
-                    <a
-                      href={`mailto:${person.email}`}
-                      style={{
-                        color: "var(--text-muted)",
-                        textDecoration: "none",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {person.email}
-                    </a>
-                  </Text>
-                ))}
-              </Stack>
+              <Text
+                style={{
+                  ...pageTheme.body,
+                  fontSize: "16px",
+                  marginTop: "4px",
+                }}
+              >
+                <a
+                  href={`mailto:${CONTACT_EMAIL}`}
+                  style={pageTheme.link}
+                >
+                  {CONTACT_EMAIL}
+                </a>
+              </Text>
             </Stack>
           </Paper>
         </Stack>

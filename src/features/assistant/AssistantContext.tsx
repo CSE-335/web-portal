@@ -30,13 +30,25 @@ import {
 import { loadConversation, saveConversation } from "./services/sessionStore";
 
 function isAbortError(err: unknown): boolean {
-  return (
-    err instanceof DOMException
-      ? err.name === "AbortError"
-      : err instanceof Error
-        ? err.name === "AbortError"
-        : false
-  );
+  if (err instanceof DOMException || err instanceof Error) {
+    return err.name === "AbortError";
+  }
+  return false;
+}
+
+/** Iframe/game events can arrive in bursts; coalesce those. Chat and toolbar actions should not wait. */
+function eventDebounceMsFor(
+  event: GameEvent,
+  defaultMs: number,
+): number {
+  switch (event.eventType) {
+    case "user_message":
+    case "hint_request":
+    case "recap_request":
+      return 0;
+    default:
+      return defaultMs;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -134,9 +146,9 @@ export function AssistantProvider({
 
   const sendGameEvent = useCallback(
     (event: GameEvent) => {
-      // New event means old response is no longer relevant.
+      // New event means the previous in-flight response is no longer relevant.
+      // `cancelInFlight` already clears the debounce timer + aborts the fetch.
       cancelInFlight();
-      if (debounceRef.current) clearTimeout(debounceRef.current);
 
       // Ensure we never reuse conversation across games.
       if (activeGameIdRef.current !== event.gameId) {
@@ -147,8 +159,8 @@ export function AssistantProvider({
         dispatch({ type: "MINIMIZE" });
       }
 
-      // Clear dialogue immediately so TTS stops as soon as the user switches
-      // (hint / summary / new game event), not after the debounce window.
+      // Flip to the loading state synchronously so TTS stops and the UI shows
+      // the "twins are discussing..." pill immediately, not after the debounce.
       lastEventRef.current = event;
       dispatch({ type: "START_STREAMING" });
 
@@ -167,7 +179,10 @@ export function AssistantProvider({
             onFinish(summary, allLines) {
               dispatch({ type: "FINISH_STREAMING", payload: { summary } });
               conversationRef.current.push(...allLines);
-              saveConversation(activeGameIdRef.current, conversationRef.current);
+              saveConversation(
+                activeGameIdRef.current,
+                conversationRef.current,
+              );
             },
             onError(msg) {
               dispatch({ type: "SET_ERROR", payload: { message: msg } });
@@ -191,9 +206,14 @@ export function AssistantProvider({
           const msg = err instanceof Error ? err.message : "Network error";
           dispatch({ type: "SET_ERROR", payload: { message: msg } });
         });
-      }, config.eventDebounceMs);
+      }, eventDebounceMsFor(event, config.eventDebounceMs));
     },
-    [config.apiEndpoint, config.maxLines, config.eventDebounceMs, cancelInFlight],
+    [
+      config.apiEndpoint,
+      config.maxLines,
+      config.eventDebounceMs,
+      cancelInFlight,
+    ],
   );
 
   const sendUserMessage = useCallback(

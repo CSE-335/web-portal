@@ -1,6 +1,6 @@
 /**
  * Supabase database types — manually maintained.
- * Tables: games, user_profiles, game_likes, play_sessions
+ * Tables: games, game_translations, user_profiles, game_likes, play_sessions
  * See supabase-migration.sql for the full schema DDL.
  */
 export type Json =
@@ -54,6 +54,48 @@ export interface Database {
           thumbnail?: string;
           is_published?: boolean;
           metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      game_translations: {
+        Row: {
+          id: number;
+          game_id: number;
+          locale: string;
+          title: string | null;
+          description: string | null;
+          long_description: string[] | null;
+          source_hash: string;
+          status: "machine" | "reviewed" | "human";
+          translated_at: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          game_id: number;
+          locale: string;
+          title?: string | null;
+          description?: string | null;
+          long_description?: string[] | null;
+          source_hash: string;
+          status?: "machine" | "reviewed" | "human";
+          translated_at?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: number;
+          game_id?: number;
+          locale?: string;
+          title?: string | null;
+          description?: string | null;
+          long_description?: string[] | null;
+          source_hash?: string;
+          status?: "machine" | "reviewed" | "human";
+          translated_at?: string;
           created_at?: string;
           updated_at?: string;
         };

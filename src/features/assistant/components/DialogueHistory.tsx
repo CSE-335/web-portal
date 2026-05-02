@@ -57,11 +57,6 @@ function HistoryEntry({
           </Text>
         </Box>
       ))}
-      {response.summary && (
-        <Text size="10px" c="dimmed" fs="italic" mt={4}>
-          {response.summary}
-        </Text>
-      )}
     </Box>
   );
 }

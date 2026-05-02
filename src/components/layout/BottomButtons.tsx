@@ -1,7 +1,7 @@
 'use client';
 import { useTranslations } from 'next-intl';
 import Image from "next/image";
-import { Button, Group } from "@mantine/core";
+import { Button, Flex } from "@mantine/core";
 import { BLUE_RADIAL_GRADIENT } from "@/constants/layout";
 import { useRouter } from 'next/navigation';
 import { games } from '@/data/games';
@@ -20,13 +20,15 @@ export default function BottomButtons({ random }: BottomButtonsProps) {
   }
 
   return (
-    <Group justify="center" gap="md" mt={48} px="md">
+    <Flex justify="center" gap="md" mt={48} px="md" direction={{ base: "column", sm: "row" }} align="center">
       {random != false &&
         <Button
           size="lg"
           color="#525B86"
           className="btn-theme"
           miw={178}
+          fullWidth
+          maw={{ base: 360, sm: "none" }}
           onClick={handleRandomGame}
         >
           <span className="flex items-center gap-3">
@@ -41,6 +43,8 @@ export default function BottomButtons({ random }: BottomButtonsProps) {
         href="#top"
         size="lg"
         miw={185}
+        fullWidth
+        maw={{ base: 360, sm: "none" }}
         style={{ background: BLUE_RADIAL_GRADIENT }}
       >
         <span className="flex items-center gap-3">
@@ -48,6 +52,6 @@ export default function BottomButtons({ random }: BottomButtonsProps) {
           {t('backToTop')}
         </span>
       </Button>
-    </Group>
+    </Flex>
   );
 }
