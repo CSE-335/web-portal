@@ -14,18 +14,22 @@ import FlagIcon from "@/components/FlagIcon";
 import { locales, LOCALE_COOKIE, type Locale } from "@/i18n/routing";
 
 
+export type UtilityNavDensity = "desktop" | "mobile";
+
 interface UtilityNavProps {
   loginModalOpened: boolean;
   setLoginModalOpened: (opened: boolean) => void;
   user: User | null;
-  compact?: boolean;
+  /** Mobile top bar: tighter controls; desktop uses full-size controls */
+  density?: UtilityNavDensity;
 }
 
 export default function UtilityNav({
   setLoginModalOpened,
   user,
-  compact = false,
+  density = "desktop",
 }: UtilityNavProps) {
+  const isMobile = density === "mobile";
   const [profileOpened, setProfileOpened] = useState(false);
   const [langOpened, setLangOpened] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("/images/bobcat.png");
@@ -54,8 +58,15 @@ export default function UtilityNav({
   const accountLabel = t('account');
 
   return (
-    <Group gap="sm" wrap={compact ? "wrap" : "nowrap"} ml={compact ? 0 : "auto"} justify={compact ? "center" : undefined}>
-      <ThemeToggle />
+    <Group
+      gap={isMobile ? "xs" : "sm"}
+      wrap="nowrap"
+      ml={isMobile ? 0 : "auto"}
+      justify={isMobile ? "flex-end" : undefined}
+      align="center"
+      style={isMobile ? { flexShrink: 0 } : undefined}
+    >
+      <ThemeToggle compact={isMobile} />
 
       <Popover
         opened={langOpened}
@@ -72,12 +83,15 @@ export default function UtilityNav({
               variant="filled"
               color="#585D92"
               radius="xl"
-              size="xl"
+              size={isMobile ? "md" : "xl"}
               className="btn-theme"
               aria-label={languageLabel}
               onClick={() => setLangOpened((o) => !o)}
             >
-              <FlagIcon locale={currentLocale} style={{ width: 24, borderRadius: 2, flexShrink: 0 }} />
+              <FlagIcon
+                locale={currentLocale}
+                style={{ width: isMobile ? 20 : 24, borderRadius: 2, flexShrink: 0 }}
+              />
             </ActionIcon>
           </span>
         </Popover.Target>
@@ -98,12 +112,12 @@ export default function UtilityNav({
           variant="filled"
           color="#585D92"
           radius="xl"
-          size="xl"
+          size={isMobile ? "md" : "xl"}
           className="btn-theme"
           aria-label={favoritesLabel}
           onClick={() => router.push("/profile?tab=liked")}
         >
-          <Image src="/images/like.svg" alt="" width={20} height={20} aria-hidden />
+          <Image src="/images/like.svg" alt="" width={isMobile ? 18 : 20} height={isMobile ? 18 : 20} aria-hidden />
         </ActionIcon>
       </span>
 
@@ -114,7 +128,7 @@ export default function UtilityNav({
               variant="filled"
               color="#585D92"
               radius="xl"
-              size="xl"
+              size={isMobile ? "md" : "xl"}
               className="btn-theme"
               aria-label={accountLabel}
               onClick={() => setProfileOpened(true)}
@@ -123,8 +137,8 @@ export default function UtilityNav({
               <img
                 src={avatarUrl}
                 alt="Profile"
-                width={50}
-                height={50}
+                width={isMobile ? 32 : 50}
+                height={isMobile ? 32 : 50}
                 style={{ borderRadius: "50%", objectFit: "cover" }}
               />
             </ActionIcon>
@@ -136,13 +150,13 @@ export default function UtilityNav({
           />
         </>
       ) : (
-        <span className="nav-tooltip" data-tooltip={t('logIn')} style={compact ? { width: "100%" } : undefined}>
+        <span className="nav-tooltip" data-tooltip={t('logIn')}>
           <Button
             onClick={() => setLoginModalOpened(true)}
-            size="md"
+            size={isMobile ? "xs" : "md"}
             className="nav-login-btn"
             style={{ background: BLUE_RADIAL_GRADIENT }}
-            fullWidth={compact}
+            px={isMobile ? 10 : undefined}
           >
             {t('logIn')}
           </Button>

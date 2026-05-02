@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useMediaQuery } from "@mantine/hooks";
 import { Group, Burger, Drawer, Stack, Box, Button, Divider } from "@mantine/core";
 import LogoBrand from "@/components/layout/LogoBrand";
 import UtilityNav from "./UtilityNav/UtilityNav";
 import LoginPopup from "@/components/LoginPopup";
 import { supabase } from "@/lib/supabase/client";
-import { ensureUserProfile } from "@/lib/supabase/auth";
+import { ensureUserProfile, signOutUser } from "@/lib/supabase/auth";
 import type { User } from "@supabase/supabase-js";
 
 const MOBILE_MENU_LINKS = [
@@ -20,9 +21,17 @@ const MOBILE_MENU_LINKS = [
 
 export default function Header() {
   const tFooter = useTranslations("footer");
+  const tNav = useTranslations("nav");
+  const tProfile = useTranslations("profile");
   const [loginModalOpened, setLoginModalOpened] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [mobileNavOpened, setMobileNavOpened] = useState(false);
+  /**
+   * Mobile-first default: `useMediaQuery` otherwise starts false until the effect runs,
+   * which forces desktop-sized nav on phones and breaks the logged-in bar (xl icons + avatar).
+   * Align with Mantine `hiddenFrom="md"` (62em).
+   */
+  const isBelowMd = useMediaQuery("(max-width: 61.99em)", true);
 
   useEffect(() => {
     let isMounted = true;
@@ -70,22 +79,31 @@ export default function Header() {
           </LogoBrand>
         </Link>
 
-        <Box hiddenFrom="md" style={{ position: "relative", zIndex: 2, pointerEvents: "auto", flexShrink: 0 }}>
-          <Burger
-            opened={mobileNavOpened}
-            onClick={() => setMobileNavOpened((opened) => !opened)}
-            aria-label="Toggle navigation"
-            color="white"
-            size="md"
-          />
-        </Box>
-
-        <Group visibleFrom="md" flex={1} wrap="nowrap" gap="md">
+        <Group
+          gap="sm"
+          wrap="nowrap"
+          align="center"
+          justify="flex-end"
+          flex={1}
+          miw={0}
+          style={{ minWidth: 0 }}
+        >
           <UtilityNav
             loginModalOpened={loginModalOpened}
             setLoginModalOpened={setLoginModalOpened}
             user={user}
+            density={isBelowMd ? "mobile" : "desktop"}
           />
+
+          <Box hiddenFrom="md" style={{ position: "relative", zIndex: 2, flexShrink: 0 }}>
+            <Burger
+              opened={mobileNavOpened}
+              onClick={() => setMobileNavOpened((opened) => !opened)}
+              aria-label="Toggle navigation"
+              color="white"
+              size="md"
+            />
+          </Box>
         </Group>
       </Group>
 
@@ -98,22 +116,35 @@ export default function Header() {
         size="100%"
         hiddenFrom="md"
       >
-        <Stack gap="lg">
-          <UtilityNav
-            loginModalOpened={loginModalOpened}
-            setLoginModalOpened={setLoginModalOpened}
-            user={user}
-            compact
-          />
+        <Stack component="nav" gap="sm" aria-label="Site">
+          {MOBILE_MENU_LINKS.map((link) => (
+            <Button
+              key={link.key}
+              component={Link}
+              href={link.href}
+              variant="default"
+              fullWidth
+              size="md"
+              onClick={() => setMobileNavOpened(false)}
+              styles={{
+                root: {
+                  background: "var(--surface-secondary)",
+                  color: "var(--text-primary)",
+                  border: "1px solid var(--border-color)",
+                },
+              }}
+            >
+              {tFooter(`links.${link.key}`)}
+            </Button>
+          ))}
 
-          <Divider styles={{ root: { borderColor: "var(--border-color)" } }} />
+          <Divider my="xs" color="var(--border-color)" />
 
-          <Stack component="nav" gap="sm" aria-label="Site">
-            {MOBILE_MENU_LINKS.map((link) => (
+          {user ? (
+            <>
               <Button
-                key={link.key}
                 component={Link}
-                href={link.href}
+                href="/profile"
                 variant="default"
                 fullWidth
                 size="md"
@@ -126,10 +157,57 @@ export default function Header() {
                   },
                 }}
               >
-                {tFooter(`links.${link.key}`)}
+                {tProfile("menuProfile")}
               </Button>
-            ))}
-          </Stack>
+              <Button
+                component={Link}
+                href="/profile?tab=liked"
+                variant="default"
+                fullWidth
+                size="md"
+                onClick={() => setMobileNavOpened(false)}
+                styles={{
+                  root: {
+                    background: "var(--surface-secondary)",
+                    color: "var(--text-primary)",
+                    border: "1px solid var(--border-color)",
+                  },
+                }}
+              >
+                {tNav("favorites")}
+              </Button>
+              <Button
+                fullWidth
+                size="md"
+                variant="light"
+                color="red"
+                onClick={async () => {
+                  await signOutUser();
+                  setMobileNavOpened(false);
+                }}
+              >
+                {tProfile("menuLogOut")}
+              </Button>
+            </>
+          ) : (
+            <Button
+              fullWidth
+              size="md"
+              onClick={() => {
+                setMobileNavOpened(false);
+                setLoginModalOpened(true);
+              }}
+              styles={{
+                root: {
+                  background: "var(--surface-secondary)",
+                  color: "var(--text-primary)",
+                  border: "1px solid var(--border-color)",
+                },
+              }}
+            >
+              {tNav("logIn")}
+            </Button>
+          )}
         </Stack>
       </Drawer>
 

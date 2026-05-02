@@ -35,12 +35,26 @@ function MoonIcon({ active }: { active: boolean }) {
   );
 }
 
-export default function ThemeToggle() {
+type ThemeToggleProps = {
+  /** Narrow pill for dense mobile header toolbars */
+  compact?: boolean;
+};
+
+export default function ThemeToggle({ compact = false }: ThemeToggleProps) {
   const t = useTranslations("nav");
   const { setColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme("dark", { getInitialValueInEffect: true });
   const isDark = computedColorScheme === "dark";
   const label = t("toggleTheme");
+
+  const w = compact ? 52 : 68;
+  const h = compact ? 26 : 34;
+  const r = compact ? 13 : 17;
+  const knob = compact ? 22 : 28;
+  const knobTop = compact ? 2 : 3;
+  const knobInset = compact ? 24 : 31;
+  const knobLeftLight = compact ? 2 : 3;
+  const iconInset = compact ? 6 : 8;
 
   return (
     <span className="nav-tooltip" data-tooltip={label}>
@@ -49,9 +63,9 @@ export default function ThemeToggle() {
         aria-label={label}
         style={{
           position: "relative",
-          width: "68px",
-          height: "34px",
-          borderRadius: "17px",
+          width: `${w}px`,
+          height: `${h}px`,
+          borderRadius: `${r}px`,
           border: "none",
           cursor: "pointer",
           padding: 0,
@@ -66,7 +80,7 @@ export default function ThemeToggle() {
       {/* Sun icon */}
       <span style={{
         position: "absolute",
-        left: "8px",
+        left: `${iconInset}px`,
         top: "50%",
         transform: "translateY(-50%)",
         display: "flex",
@@ -80,7 +94,7 @@ export default function ThemeToggle() {
       {/* Moon icon */}
       <span style={{
         position: "absolute",
-        right: "8px",
+        right: `${iconInset}px`,
         top: "50%",
         transform: "translateY(-50%)",
         display: "flex",
@@ -94,10 +108,10 @@ export default function ThemeToggle() {
       {/* Knob */}
         <span style={{
           position: "absolute",
-          top: "3px",
-          left: isDark ? "calc(100% - 31px)" : "3px",
-          width: "28px",
-          height: "28px",
+          top: `${knobTop}px`,
+          left: isDark ? `calc(100% - ${knobInset}px)` : `${knobLeftLight}px`,
+          width: `${knob}px`,
+          height: `${knob}px`,
           borderRadius: "50%",
           background: "#ffffff",
           boxShadow: "0 2px 6px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1)",

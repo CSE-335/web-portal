@@ -52,9 +52,6 @@ export default function GameListCard({
                 <span className="rounded-[20px] px-3 py-1 text-xs font-medium" style={{ background: "var(--tag-bg)", border: "1px solid var(--tag-border)", color: "var(--text-tag)" }}>
                   {tCard.has(subject) ? tCard(subject) : subject}
                 </span>
-                <span className="rounded-[20px] px-3 py-1 text-xs font-medium" style={{ background: "var(--tag-bg)", border: "1px solid var(--tag-border)", color: "var(--text-tag)" }}>
-                  {tCommon('educational')}
-                </span>
               </div>
             </div>
 

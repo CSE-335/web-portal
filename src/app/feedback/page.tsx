@@ -11,13 +11,22 @@ import {
   TextInput,
   Textarea,
   Button,
-  Group,
   Box,
   Divider,
+  SimpleGrid,
 } from "@mantine/core";
 import { pageTheme, themedInputStyles, themedTextareaStyles } from "@/lib/theme/pageTheme";
 
 const likelihoodKeys = ['veryUnlikely', 'unlikely', 'notSure', 'likely', 'veryLikely'] as const;
+
+/** Values expected by `POST /api/feedback` (see `RETURN_LIKELIHOOD_VALUES` on the server). */
+const likelihoodApiValue: Record<(typeof likelihoodKeys)[number], string> = {
+  veryUnlikely: "very_unlikely",
+  unlikely: "unlikely",
+  notSure: "neutral",
+  likely: "likely",
+  veryLikely: "very_likely",
+};
 
 export default function FeedbackPage() {
   const t = useTranslations('feedback');
@@ -55,7 +64,11 @@ export default function FeedbackPage() {
           email,
           issues,
           futureIdeas,
-          returnLikelihood,
+          returnLikelihood:
+            returnLikelihood &&
+            (likelihoodKeys as readonly string[]).includes(returnLikelihood)
+              ? likelihoodApiValue[returnLikelihood as (typeof likelihoodKeys)[number]]
+              : "",
           comments,
         }),
       });
@@ -83,13 +96,22 @@ export default function FeedbackPage() {
   }
 
   return (
-    <Container size="md" py={48}>
-      <Box
-        style={{
-          ...pageTheme.panel,
-          padding: "40px 48px",
-        }}
-      >
+    <div
+      style={{
+        ...pageTheme.shell,
+        paddingTop: "clamp(24px, 6vw, 48px)",
+        paddingBottom: "clamp(40px, 8vw, 72px)",
+        paddingLeft: "clamp(12px, 4vw, 16px)",
+        paddingRight: "clamp(12px, 4vw, 16px)",
+      }}
+    >
+      <Container size="md" px={0}>
+        <Box
+          style={{
+            ...pageTheme.panel,
+            padding: "clamp(16px, 4vw, 40px) clamp(16px, 5vw, 48px)",
+          }}
+        >
         <form onSubmit={handleSubmit}>
           <Stack gap="lg">
             <Stack gap={4}>
@@ -97,7 +119,8 @@ export default function FeedbackPage() {
                 order={1}
                 style={{
                   color: "var(--text-primary)",
-                  fontSize: "28px",
+                  fontSize: "clamp(1.35rem, 4vw + 0.5rem, 1.75rem)",
+                  lineHeight: 1.2,
                   fontWeight: 600,
                   fontFamily: "var(--font-alexandria), sans-serif",
                 }}
@@ -107,8 +130,9 @@ export default function FeedbackPage() {
               <Text
                 style={{
                   fontFamily: "var(--font-alexandria), sans-serif",
-                  fontSize: "14px",
+                  fontSize: "clamp(13px, 2.5vw, 14px)",
                   color: "var(--text-secondary)",
+                  lineHeight: 1.5,
                 }}
               >
                 {t('subtitle')}
@@ -117,7 +141,7 @@ export default function FeedbackPage() {
 
             <Divider styles={{ root: { borderColor: "var(--app-divider-color)" } }} />
 
-            <Group grow gap="md">
+            <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
               <TextInput
                 value={name}
                 onChange={(e) => setName(e.currentTarget.value)}
@@ -141,7 +165,7 @@ export default function FeedbackPage() {
                 }
                 styles={themedInputStyles}
               />
-            </Group>
+            </SimpleGrid>
 
             <Textarea
               value={issues}
@@ -173,38 +197,58 @@ export default function FeedbackPage() {
             />
 
             <Stack gap="sm">
-              <Text style={pageTheme.inputLabel}>
+              <Text id="feedback-return-likelihood-label" style={pageTheme.inputLabel}>
                 {t('likelihood')}
               </Text>
-              <Group gap={8} wrap="nowrap">
-                {likelihoodKeys.map((key) => (
+              <Box
+                role="group"
+                aria-labelledby="feedback-return-likelihood-label"
+                style={{
+                  display: "flex",
+                  width: "100%",
+                  borderRadius: "10px",
+                  overflow: "hidden",
+                  border: "1px solid var(--card-border)",
+                  background: "var(--option-bg)",
+                }}
+              >
+                {likelihoodKeys.map((key, i) => (
                   <Box
                     key={key}
                     component="button"
                     type="button"
+                    aria-pressed={returnLikelihood === key}
                     onClick={() => setReturnLikelihood(key)}
                     style={{
                       flex: 1,
-                      padding: "10px 4px",
-                      borderRadius: "10px",
+                      minWidth: 0,
+                      minHeight: 48,
+                      padding: "10px 6px",
                       border: "none",
+                      borderRight:
+                        i < likelihoodKeys.length - 1
+                          ? "1px solid var(--app-divider-color)"
+                          : undefined,
                       cursor: "pointer",
                       textAlign: "center",
+                      wordBreak: "break-word",
+                      hyphens: "auto",
                       fontFamily: "var(--font-alexandria), sans-serif",
                       fontWeight: 500,
-                      fontSize: "12px",
+                      fontSize: "clamp(10px, 2.1vw, 13px)",
+                      lineHeight: 1.25,
                       color: returnLikelihood === key ? "var(--button-primary-text)" : "var(--text-secondary)",
                       background:
                         returnLikelihood === key
                           ? "var(--button-primary-bg)"
-                          : "var(--option-bg)",
-                      transition: "all 0.2s ease",
+                          : "transparent",
+                      transition: "background 0.15s ease, color 0.15s ease",
                     }}
                   >
                     {t(key)}
                   </Box>
                 ))}
-              </Group>
+              </Box>
             </Stack>
 
             <Textarea
@@ -233,20 +277,27 @@ export default function FeedbackPage() {
               </Text>
             )}
 
-            <Group justify="flex-end">
+            <Box
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                width: "100%",
+              }}
+            >
               <Button
                 type="submit"
                 loading={loading}
-                w={200}
+                w={{ base: "100%", sm: 200 }}
                 h={42}
                 style={pageTheme.primaryButton}
               >
                 {t('submit')}
               </Button>
-            </Group>
+            </Box>
           </Stack>
         </form>
-      </Box>
-    </Container>
+        </Box>
+      </Container>
+    </div>
   );
 }

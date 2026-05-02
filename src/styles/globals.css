@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* Reserve vertical scrollbar space so layout width does not flip when `overflow-y` toggles
+   (common at end-of-page), which can re-fire `matchMedia` and/or flex overflow layouts. */
+html {
+  scrollbar-gutter: stable;
+}
+
 /* Arabic RTL */
 html[lang="ar"] p,
 html[lang="ar"] h1,

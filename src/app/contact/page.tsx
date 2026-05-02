@@ -1,13 +1,7 @@
 import { Container, Stack, Title, Text, Paper, Box } from "@mantine/core";
 import { pageTheme } from "@/lib/theme/pageTheme";
 
-const contacts = [
-  { name: "Arielle Talania", email: "atalania@ucmerced.edu" },
-  { name: "Djeinabou Bah", email: "dbah@ucmerced.edu" },
-  { name: "Natalie Parker", email: "nparker2@ucmerced.edu" },
-  { name: "Sergio Gonzalez", email: "sgonzalezborbon@ucmerced.edu" },
-  { name: "Ethan Reed", email: "ethanreed@ucmerced.edu" },
-];
+const CONTACT_EMAIL = "llnlcoolstemgames@gmail.com";
 
 export default function ContactPage() {
   return (
@@ -57,7 +51,7 @@ export default function ContactPage() {
                   fontWeight: 700,
                 }}
               >
-                Team Contact Information
+                Reach LLNL STEM Games
               </Text>
 
               <Text
@@ -66,28 +60,24 @@ export default function ContactPage() {
                   fontSize: "16px",
                 }}
               >
-                Feel free to reach out to any of us for questions or concerns!
+                For questions, support, or anything else about this site and
+                our games, please contact us at the email below!
               </Text>
 
-              <Stack gap="sm" mt="sm">
-                {contacts.map((person) => (
-                  <Text
-                    key={person.email}
-                    style={{
-                      ...pageTheme.body,
-                      fontSize: "16px",
-                    }}
-                  >
-                    <strong style={pageTheme.strong}>{person.name}:</strong>{" "}
-                    <a
-                      href={`mailto:${person.email}`}
-                      style={pageTheme.link}
-                    >
-                      {person.email}
-                    </a>
-                  </Text>
-                ))}
-              </Stack>
+              <Text
+                style={{
+                  ...pageTheme.body,
+                  fontSize: "16px",
+                  marginTop: "4px",
+                }}
+              >
+                <a
+                  href={`mailto:${CONTACT_EMAIL}`}
+                  style={pageTheme.link}
+                >
+                  {CONTACT_EMAIL}
+                </a>
+              </Text>
             </Stack>
           </Paper>
         </Stack>
