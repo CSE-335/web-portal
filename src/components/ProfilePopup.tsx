@@ -147,6 +147,8 @@ export default function ProfilePopup({ opened, onClose, user, initialView = "mai
         setEditUsername(profile?.display_name || displayName);
         setEditLocation(profile?.locale || null);
         setProfileAvatarUrl(profile?.avatar_url || null);
+      }).catch(() => {
+        setProfileAvatarUrl(null);
       });
     }
   }, [opened, user.id, displayName]);
@@ -232,7 +234,7 @@ export default function ProfilePopup({ opened, onClose, user, initialView = "mai
               <Box style={{ position: "relative" }}>
                 <Box style={{ width: 90, height: 90, borderRadius: "50%", overflow: "hidden", border: "3px solid var(--text-muted)" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={avatarUrl} alt="Profile" width={90} height={90} style={{ objectFit: "cover" }} />
+                  <img src={avatarUrl} alt="Profile" width={90} height={90} style={{ objectFit: "cover" }} onError={(e) => { e.currentTarget.src = "/images/bobcat.png"; }} />
                 </Box>
                 <Box style={{ position: "absolute", bottom: 0, right: 0, width: 28, height: 28, borderRadius: "50%", background: "linear-gradient(135deg, #1b41ff, #0054f0)", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid var(--surface-primary)" }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -310,7 +312,7 @@ export default function ProfilePopup({ opened, onClose, user, initialView = "mai
             <Stack gap="md" align="center" pt={36}>
               <Box style={{ width: 80, height: 80, borderRadius: "50%", overflow: "hidden", border: "3px solid rgba(110, 144, 182, 0.8)", boxShadow: "0 0 12px rgba(27, 65, 255, 0.35), 0 0 4px rgba(110, 144, 182, 0.3)" }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={avatarUrl} alt="Profile" width={80} height={80} style={{ objectFit: "cover" }} />
+                <img src={avatarUrl} alt="Profile" width={80} height={80} style={{ objectFit: "cover" }} onError={(e) => { e.currentTarget.src = "/images/bobcat.png"; }} />
               </Box>
 
               <Stack gap={2} align="center">

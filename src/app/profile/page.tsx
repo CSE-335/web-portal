@@ -131,7 +131,7 @@ export default function ProfilePage() {
           >
             <Box style={{ width: 120, height: 120, borderRadius: 14, overflow: "hidden", border: "4px solid var(--surface-primary)", boxShadow: "var(--shadow-card)" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={avatarUrl} alt="Avatar" width={120} height={120} style={{ objectFit: "cover", display: "block" }} />
+              <img src={avatarUrl} alt="Avatar" width={120} height={120} style={{ objectFit: "cover", display: "block" }} onError={(e) => { e.currentTarget.src = "/images/bobcat.png"; }} />
             </Box>
             {avatarHovered && (
               <Box style={{ position: "absolute", inset: 0, borderRadius: 14, background: "rgba(0,0,0,0.55)", display: "flex", alignItems: "center", justifyContent: "center" }}>

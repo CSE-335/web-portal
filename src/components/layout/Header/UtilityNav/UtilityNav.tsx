@@ -41,6 +41,8 @@ export default function UtilityNav({
     if (user) {
       getUserProfile(user.id).then((profile) => {
         setAvatarUrl(profile?.avatar_url || user.user_metadata?.avatar_url || "/images/bobcat.png");
+      }).catch(() => {
+        setAvatarUrl(user.user_metadata?.avatar_url || "/images/bobcat.png");
       });
     }
   }, [user]);
@@ -140,6 +142,7 @@ export default function UtilityNav({
                 width={isMobile ? 32 : 50}
                 height={isMobile ? 32 : 50}
                 style={{ borderRadius: "50%", objectFit: "cover" }}
+                onError={(e) => { e.currentTarget.src = "/images/bobcat.png"; }}
               />
             </ActionIcon>
           </span>
