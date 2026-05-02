@@ -66,7 +66,7 @@ export default function UtilityNav({
       align="center"
       style={isMobile ? { flexShrink: 0 } : undefined}
     >
-      <ThemeToggle compact={isMobile} />
+      <ThemeToggle />
 
       <Popover
         opened={langOpened}
