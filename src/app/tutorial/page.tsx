@@ -23,18 +23,26 @@ export const metadata: Metadata = {
 
 export default function TutorialPage() {
   return (
-    <main>
-      <Stack gap="lg" pb="xl">
+    <main className="tutorial-page mx-auto w-full max-w-3xl">
+      <Stack gap={{ base: 'md', sm: 'lg' }} pb={{ base: 'lg', md: 'xl' }}>
         <div>
-          <Title order={1} style={{ color: 'var(--text-primary)' }}>
+          <Title
+            order={1}
+            fz={{ base: '1.65rem', sm: '2rem' }}
+            style={{ color: 'var(--text-primary)', lineHeight: 1.25 }}
+          >
             Quick guide
           </Title>
-          <Text mt="sm" style={{ color: 'var(--text-body)' }}>
+          <Text mt="sm" style={{ color: 'var(--text-body)', lineHeight: 1.55 }} className="break-words">
             New here? This page explains the main controls. Each game also has its own menus inside the play area—those
             can differ from game to game.
           </Text>
           <Text mt="xs" size="sm" c="dimmed">
-            <Link href="/" style={{ color: 'var(--link-color)' }} className="underline-offset-[3px] hover:underline">
+            <Link
+              href="/"
+              style={{ color: 'var(--link-color)' }}
+              className="inline-flex min-h-10 items-center underline-offset-[3px] [touch-action:manipulation] hover:underline"
+            >
               Back to homepage
             </Link>
           </Text>
@@ -43,7 +51,7 @@ export default function TutorialPage() {
         <Paper
           component="section"
           id="site-overview"
-          p="lg"
+          p={{ base: 'md', sm: 'lg' }}
           radius="md"
           aria-labelledby="site-overview-heading"
           style={{
@@ -66,7 +74,13 @@ export default function TutorialPage() {
             <strong>Log in / profile</strong> — account and settings.
           </BulletWithIcon>
 
-          <Text mt="sm" size="sm" c="dimmed" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', alignItems: 'center' }}>
+          <Text
+            mt="sm"
+            size="sm"
+            c="dimmed"
+            className="break-words"
+            style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', alignItems: 'center', lineHeight: 1.5 }}
+          >
             On the homepage you’ll also see subject tags,
             <InlineImg src="/images/shuffle.svg" alt="" /> <strong>Random game</strong>, and
             <InlineImg src="/images/arrow.svg" alt="" /> <strong>Back to the top</strong>.
@@ -75,7 +89,7 @@ export default function TutorialPage() {
 
         <Paper
           component="section"
-          p="lg"
+          p={{ base: 'md', sm: 'lg' }}
           radius="md"
           aria-labelledby="game-page-heading"
           style={{
@@ -147,7 +161,7 @@ export default function TutorialPage() {
 
         <Paper
           component="section"
-          p="lg"
+          p={{ base: 'md', sm: 'lg' }}
           radius="md"
           aria-labelledby="tutors-heading"
           style={{
@@ -157,10 +171,18 @@ export default function TutorialPage() {
         >
           <SectionTitle id="tutors-heading">AI tutors (Laurie &amp; Livvy)</SectionTitle>
 
-          <Text mb="sm" style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', color: 'var(--text-body)' }}>
-            <ImgIcon src="/images/aichat.svg" alt="" />
-            Open them with <strong>Ask AI tutors</strong>. You might see loading text first—or a small <strong>Tutors</strong>{' '}
-            pill; tap it to expand again.
+          <Text
+            mb="sm"
+            className="break-words"
+            style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', alignItems: 'flex-start', color: 'var(--text-body)' }}
+          >
+            <span className="mt-0.5 shrink-0">
+              <ImgIcon src="/images/aichat.svg" alt="" />
+            </span>
+            <span className="min-w-0 flex-1" style={{ lineHeight: 1.55 }}>
+              Open them with <strong>Ask AI tutors</strong>. You might see loading text first—or a small <strong>Tutors</strong>{' '}
+              pill; tap it to expand again.
+            </span>
           </Text>
 
           <Bullet>
@@ -245,8 +267,8 @@ export default function TutorialPage() {
           <Title order={3} mt="lg" mb="sm" fz="md" style={{ color: 'var(--text-primary)' }}>
             Handy keys
           </Title>
-          <div className="-mx-1 overflow-x-auto sm:mx-0">
-            <table className="tutorial-shortcuts-table">
+          <div className="-mx-1 touch-pan-x overflow-x-auto pb-px [-webkit-overflow-scrolling:touch] sm:mx-0">
+            <table className="tutorial-shortcuts-table tutorial-shortcuts-table--mobile">
               <thead>
                 <tr>
                   <th scope="col">Key</th>
@@ -283,9 +305,13 @@ export default function TutorialPage() {
           </div>
         </Paper>
 
-        <Text size="sm" c="dimmed">
+        <Text size="sm" c="dimmed" className="break-words" style={{ lineHeight: 1.55 }}>
           Want to try it?{' '}
-          <Link href="/games/circuit-breaker" style={{ color: 'var(--link-color)' }} className="underline-offset-[3px] hover:underline">
+          <Link
+            href="/games/circuit-breaker"
+            style={{ color: 'var(--link-color)' }}
+            className="inline-flex min-h-10 items-center underline-offset-[3px] [touch-action:manipulation] hover:underline"
+          >
             Open a sample game
           </Link>
           .
@@ -324,7 +350,7 @@ function IconBadge({ children, 'aria-hidden': ariaHidden }: { children: ReactNod
   return (
     <span
       aria-hidden={ariaHidden}
-      className="tutorial-icon-badge inline-flex shrink-0 items-center justify-center gap-1 px-2"
+      className="tutorial-icon-badge inline-flex max-w-full shrink-0 flex-wrap items-center justify-center gap-1 px-1.5 sm:gap-1 sm:px-2"
       style={{
         minWidth: 40,
         minHeight: 40,
@@ -398,15 +424,14 @@ function Bullet({ children }: { children: ReactNode }) {
 function BulletWithIcon({ icon, children }: { icon: ReactNode; children: ReactNode }) {
   return (
     <div
-      className="flex gap-5"
+      className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-5"
       style={{
         color: 'var(--text-body)',
-        alignItems: 'flex-start',
-        marginBottom: '0.75rem',
+        marginBottom: '0.85rem',
       }}
     >
-      <span style={{ flexShrink: 0 }}>{icon}</span>
-      <Text component="span" style={{ flex: 1, minWidth: 0, color: 'var(--text-body)', lineHeight: 1.55 }}>
+      <span className="shrink-0 self-start sm:pt-0.5">{icon}</span>
+      <Text component="span" className="min-w-0 flex-1 break-words" style={{ color: 'var(--text-body)', lineHeight: 1.55 }}>
         {children}
       </Text>
     </div>

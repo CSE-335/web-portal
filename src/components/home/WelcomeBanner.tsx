@@ -17,25 +17,29 @@ export default function WelcomeBanner() {
       }}
       aria-labelledby="welcome-banner-heading"
     >
-      <div className="relative min-h-[200px] w-full md:min-h-[240px] md:aspect-[2400/800] lg:aspect-[2400/720]">
+      {/* Taller min height + left-weighted crop on phones keeps headline over the light area of the art */}
+      <div className="relative min-h-[220px] w-full sm:min-h-[200px] md:min-h-[240px] md:aspect-[2400/800] lg:aspect-[2400/720]">
         <Image
           src="/images/welcome-stem-banner.png"
           alt=""
           fill
-          className="object-cover object-[75%_center] md:object-[center]"
-          sizes="100vw"
+          className="object-cover object-[15%_center] sm:object-[65%_center] md:object-center"
+          sizes="(max-width: 640px) 100vw, (max-width: 1200px) 100vw, 1200px"
           priority
         />
       </div>
 
-      <div className="pointer-events-none absolute inset-0 flex items-center px-5 py-5 sm:px-8 md:px-12">
-        <div className="pointer-events-auto max-w-full rounded-xl px-4 py-3 sm:max-w-[min(28rem,calc(52%-2rem))] sm:bg-transparent sm:px-2 sm:py-2 md:py-4 bg-white/[0.92] backdrop-blur-[3px] sm:backdrop-blur-0 md:rounded-none md:bg-transparent md:backdrop-blur-none">
+      <div
+        className="pointer-events-none absolute inset-0 flex flex-col justify-start px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] sm:flex-row sm:items-center sm:justify-start sm:px-8 sm:pb-5 sm:pt-5 md:px-12"
+        style={{ paddingLeft: 'max(0.75rem, env(safe-area-inset-left))', paddingRight: 'max(0.75rem, env(safe-area-inset-right))' }}
+      >
+        <div className="pointer-events-auto w-full max-w-full rounded-xl bg-white/[0.93] px-3 py-3 shadow-sm backdrop-blur-[2px] sm:ml-4 sm:max-w-[min(28rem,calc(52%-2rem))] sm:bg-transparent sm:px-2 sm:py-2 sm:shadow-none sm:backdrop-blur-none md:ml-7 md:py-4 lg:ml-10">
           <h1
             id="welcome-banner-heading"
-            className="text-balance font-extrabold leading-tight tracking-tight"
+            className="text-balance font-extrabold leading-[1.15] tracking-tight sm:leading-tight"
             style={{
               color: '#0f2847',
-              fontSize: 'clamp(1.35rem, 3vw, 2.45rem)',
+              fontSize: 'clamp(1.15rem, 4.2vw + 0.4rem, 2.45rem)',
               textShadow: '0 1px 0 rgba(255,255,255,0.6)',
             }}
           >
@@ -43,8 +47,8 @@ export default function WelcomeBanner() {
           </h1>
           <Link
             href="/tutorial"
-            className="mt-3 inline-block font-semibold underline decoration-[#1565af] underline-offset-[3px] transition-colors hover:text-[#0b5294]"
-            style={{ color: '#1157a8', fontSize: 'clamp(0.8rem, 1.85vw, 1rem)', lineHeight: 1.4 }}
+            className="mt-3 inline-flex min-h-11 max-w-full items-center break-words py-2 text-[0.95rem] font-semibold underline decoration-[#1565af] underline-offset-[3px] transition-colors hover:text-[#0b5294] [touch-action:manipulation] active:opacity-90 sm:min-h-0 sm:py-0 sm:text-[clamp(0.8rem,1.85vw,1rem)]"
+            style={{ color: '#1157a8', lineHeight: 1.4 }}
           >
             {t('tutorialSubtitle')}
           </Link>

@@ -456,3 +456,16 @@ button.banner-close-btn:hover[data-variant] {
   color: var(--text-tag);
 }
 
+@media (max-width: 35em) {
+  .tutorial-shortcuts-table--mobile th,
+  .tutorial-shortcuts-table--mobile td {
+    padding: 0.45rem 0.55rem;
+    font-size: 0.8125rem;
+  }
+
+  .tutorial-shortcuts-table--mobile th:first-child,
+  .tutorial-shortcuts-table--mobile td:first-child {
+    min-width: 9rem;
+  }
+}
+
