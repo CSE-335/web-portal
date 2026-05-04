@@ -135,6 +135,7 @@
   "home": {
     "welcome1": "欢迎来到LLNL",
     "welcome2": "STEM游戏",
+    "tutorialSubtitle": "新手？查看教程：各按钮用途以及如何打开助教助手。",
     "interactiveLearning": "互动学习",
     "saveProgress": "保存你的进度",
     "playAnyDevice": "在任何设备上游玩",

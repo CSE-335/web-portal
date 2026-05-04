@@ -135,6 +135,7 @@
   "home": {
     "welcome1": "مرحبًا بك في LLNL",
     "welcome2": "ألعاب STEM",
+    "tutorialSubtitle": "جديد هنا؟ اطلع على البرنامج التعليمي لمعرفة وظيفة كل زر وكيفية فتح مساعدي البوت.",
     "interactiveLearning": "تعلم تفاعلي",
     "saveProgress": "احفظ تقدمك",
     "playAnyDevice": "العب على أي جهاز",

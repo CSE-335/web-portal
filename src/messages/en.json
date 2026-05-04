@@ -129,7 +129,8 @@
   },
   "home": {
     "welcome1": "Welcome to LLNL",
-    "welcome2": "STEM Games",
+    "welcome2": "STEM Games!",
+    "tutorialSubtitle": "New here? View the tutorial on what each button does and how to open the assistant bots.",
     "interactiveLearning": "Interactive learning",
     "saveProgress": "Save your progress",
     "playAnyDevice": "Play on any device",

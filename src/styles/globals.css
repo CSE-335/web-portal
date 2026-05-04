@@ -403,3 +403,56 @@ button.banner-close-btn:hover[data-variant] {
   transform: translateY(0) scale(0.98);
 }
 
+/* /tutorial shortcut matrix — plain HTML table (no Mantine Table RSC quirks) */
+.tutorial-shortcuts-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--text-body);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tutorial-shortcuts-table thead {
+  background: var(--surface-secondary);
+}
+
+.tutorial-shortcuts-table th,
+.tutorial-shortcuts-table td {
+  padding: 0.55rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.tutorial-shortcuts-table th {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.tutorial-shortcuts-table tbody tr:nth-child(odd) {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.tutorial-shortcuts-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.tutorial-shortcuts-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tutorial-kbd {
+  display: inline-block;
+  padding: 0.1em 0.45em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8em;
+  line-height: 1.4;
+  border-radius: 4px;
+  border: 1px solid var(--tag-border);
+  background: var(--tag-bg);
+  color: var(--text-tag);
+}
+

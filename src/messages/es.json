@@ -135,6 +135,7 @@
   "home": {
     "welcome1": "Bienvenido a LLNL",
     "welcome2": "Juegos STEM",
+    "tutorialSubtitle": "¿Primera vez? Consulta el tutorial sobre cada botón y cómo abrir los asistentes.",
     "interactiveLearning": "Aprendizaje interactivo",
     "saveProgress": "Guarda tu progreso",
     "playAnyDevice": "Juega en cualquier dispositivo",
