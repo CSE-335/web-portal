@@ -57,7 +57,10 @@ export default function GameListCard({
 
             <Link
               href={`/games/${slug}`}
-              className="play-btn inline-flex rounded-[20px] bg-[#176BFF] px-6 py-2.5 text-base font-semibold text-white transition hover:bg-[#0f5ae0]"
+              className="play-btn play-btn-game-card inline-flex rounded-[20px] px-6 py-2.5 text-base font-semibold text-white transition hover:opacity-95"
+              style={{
+                backgroundColor: "var(--play-button-bg)",
+              }}
             >
               {tCommon('play')}
             </Link>

@@ -122,3 +122,73 @@ export const themedTextareaStyles = {
     padding: "14px 20px",
   },
 };
+
+/** About / Contact / Privacy / Feedback — one shell, cards, and type scale (light + dark via CSS vars) */
+export const staticInfoPageShell: CSSProperties = {
+  backgroundColor: "var(--about-wrapper-bg)",
+  borderRadius: "16px",
+  minHeight: "100vh",
+  paddingTop: "max(3rem, env(safe-area-inset-top, 0px))",
+  paddingBottom: "max(4.5rem, env(safe-area-inset-bottom, 0px))",
+  paddingLeft: "max(0.75rem, env(safe-area-inset-left, 0px))",
+  paddingRight: "max(0.75rem, env(safe-area-inset-right, 0px))",
+};
+
+/** Scales down on phones; caps at ~48px on large screens */
+export const staticInfoPageTitle: CSSProperties = {
+  color: "var(--about-text)",
+  fontSize: "clamp(1.625rem, 4vw + 1rem, 3rem)",
+  fontWeight: 600,
+  lineHeight: 1.12,
+  marginBottom: "10px",
+  letterSpacing: "-0.5px",
+};
+
+/** Padding inside cards — replaces responsive p= prop for TS-safe mobile/desktop rhythm */
+export const staticInfoCardPadding = "clamp(1rem, 2.5vw + 0.5rem, 2rem)";
+
+/** Stack gaps between major blocks */
+export const staticInfoBlockGap = "clamp(1.25rem, 2.8vw, 2rem)";
+
+/** Card surface — add `padding: staticInfoCardPadding` in the style prop */
+export const staticInfoCardSurface: CSSProperties = {
+  backgroundColor: "var(--about-container-bg)",
+  border: "2px solid var(--about-border-strong)",
+};
+
+export const staticInfoSectionTitle: CSSProperties = {
+  color: "var(--about-text)",
+  fontSize: "clamp(1.05rem, 2vw + 0.65rem, 1.25rem)",
+  fontWeight: 600,
+};
+
+export const staticInfoSubSectionTitle: CSSProperties = {
+  color: "var(--text-secondary)",
+  fontSize: "clamp(0.95rem, 1.5vw + 0.65rem, 1.0625rem)",
+  fontWeight: 600,
+};
+
+export const staticInfoBody: CSSProperties = {
+  color: "var(--about-text)",
+  fontSize: "clamp(1rem, 1.2vw + 0.875rem, 1.125rem)",
+  lineHeight: 1.7,
+};
+
+export const staticInfoList: CSSProperties = {
+  color: "var(--about-text)",
+  fontSize: "clamp(0.9375rem, 1vw + 0.8rem, 1rem)",
+};
+
+export const staticInfoLabel: CSSProperties = {
+  fontFamily,
+  fontWeight: 500,
+  fontSize: "clamp(0.875rem, 1.2vw + 0.7rem, 1rem)",
+  color: "var(--about-text)",
+  marginBottom: "6px",
+};
+
+export const staticInfoOptional: CSSProperties = {
+  color: "var(--text-secondary)",
+  fontWeight: 400,
+  fontSize: "13px",
+};

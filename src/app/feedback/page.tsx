@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useTranslations } from 'next-intl';
-import { useMantineColorScheme } from '@mantine/core';
+import { useTranslations } from "next-intl";
+import { useMediaQuery } from "@mantine/hooks";
 import { supabase } from "@/lib/supabase/client";
 import {
   Container,
@@ -15,16 +15,30 @@ import {
   Button,
   Group,
   Box,
-  Divider,
+  Paper,
+  SimpleGrid,
 } from "@mantine/core";
+import {
+  staticInfoPageShell,
+  staticInfoPageTitle,
+  staticInfoCardSurface,
+  staticInfoLabel,
+  staticInfoOptional,
+  staticInfoCardPadding,
+  staticInfoBlockGap,
+  themedInputStyles,
+  themedTextareaStyles,
+  pageTheme,
+} from "@/lib/theme/pageTheme";
 
-const likelihoodKeys = ['veryUnlikely', 'unlikely', 'notSure', 'likely', 'veryLikely'] as const;
+const likelihoodKeys = ["veryUnlikely", "unlikely", "notSure", "likely", "veryLikely"] as const;
 const CONTACT_TEAM_ERROR_SUFFIX = "Please contact the team for further help.";
 
+const cardStyle = { ...staticInfoCardSurface, padding: staticInfoCardPadding };
+
 export default function FeedbackPage() {
-  const t = useTranslations('feedback');
-  const { colorScheme } = useMantineColorScheme();
-  const isDark = colorScheme !== 'light';
+  const t = useTranslations("feedback");
+  const isNarrow = useMediaQuery("(max-width: 639.9px)");
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -71,7 +85,7 @@ export default function FeedbackPage() {
         throw new Error(data.error || "Failed to submit feedback.");
       }
 
-      setSuccess(t('success'));
+      setSuccess(t("success"));
       setName("");
       setEmail("");
       setIssues("");
@@ -79,256 +93,197 @@ export default function FeedbackPage() {
       setReturnLikelihood("");
       setComments("");
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : t('error')
-      );
+      setError(err instanceof Error ? err.message : t("error"));
     } finally {
       setLoading(false);
     }
   }
 
-  const inputStyles = {
-    wrapper: {
-      borderRadius: "10px",
-      background: isDark
-        ? "linear-gradient(#525b85, #525b85) padding-box, linear-gradient(to bottom, #7886bf, #6e91d0) border-box"
-        : "var(--input-wrapper-bg)",
-      border: isDark ? "2px solid transparent" : "var(--input-wrapper-border)",
-    },
-    input: {
-      backgroundColor: "transparent",
-      color: isDark ? "white" : "var(--text-primary)",
-      border: "none",
-      height: "46px",
-      fontSize: "15px",
-      fontFamily: "var(--font-alexandria), sans-serif",
-      fontWeight: 400,
-      paddingLeft: "20px",
-    },
-  };
-
-  const textareaStyles = {
-    wrapper: {
-      borderRadius: "10px",
-      background: isDark
-        ? "linear-gradient(#525b85, #525b85) padding-box, linear-gradient(to bottom, #7886bf, #6e91d0) border-box"
-        : "var(--input-wrapper-bg)",
-      border: isDark ? "2px solid transparent" : "var(--input-wrapper-border)",
-    },
-    input: {
-      backgroundColor: "transparent",
-      color: isDark ? "white" : "var(--text-primary)",
-      border: "none",
-      fontSize: "15px",
-      fontFamily: "var(--font-alexandria), sans-serif",
-      fontWeight: 400,
-      padding: "14px 20px",
-    },
-  };
-
-  const labelStyle = {
-    fontFamily: "var(--font-alexandria), sans-serif",
-    fontWeight: 500,
-    fontSize: "16px",
-    color: isDark ? "white" : "var(--text-primary)",
-    marginBottom: "6px",
-  };
-
-  const optionalStyle = {
-    color: isDark ? "#9CA3AF" : "var(--text-secondary)",
-    fontWeight: 400,
-    fontSize: "13px",
-  };
-
   const showContactTeamLink = error.includes(CONTACT_TEAM_ERROR_SUFFIX);
 
   return (
-    <Container size="md" py={48}>
-      <Box
-        style={{
-          backgroundColor: isDark ? "#1f2542" : "var(--surface-primary)",
-          border: isDark ? "1px solid #6e90b6" : "1px solid var(--border-color)",
-          borderRadius: "10px",
-          padding: "40px 48px",
-        }}
-      >
-        <form onSubmit={handleSubmit}>
-          <Stack gap="lg">
-            <Stack gap={4}>
-              <Title
-                order={1}
-                style={{
-                  color: isDark ? "white" : "var(--text-primary)",
-                  fontSize: "28px",
-                  fontWeight: 600,
-                  fontFamily: "var(--font-alexandria), sans-serif",
-                }}
-              >
-                {t('title')}
-              </Title>
-              <Text
-                style={{
-                  fontFamily: "var(--font-alexandria), sans-serif",
-                  fontSize: "14px",
-                  color: isDark ? "#9CA3AF" : "var(--text-secondary)",
-                }}
-              >
-                {t('subtitle')}
-              </Text>
-            </Stack>
-
-            <Divider styles={{ root: { borderColor: isDark ? "#344369" : "var(--border-color)" } }} />
-
-            <Group grow gap="md">
-              <TextInput
-                value={name}
-                onChange={(e) => setName(e.currentTarget.value)}
-                placeholder={t('name')}
-                label={
-                  <span style={labelStyle}>
-                    {t('name')} <span style={optionalStyle}>{t('optional')}</span>
-                  </span>
-                }
-                styles={inputStyles}
-              />
-              <TextInput
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.currentTarget.value)}
-                placeholder={t('email')}
-                label={
-                  <span style={labelStyle}>
-                    {t('email')} <span style={optionalStyle}>{t('optional')}</span>
-                  </span>
-                }
-                styles={inputStyles}
-              />
-            </Group>
-
-            <Textarea
-              value={issues}
-              onChange={(e) => setIssues(e.currentTarget.value)}
-              placeholder={t('issuesPlaceholder')}
-              minRows={5}
-              autosize
-              required
-              label={
-                <span style={labelStyle}>
-                  {t('issues')}
-                </span>
-              }
-              styles={textareaStyles}
+    <div style={staticInfoPageShell}>
+      <Container size="lg">
+        <Stack style={{ gap: staticInfoBlockGap }}>
+          <Box>
+            <Title order={1} style={staticInfoPageTitle}>
+              {t("title")}
+            </Title>
+            <Text
+              style={{
+                color: "var(--text-secondary)",
+                fontSize: "clamp(0.8125rem, 1.5vw + 0.65rem, 0.9375rem)",
+                marginTop: "4px",
+                lineHeight: 1.45,
+              }}
+            >
+              {t("subtitle")}
+            </Text>
+            <div
+              style={{
+                width: "100%",
+                height: "1px",
+                backgroundColor: "var(--app-divider-color)",
+                marginTop: "12px",
+              }}
             />
+          </Box>
 
-            <Textarea
-              value={futureIdeas}
-              onChange={(e) => setFutureIdeas(e.currentTarget.value)}
-              placeholder={t('ideasPlaceholder')}
-              minRows={5}
-              autosize
-              label={
-                <span style={labelStyle}>
-                  {t('ideas')} <span style={optionalStyle}>{t('optional')}</span>
-                </span>
-              }
-              styles={textareaStyles}
-            />
+          <Paper shadow="none" radius="lg" style={cardStyle}>
+            <form onSubmit={handleSubmit}>
+              <Stack style={{ gap: "clamp(1rem, 2.5vw, 1.5rem)" }}>
+                <SimpleGrid cols={{ base: 1, sm: 2 }} style={{ gap: "clamp(0.75rem, 2vw, 1rem)" }}>
+                  <TextInput
+                    value={name}
+                    onChange={(e) => setName(e.currentTarget.value)}
+                    placeholder={t("name")}
+                    label={
+                      <span style={staticInfoLabel}>
+                        {t("name")} <span style={staticInfoOptional}>{t("optional")}</span>
+                      </span>
+                    }
+                    styles={themedInputStyles}
+                  />
+                  <TextInput
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.currentTarget.value)}
+                    placeholder={t("email")}
+                    label={
+                      <span style={staticInfoLabel}>
+                        {t("email")} <span style={staticInfoOptional}>{t("optional")}</span>
+                      </span>
+                    }
+                    styles={themedInputStyles}
+                  />
+                </SimpleGrid>
 
-            <Stack gap="sm">
-              <Text style={labelStyle}>
-                {t('likelihood')}
-              </Text>
-              <Group gap={8} wrap="nowrap">
-                {likelihoodKeys.map((key) => (
-                  <Box
-                    key={key}
-                    component="button"
-                    type="button"
-                    onClick={() => setReturnLikelihood(key)}
+                <Textarea
+                  value={issues}
+                  onChange={(e) => setIssues(e.currentTarget.value)}
+                  placeholder={t("issuesPlaceholder")}
+                  minRows={5}
+                  autosize
+                  required
+                  label={<span style={staticInfoLabel}>{t("issues")}</span>}
+                  styles={themedTextareaStyles}
+                />
+
+                <Textarea
+                  value={futureIdeas}
+                  onChange={(e) => setFutureIdeas(e.currentTarget.value)}
+                  placeholder={t("ideasPlaceholder")}
+                  minRows={5}
+                  autosize
+                  label={
+                    <span style={staticInfoLabel}>
+                      {t("ideas")} <span style={staticInfoOptional}>{t("optional")}</span>
+                    </span>
+                  }
+                  styles={themedTextareaStyles}
+                />
+
+                <Stack gap="sm">
+                  <Text style={staticInfoLabel}>{t("likelihood")}</Text>
+                  <SimpleGrid
+                    cols={{ base: 2, xs: 3, sm: 5 }}
+                    style={{ gap: "clamp(0.35rem, 1.5vw, 0.5rem)" }}
+                  >
+                    {likelihoodKeys.map((key) => (
+                      <Box
+                        key={key}
+                        component="button"
+                        type="button"
+                        onClick={() => setReturnLikelihood(key)}
+                        style={{
+                          padding: "10px 6px",
+                          minHeight: 44,
+                          borderRadius: "12px",
+                          border:
+                            returnLikelihood === key
+                              ? "2px solid transparent"
+                              : "1px solid var(--about-border-strong)",
+                          cursor: "pointer",
+                          textAlign: "center",
+                          fontFamily: "var(--font-alexandria), sans-serif",
+                          fontWeight: 500,
+                          fontSize: "clamp(0.6875rem, 1vw + 0.55rem, 0.75rem)",
+                          lineHeight: 1.25,
+                          color:
+                            returnLikelihood === key
+                              ? "var(--button-primary-text)"
+                              : "var(--text-secondary)",
+                          background:
+                            returnLikelihood === key
+                              ? "var(--button-primary-bg)"
+                              : "var(--surface-secondary)",
+                          transition: "background 0.2s ease, color 0.2s ease",
+                        }}
+                      >
+                        {t(key)}
+                      </Box>
+                    ))}
+                  </SimpleGrid>
+                </Stack>
+
+                <Textarea
+                  value={comments}
+                  onChange={(e) => setComments(e.currentTarget.value)}
+                  placeholder={t("commentsPlaceholder")}
+                  minRows={4}
+                  autosize
+                  label={
+                    <span style={staticInfoLabel}>
+                      {t("comments")} <span style={staticInfoOptional}>{t("optional")}</span>
+                    </span>
+                  }
+                  styles={themedTextareaStyles}
+                />
+
+                {error && (
+                  <Text c="red.4" fz="sm" style={{ fontFamily: "var(--font-alexandria), sans-serif" }}>
+                    {showContactTeamLink ? (
+                      <>
+                        {"There was an error submitting your feedback. Please contact the "}
+                        <Link
+                          href="/contact"
+                          style={{ color: "inherit", textDecoration: "underline", fontWeight: 600 }}
+                        >
+                          team
+                        </Link>
+                        {" for further help."}
+                      </>
+                    ) : (
+                      error
+                    )}
+                  </Text>
+                )}
+
+                {success && (
+                  <Text c="green.4" fz="sm" style={{ fontFamily: "var(--font-alexandria), sans-serif" }}>
+                    {success}
+                  </Text>
+                )}
+
+                <Group justify={isNarrow ? "stretch" : "flex-end"} wrap="nowrap">
+                  <Button
+                    type="submit"
+                    loading={loading}
+                    h={42}
                     style={{
-                      flex: 1,
-                      padding: "10px 4px",
-                      borderRadius: "10px",
-                      border: returnLikelihood === key ? "none" : isDark ? "none" : "1px solid var(--border-color)",
-                      cursor: "pointer",
-                      textAlign: "center",
-                      fontFamily: "var(--font-alexandria), sans-serif",
-                      fontWeight: 500,
-                      fontSize: "12px",
-                      color: returnLikelihood === key ? "white" : isDark ? "#9CA3AF" : "var(--text-secondary)",
-                      background: returnLikelihood === key
-                        ? "linear-gradient(135deg, #1b41ff, #0054f0)"
-                        : isDark ? "#525b85" : "var(--surface-secondary)",
-                      transition: "all 0.2s ease",
+                      ...pageTheme.primaryButton,
+                      width: isNarrow ? "100%" : 200,
+                      maxWidth: isNarrow ? "100%" : 200,
                     }}
                   >
-                    {t(key)}
-                  </Box>
-                ))}
-              </Group>
-            </Stack>
-
-            <Textarea
-              value={comments}
-              onChange={(e) => setComments(e.currentTarget.value)}
-              placeholder={t('commentsPlaceholder')}
-              minRows={4}
-              autosize
-              label={
-                <span style={labelStyle}>
-                  {t('comments')} <span style={optionalStyle}>{t('optional')}</span>
-                </span>
-              }
-              styles={textareaStyles}
-            />
-
-            {error && (
-              <Text c="red.4" fz="sm" style={{ fontFamily: "var(--font-alexandria), sans-serif" }}>
-                {showContactTeamLink ? (
-                  <>
-                    {"There was an error submitting your feedback. Please contact the "}
-                    <Link
-                      href="/contact"
-                      style={{ color: "inherit", textDecoration: "underline", fontWeight: 600 }}
-                    >
-                      team
-                    </Link>
-                    {" for further help."}
-                  </>
-                ) : (
-                  error
-                )}
-              </Text>
-            )}
-
-            {success && (
-              <Text c="green.4" fz="sm" style={{ fontFamily: "var(--font-alexandria), sans-serif" }}>
-                {success}
-              </Text>
-            )}
-
-            <Group justify="flex-end">
-              <Button
-                type="submit"
-                loading={loading}
-                w={200}
-                h={42}
-                style={{
-                  background: "linear-gradient(to bottom, #1b41ff 0%, #0054f0 100%)",
-                  borderRadius: "20px",
-                  color: "#fbe6e6",
-                  fontFamily: "var(--font-alexandria), sans-serif",
-                  fontWeight: 700,
-                  fontSize: "15px",
-                  border: "none",
-                }}
-              >
-                {t('submit')}
-              </Button>
-            </Group>
-          </Stack>
-        </form>
-      </Box>
-    </Container>
+                    {t("submit")}
+                  </Button>
+                </Group>
+              </Stack>
+            </form>
+          </Paper>
+        </Stack>
+      </Container>
+    </div>
   );
 }

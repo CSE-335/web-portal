@@ -17,8 +17,8 @@ export default function WelcomeBanner() {
       }}
       aria-labelledby="welcome-banner-heading"
     >
-      {/* Taller min height + left-weighted crop on phones keeps headline over the light area of the art */}
-      <div className="relative min-h-[220px] w-full sm:min-h-[200px] md:min-h-[240px] md:aspect-[2400/800] lg:aspect-[2400/720]">
+      {/* Phones only: taller min-height so wrapped headings + link are not clipped (section is overflow-hidden) */}
+      <div className="relative min-h-[280px] w-full sm:min-h-[200px] md:min-h-[240px] md:aspect-[2400/800] lg:aspect-[2400/720]">
         <Image
           src="/images/welcome-stem-banner.png"
           alt=""
@@ -30,25 +30,27 @@ export default function WelcomeBanner() {
       </div>
 
       <div
-        className="pointer-events-none absolute inset-0 flex flex-col justify-start px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] sm:flex-row sm:items-center sm:justify-start sm:px-8 sm:pb-5 sm:pt-5 md:px-12"
+        className="pointer-events-none absolute inset-0 flex flex-col justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] sm:flex-row sm:items-center sm:justify-start sm:px-8 sm:pb-5 sm:pt-5 md:px-12"
         style={{ paddingLeft: 'max(0.75rem, env(safe-area-inset-left))', paddingRight: 'max(0.75rem, env(safe-area-inset-right))' }}
       >
-        <div className="pointer-events-auto w-full max-w-full rounded-xl bg-white/[0.93] px-3 py-3 shadow-sm backdrop-blur-[2px] sm:ml-4 sm:max-w-[min(28rem,calc(52%-2rem))] sm:bg-transparent sm:px-2 sm:py-2 sm:shadow-none sm:backdrop-blur-none md:ml-7 md:py-4 lg:ml-10">
+        <div
+          className="pointer-events-auto w-full min-w-0 max-w-full rounded-2xl px-4 py-4 shadow-sm backdrop-blur-[3px] sm:ml-3 sm:max-w-[min(38rem,calc(60%-1rem))] sm:bg-transparent sm:px-8 sm:py-8 sm:shadow-none sm:backdrop-blur-none md:ml-6 md:px-10 md:py-9 lg:ml-10 lg:px-11 lg:py-10"
+          style={{ background: "var(--welcome-overlay-mobile-bg)" }}
+        >
           <h1
             id="welcome-banner-heading"
-            className="text-balance font-extrabold leading-[1.15] tracking-tight sm:leading-tight"
+            className="max-sm:break-words text-balance font-extrabold leading-[1.2] tracking-tight text-[clamp(1rem,3.7vw+0.45rem,2rem)] sm:leading-tight sm:text-[clamp(1.15rem,4.2vw+0.4rem,2.45rem)]"
             style={{
-              color: '#0f2847',
-              fontSize: 'clamp(1.15rem, 4.2vw + 0.4rem, 2.45rem)',
-              textShadow: '0 1px 0 rgba(255,255,255,0.6)',
+              color: "var(--welcome-banner-title-color)",
+              textShadow: 'var(--welcome-banner-heading-shadow)',
             }}
           >
             {title}
           </h1>
           <Link
             href="/tutorial"
-            className="mt-3 inline-flex min-h-11 max-w-full items-center break-words py-2 text-[0.95rem] font-semibold underline decoration-[#1565af] underline-offset-[3px] transition-colors hover:text-[#0b5294] [touch-action:manipulation] active:opacity-90 sm:min-h-0 sm:py-0 sm:text-[clamp(0.8rem,1.85vw,1rem)]"
-            style={{ color: '#1157a8', lineHeight: 1.4 }}
+            className="mt-3 inline-flex min-h-11 max-w-full items-center break-words py-2 text-[0.95rem] font-semibold underline decoration-[#1565af] underline-offset-[3px] transition-colors [touch-action:manipulation] active:opacity-90 sm:min-h-0 sm:py-0 sm:text-[clamp(0.8rem,1.85vw,1rem)] sm:hover:opacity-90"
+            style={{ color: "var(--link-color)", lineHeight: 1.4 }}
           >
             {t('tutorialSubtitle')}
           </Link>

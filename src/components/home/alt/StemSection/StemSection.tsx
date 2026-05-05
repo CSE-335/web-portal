@@ -1,14 +1,16 @@
 import { Title, Flex, Stack, Box } from "@mantine/core";
 import GameSlot from "./GameSlot";
 import { SIDE_CARD_HEIGHT, MAIN_CARD_HEIGHT } from "@/constants/layout";
-import { games, GameMeta } from "@/data/games";
+import type { GameMeta } from "@/data/games";
 
 type StemSectionProps = {
+  games: GameMeta[];
   subject: GameMeta["subject"];
   titlePosition?: "left" | "right";
 };
 
 export default function StemSection({
+  games,
   subject,
   titlePosition = "left",
 }: StemSectionProps) {

@@ -83,6 +83,22 @@ html[lang="ar"] button {
   --about-wrapper-bg: #2f3566;
   --about-container-bg: #353c71;
   --about-text: #ffffff;
+  --about-avatar-placeholder-bg: rgba(209, 213, 219, 0.35);
+  --about-border-strong: rgba(255, 255, 255, 0.22);
+  /* Softer blend into banner art + reads as part of dark UI (blue-violet, not flat navy slab) */
+  --welcome-overlay-mobile-bg: linear-gradient(
+    115deg,
+    rgba(36, 42, 78, 0.97) 0%,
+    rgba(40, 50, 98, 0.88) 38%,
+    rgba(52, 64, 118, 0.42) 68%,
+    transparent 92%
+  );
+  --welcome-banner-title-color: var(--title-color);
+  --welcome-banner-heading-shadow: 0 1px 4px rgba(0, 0, 0, 0.55), 0 0 20px rgba(255, 255, 255, 0.08);
+  --tutorial-table-row-odd: rgba(255, 255, 255, 0.035);
+  --tutorial-table-row-hover: rgba(255, 255, 255, 0.08);
+  --play-button-bg: #176bff;
+  --play-button-bg-hover: #0f5ae0;
 }
 
 [data-mantine-color-scheme="light"] {
@@ -148,6 +164,51 @@ html[lang="ar"] button {
   --about-wrapper-bg: #e0e1e9;
   --about-container-bg: #ffffff;
   --about-text: #111827;
+  --about-avatar-placeholder-bg: #e2e8f0;
+  --about-border-strong: rgba(0, 48, 135, 0.2);
+  /* Fade into banner art (same geometry as dark mode, frosted white) */
+  --welcome-overlay-mobile-bg: linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.97) 0%,
+    rgba(255, 255, 255, 0.88) 38%,
+    rgba(255, 255, 255, 0.42) 68%,
+    transparent 92%
+  );
+  --welcome-banner-title-color: #0f2847;
+  --welcome-banner-heading-shadow: 0 1px 0 rgba(255, 255, 255, 0.75);
+  --tutorial-table-row-odd: rgba(0, 48, 135, 0.04);
+  --tutorial-table-row-hover: rgba(0, 87, 168, 0.06);
+  --play-button-bg: #0a40a8;
+  --play-button-bg-hover: #0d4dbe;
+}
+
+/* Mantine tokens: match app semantic colors (globals load after Mantine core styles.css) */
+:root[data-mantine-color-scheme="dark"],
+:host([data-mantine-color-scheme="dark"]) {
+  --mantine-color-body: var(--surface-primary);
+  --mantine-color-text: var(--text-primary);
+  --mantine-color-dimmed: var(--text-secondary);
+  --mantine-color-bright: var(--text-primary);
+  --mantine-color-default: var(--surface-secondary);
+  --mantine-color-default-hover: color-mix(in srgb, var(--surface-secondary) 92%, white);
+  --mantine-color-default-color: var(--text-primary);
+  --mantine-color-default-border: var(--border-color);
+  --mantine-color-placeholder: rgba(176, 198, 230, 0.55);
+  --mantine-color-anchor: var(--link-color);
+}
+
+:root[data-mantine-color-scheme="light"],
+:host([data-mantine-color-scheme="light"]) {
+  --mantine-color-body: var(--app-bg-gradient);
+  --mantine-color-text: var(--text-primary);
+  --mantine-color-dimmed: var(--text-secondary);
+  --mantine-color-bright: var(--text-primary);
+  --mantine-color-default: var(--surface-secondary);
+  --mantine-color-default-hover: color-mix(in srgb, var(--surface-secondary) 88%, black);
+  --mantine-color-default-color: var(--text-primary);
+  --mantine-color-default-border: var(--border-color);
+  --mantine-color-placeholder: #6b7280;
+  --mantine-color-anchor: var(--link-color);
 }
 
 /* Light mode banner */
@@ -177,15 +238,15 @@ html[lang="ar"] button {
   color: rgba(255,255,255,0.6) !important;
 }
 
-/* Search popup theming */
-.search-popup-btn:hover {
-  background: var(--search-popup-hover) !important;
-}
-[data-mantine-color-scheme="light"] .search-popup {
+/* Search popup theming (homepage + shared) */
+.search-popup {
   background: var(--search-popup-bg) !important;
 }
-[data-mantine-color-scheme="light"] .search-popup-btn {
+.search-popup-btn {
   color: var(--search-popup-text) !important;
+}
+.search-popup-btn:hover {
+  background: var(--search-popup-hover) !important;
 }
 
 /* Dark mode search */
@@ -340,6 +401,10 @@ button.banner-close-btn:hover[data-variant] {
   --ai-hover: #0d4dbe !important;
 }
 
+.play-btn-game-card:hover {
+  background-color: var(--play-button-bg-hover) !important;
+}
+
 .nav-tooltip {
   position: relative;
   display: inline-flex;
@@ -388,6 +453,17 @@ button.banner-close-btn:hover[data-variant] {
   transform: translate(-50%, 0);
 }
 
+[data-mantine-color-scheme="light"] .nav-tooltip::after {
+  background: #f8fafc;
+  color: #1a1d2e;
+  box-shadow: 0 8px 24px rgba(0, 48, 135, 0.14);
+  border: 1px solid rgba(0, 48, 135, 0.12);
+}
+
+[data-mantine-color-scheme="light"] .nav-tooltip::before {
+  border-bottom-color: #f8fafc;
+}
+
 .nav-login-btn {
   box-shadow: 0 3px 10px rgba(27, 65, 255, 0.35);
   transition: filter 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease !important;
@@ -433,11 +509,11 @@ button.banner-close-btn:hover[data-variant] {
 }
 
 .tutorial-shortcuts-table tbody tr:nth-child(odd) {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--tutorial-table-row-odd);
 }
 
 .tutorial-shortcuts-table tbody tr:hover {
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--tutorial-table-row-hover);
 }
 
 .tutorial-shortcuts-table tbody tr:last-child td {

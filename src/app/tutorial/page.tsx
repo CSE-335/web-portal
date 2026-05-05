@@ -24,7 +24,12 @@ export const metadata: Metadata = {
 export default function TutorialPage() {
   return (
     <main className="tutorial-page mx-auto w-full max-w-3xl">
-      <Stack gap={{ base: 'md', sm: 'lg' }} pb={{ base: 'lg', md: 'xl' }}>
+      <Stack
+        style={{
+          gap: 'clamp(0.875rem, 1.8vw, 1.25rem)',
+          paddingBottom: 'clamp(1.25rem, 3vw, 2rem)',
+        }}
+      >
         <div>
           <Title
             order={1}

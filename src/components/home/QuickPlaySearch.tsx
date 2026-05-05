@@ -5,15 +5,10 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Paper, Text, TextInput, Title } from "@mantine/core";
 import { useTranslations } from "next-intl";
-
-type QuickPlayGame = {
-  slug: string;
-  title: string;
-  thumbnailSrc: string;
-};
+import type { GameMeta } from "@/data/games";
 
 type QuickPlaySearchProps = {
-  games: QuickPlayGame[];
+  games: Pick<GameMeta, "slug" | "title" | "thumbnailSrc">[];
 };
 
 export default function QuickPlaySearch({ games }: QuickPlaySearchProps) {
@@ -77,7 +72,7 @@ export default function QuickPlaySearch({ games }: QuickPlaySearchProps) {
         position: "relative",
       }}
     >
-      <Title order={2} fz={{ base: "xl", md: "h2" }} c="white">
+      <Title order={2} fz={{ base: "xl", md: "h2" }} style={{ color: "var(--title-color)" }}>
         {tHome("quickPlayTitle")}
       </Title>
       <Text mt={4} mb="md" c="var(--text-body)">
@@ -107,33 +102,35 @@ export default function QuickPlaySearch({ games }: QuickPlaySearchProps) {
           rightSection={<img src="/images/search.svg" alt="" aria-hidden width={20} height={20} style={{ filter: "var(--icon-filter)" }} />}
           styles={{
             input: {
-              background: "var(--overlay-bg)",
+              background: "var(--input-bg)",
               border: "1px solid var(--overlay-border)",
-              color: "white",
+              color: "var(--text-primary)",
             },
           }}
         />
 
         {isOpen && query && (
           <div
+            className="search-popup"
             style={{
               position: "absolute",
               top: "100%",
               left: 0,
               right: 0,
               marginTop: 6,
-              background: "#2a2f4e",
               border: "1px solid var(--overlay-border)",
               borderRadius: 12,
               overflow: "hidden",
               zIndex: 20,
-              boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+              boxShadow: "var(--shadow-card)",
             }}
           >
             {results.length > 0 ? (
               results.map((game) => (
                 <button
                   key={game.slug}
+                  type="button"
+                  className="search-popup-btn"
                   onClick={() => handleSelect(game.slug)}
                   style={{
                     display: "flex",
@@ -144,12 +141,9 @@ export default function QuickPlaySearch({ games }: QuickPlaySearchProps) {
                     textAlign: "left",
                     background: "transparent",
                     border: "none",
-                    color: "white",
                     cursor: "pointer",
                     fontSize: 18,
                   }}
-                  onMouseEnter={(event) => (event.currentTarget.style.background = "rgba(255,255,255,0.08)")}
-                  onMouseLeave={(event) => (event.currentTarget.style.background = "transparent")}
                 >
                   <Image
                     src={game.thumbnailSrc}
@@ -162,7 +156,7 @@ export default function QuickPlaySearch({ games }: QuickPlaySearchProps) {
                 </button>
               ))
             ) : (
-              <Text px="md" py="sm" c="white">
+              <Text px="md" py="sm" style={{ color: "var(--search-popup-text)" }}>
                 {tHome("quickPlayNoResults")}
               </Text>
             )}
