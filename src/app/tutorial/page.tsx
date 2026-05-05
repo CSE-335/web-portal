@@ -137,6 +137,7 @@ export default function TutorialPage() {
                     width={20}
                     height={20}
                     className="pointer-events-none max-h-[20px] max-w-[20px] select-none"
+                    style={{ filter: 'var(--icon-filter)' }}
                   />
                   <span className="px-0.5 text-[10px] text-[var(--text-muted)]">/</span>
                   <Image
@@ -145,6 +146,7 @@ export default function TutorialPage() {
                     width={20}
                     height={20}
                     className="pointer-events-none max-h-[20px] max-w-[20px] select-none"
+                    style={{ filter: 'var(--icon-filter)' }}
                   />
                 </span>
               </IconBadge>
@@ -362,7 +364,7 @@ function IconBadge({ children, 'aria-hidden': ariaHidden }: { children: ReactNod
         borderRadius: 9999,
         background: 'var(--toolbar-btn-bg)',
         border: '1px solid var(--toolbar-btn-border)',
-        color: 'rgba(226,232,240,0.92)',
+        color: 'var(--text-primary)',
       }}
     >
       {children}
@@ -380,7 +382,7 @@ function ImgIcon({ src, alt = '', w = 21, flip }: { src: string; alt?: string; w
           width={w}
           height={w}
           className="pointer-events-none select-none"
-          style={{ maxHeight: w, maxWidth: w }}
+          style={{ maxHeight: w, maxWidth: w, filter: 'var(--icon-filter)' }}
         />
       </span>
     </IconBadge>
@@ -390,7 +392,14 @@ function ImgIcon({ src, alt = '', w = 21, flip }: { src: string; alt?: string; w
 function InlineImg({ src, alt = '' }: { src: string; alt?: string }) {
   return (
     <span className="inline-block align-middle" style={{ width: 20, height: 20 }}>
-      <Image src={src} alt={alt} width={20} height={20} className="pointer-events-none select-none opacity-85" />
+      <Image
+        src={src}
+        alt={alt}
+        width={20}
+        height={20}
+        className="pointer-events-none select-none opacity-85"
+        style={{ filter: 'var(--icon-filter)' }}
+      />
     </span>
   );
 }
