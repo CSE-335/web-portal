@@ -4,9 +4,9 @@
 
 ### Team Members
 
-**Ethan Reed** - Team Coordinator, Full-Stack 
+**Ethan Reed** - Team Lead/Coordinator, Full-Stack 
 <br>
-**Natalie Parker** - Team Lead, Full-Stack, Database Designer
+**Natalie Parker** - Full-Stack, Database Designer
 <br>
 **Arielle Talania** - Full-Stack, DevOps Engineer, UI/UX Designer
 <br>

@@ -1,4 +1,13 @@
 import { Container, Stack, Title, Text, Paper, SimpleGrid, Box } from "@mantine/core";
+import {
+  staticInfoPageShell,
+  staticInfoPageTitle,
+  staticInfoCardSurface,
+  staticInfoSectionTitle,
+  staticInfoBody,
+  staticInfoCardPadding,
+  staticInfoBlockGap,
+} from "@/lib/theme/pageTheme";
 
 const teamMembers = [
   {
@@ -13,7 +22,7 @@ const teamMembers = [
   },
   {
     name: "Natalie Parker",
-    roles: ["Team Lead", "Full-Stack", "Database Designer"],
+    roles: ["Full-Stack", "Database Designer"],
     image: "/teampics/natalie.png",
   },
   {
@@ -23,42 +32,20 @@ const teamMembers = [
   },
   {
     name: "Ethan Reed",
-    roles: ["Team Coordinator", "Full-Stack"],
+    roles: ["Team Lead", "Full-Stack"],
     image: "/teampics/ethan.png",
   },
 ];
 
+const cardStyle = { ...staticInfoCardSurface, padding: staticInfoCardPadding };
+
 export default function AboutPage() {
   return (
-    <div
-      style={{
-        backgroundColor: "var(--about-wrapper-bg)",
-        borderRadius: "16px",
-        // backgroundColor: "var(--about-page-bg)",
-        minHeight: "100vh",
-        paddingTop: "40px",
-        paddingBottom: "60px",
-      }}
-    >
+    <div style={staticInfoPageShell}>
       <Container size="lg">
-        <div
-          style={{
-            // backgroundColor: "var(--about-wrapper-bg)",
-            borderRadius: "16px",
-            padding: "32px",
-          }}
-        >
-        <Stack gap="xl">
+        <Stack style={{ gap: staticInfoBlockGap }}>
           <Box>
-            <Title
-              order={1}
-              style={{
-                color: "var(--about-text)",
-                fontSize: "56px",
-                fontWeight: 500,
-                marginBottom: "8px",
-              }}
-            >
+            <Title order={1} style={staticInfoPageTitle}>
               About Us
             </Title>
 
@@ -66,38 +53,17 @@ export default function AboutPage() {
               style={{
                 width: "100%",
                 height: "1px",
-                backgroundColor: "#4B5563",
+                backgroundColor: "var(--app-divider-color)",
+                marginTop: "2px",
               }}
             />
           </Box>
 
-          <Paper
-            shadow="none"
-            radius="lg"
-            p="xl"
-            style={{
-              backgroundColor: "var(--about-container-bg)",
-              border: "2px solid #374151",
-            }}
-          >
+          <Paper shadow="none" radius="lg" style={cardStyle}>
             <Stack gap="sm">
-              <Text
-                style={{
-                  color: "var(--about-text)",
-                  fontSize: "20px",
-                  fontWeight: 500,
-                }}
-              >
-                Project Overview
-              </Text>
+              <Text style={staticInfoSectionTitle}>Project Overview</Text>
 
-              <Text
-                style={{
-                  color: "var(--about-text)",
-                  fontSize: "18px",
-                  lineHeight: 1.7,
-                }}
-              >
+              <Text style={staticInfoBody}>
                 Welcome to LLNL STEM Games! Explore short, interactive mini-games that turn core STEM ideas
                 into hands-on challenges you can play right in your browser. Each
                 activity is designed to help you build real understanding through
@@ -114,25 +80,26 @@ export default function AboutPage() {
           <Stack gap="md">
             <Text
               style={{
-                color: "var(--about-text)",
-                fontSize: "26px",
-                fontWeight: 500,
+                ...staticInfoSectionTitle,
+                fontSize: "clamp(1.2rem, 2.8vw + 0.55rem, 1.625rem)",
               }}
             >
               Meet the Team
             </Text>
 
-            <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 5 }} spacing="lg">
+            <SimpleGrid
+              cols={{ base: 1, sm: 2, md: 3, lg: 5 }}
+              style={{ gap: "clamp(0.75rem, 2.5vw, 1.5rem)" }}
+            >
               {teamMembers.map((member) => (
                 <Paper
                   key={member.name}
                   shadow="none"
                   radius="lg"
-                  p="lg"
                   style={{
-                    backgroundColor: "var(--about-container-bg)",
-                    border: "2px solid #374151",
-                    minHeight: "340px",
+                    ...staticInfoCardSurface,
+                    padding: "clamp(1rem, 2.2vw, 1.5rem)",
+                    minHeight: "clamp(260px, 55vh, 340px)",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
@@ -148,9 +115,9 @@ export default function AboutPage() {
                         height: "110px",
                         objectFit: "cover",
                         borderRadius: "12px",
-                        border: "2px solid #374151",
+                        border: "2px solid var(--about-border-strong)",
                         marginBottom: "20px",
-                        backgroundColor: "#D1D5DB",
+                        backgroundColor: "var(--about-avatar-placeholder-bg)",
                       }}
                     />
                   ) : (
@@ -158,9 +125,9 @@ export default function AboutPage() {
                       style={{
                         width: "110px",
                         height: "110px",
-                        backgroundColor: "#D1D5DB",
+                        backgroundColor: "var(--about-avatar-placeholder-bg)",
                         borderRadius: "12px",
-                        border: "2px solid #374151",
+                        border: "2px solid var(--about-border-strong)",
                         marginBottom: "20px",
                       }}
                     />
@@ -169,7 +136,7 @@ export default function AboutPage() {
                   <Text
                     style={{
                       color: "var(--about-text)",
-                      fontSize: "18px",
+                      fontSize: "clamp(1rem, 1.5vw + 0.75rem, 1.125rem)",
                       fontWeight: 500,
                       marginBottom: "14px",
                     }}
@@ -183,7 +150,7 @@ export default function AboutPage() {
                         key={role}
                         style={{
                           color: "var(--about-text)",
-                          fontSize: "16px",
+                          fontSize: "clamp(0.875rem, 1vw + 0.7rem, 1rem)",
                           lineHeight: 1.4,
                         }}
                       >
@@ -196,33 +163,11 @@ export default function AboutPage() {
             </SimpleGrid>
           </Stack>
 
-          <Paper
-            shadow="none"
-            radius="lg"
-            p="xl"
-            style={{
-              backgroundColor: "var(--about-container-bg)",
-              border: "2px solid #374151",
-            }}
-          >
+          <Paper shadow="none" radius="lg" style={cardStyle}>
             <Stack gap="sm">
-              <Text
-                style={{
-                  color: "var(--about-text)",
-                  fontSize: "20px",
-                  fontWeight: 500,
-                }}
-              >
-                Client Company
-              </Text>
+              <Text style={staticInfoSectionTitle}>Client Company</Text>
 
-              <Text
-                style={{
-                  color: "var(--about-text)",
-                  fontSize: "18px",
-                  lineHeight: 1.7,
-                }}
-              >
+              <Text style={staticInfoBody}>
                 Lawrence Livermore National Laboratory (LLNL) is a federally
                 funded research and development center known for cutting-edge
                 work in national security, scientific computing, engineering, and
@@ -238,7 +183,6 @@ export default function AboutPage() {
             </Stack>
           </Paper>
         </Stack>
-        </div>
       </Container>
     </div>
   );

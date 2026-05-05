@@ -1,28 +1,26 @@
 import { Container, Stack, Title, Text, Paper, Box } from "@mantine/core";
-import { pageTheme } from "@/lib/theme/pageTheme";
+import {
+  staticInfoPageShell,
+  staticInfoPageTitle,
+  staticInfoCardSurface,
+  staticInfoSectionTitle,
+  staticInfoBody,
+  staticInfoCardPadding,
+  staticInfoBlockGap,
+  pageTheme,
+} from "@/lib/theme/pageTheme";
 
 const CONTACT_EMAIL = "llnlcoolstemgames@gmail.com";
 
+const cardStyle = { ...staticInfoCardSurface, padding: staticInfoCardPadding };
+
 export default function ContactPage() {
   return (
-    <div
-      style={{
-        ...pageTheme.shell,
-        paddingTop: "48px",
-        paddingBottom: "72px",
-      }}
-    >
+    <div style={staticInfoPageShell}>
       <Container size="lg">
-        <Stack gap="2rem">
+        <Stack style={{ gap: staticInfoBlockGap }}>
           <Box>
-            <Title
-              order={1}
-              style={{
-                ...pageTheme.title,
-                fontSize: "48px",
-                marginBottom: "10px",
-              }}
-            >
+            <Title order={1} style={staticInfoPageTitle}>
               Contact Us
             </Title>
 
@@ -31,49 +29,31 @@ export default function ContactPage() {
                 width: "100%",
                 height: "1px",
                 backgroundColor: "var(--app-divider-color)",
+                marginTop: "2px",
               }}
             />
           </Box>
 
-          <Paper
-            shadow="sm"
-            radius="md"
-            style={{
-              ...pageTheme.card,
-              padding: "24px 28px",
-            }}
-          >
+          <Paper shadow="none" radius="lg" style={cardStyle}>
             <Stack gap="md">
-              <Text
-                style={{
-                  color: "var(--text-primary)",
-                  fontSize: "20px",
-                  fontWeight: 700,
-                }}
-              >
-                Reach LLNL STEM Games
-              </Text>
+              <Text style={staticInfoSectionTitle}>Reach LLNL STEM Games</Text>
 
-              <Text
-                style={{
-                  ...pageTheme.body,
-                  fontSize: "16px",
-                }}
-              >
+              <Text style={staticInfoBody}>
                 For questions, support, or anything else about this site and
                 our games, please contact us at the email below!
               </Text>
 
               <Text
                 style={{
-                  ...pageTheme.body,
-                  fontSize: "16px",
+                  ...staticInfoBody,
                   marginTop: "4px",
+                  wordBreak: "break-word",
+                  overflowWrap: "anywhere",
                 }}
               >
                 <a
                   href={`mailto:${CONTACT_EMAIL}`}
-                  style={pageTheme.link}
+                  style={{ ...pageTheme.link, textDecoration: "underline" }}
                 >
                   {CONTACT_EMAIL}
                 </a>

@@ -20,7 +20,7 @@ export default function TagFilter({ tags, activeTags, onToggle }: TagFilterProps
             className="rounded-full px-4 py-1.5 mb-4 text-sm font-medium transition-all"
             style={{
               background: active
-                ? "linear-gradient(135deg, #1b41ff, #0054f0)"
+                ? "var(--button-primary-bg)"
                 : "var(--tag-bg)",
               border: active
                 ? "1px solid transparent"
