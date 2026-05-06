@@ -103,6 +103,166 @@ This keeps game code minimal while preserving additive updates.
 
 ---
 
+## Leaderboard Contract (Portal Side Ready)
+
+The profile leaderboards API currently ranks users by the **highest numeric score** found in
+`game_data.data_json`.
+
+Preferred convention for all games:
+
+- Write a top-level number: `highScore`
+- Optionally also write top-level `score` (fallback compatibility)
+
+For the three game repos you called out, the portal already accepts these aliases too:
+
+- `circuit-breaker`: `highScore`, `score`, `circuitBreaker.highScore`, `circuitBreaker.score`
+- `sonic-lab`: `highScore`, `score`, `points`, `sonicLab.highScore`, `sonicLab.points`
+- `matrix-meadow`: `highScore`, `score`, `matrixMeadow.highScore`, `matrixMeadow.score`
+
+Recommended game-side pattern:
+
+1. Compute current run/session score.
+2. Read prior best from loaded game data.
+3. Save merged payload with max value.
+
+```ts
+const previous = Number(data.highScore ?? 0);
+const nextBest = Math.max(previous, runScore);
+mergeAndPersist({ highScore: nextBest });
+```
+
+If your native metric is "lower is better" (e.g. time), normalize to higher-is-better before
+saving (`highScore = -elapsedMs` or a similar transform).
+
+---
+
+## Copy-Paste JS Bridge (No React Required)
+
+Use this in vanilla JS repos (like Circuit Breaker / Sonic Lab / Matrix Meadow) to read/write
+`game_data.data_json` through the portal iframe bridge.
+
+Create `js/portalGameData.js`:
+
+```js
+let portalOrigin = null;
+const listeners = new Set();
+
+function inIframe() {
+  try { return window.self !== window.top; } catch { return true; }
+}
+
+function post(type, payload = {}) {
+  if (!inIframe()) return;
+  window.parent.postMessage({ type, payload }, portalOrigin || "*");
+}
+
+function normalizeObject(value) {
+  return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+}
+
+function onMessage(event) {
+  const data = event?.data;
+  if (!data || typeof data !== "object") return;
+  if (!portalOrigin) portalOrigin = event.origin;
+  if (data.type === "PORTAL_GAME_DATA_LOADED") {
+    const payload = normalizeObject(data.payload);
+    listeners.forEach((fn) => fn(payload));
+  }
+}
+
+export function initPortalGameDataBridge() {
+  window.addEventListener("message", onMessage);
+  return () => window.removeEventListener("message", onMessage);
+}
+
+export function fetchPortalGameData(timeoutMs = 5000) {
+  return new Promise((resolve, reject) => {
+    const timer = window.setTimeout(() => {
+      listeners.delete(onLoaded);
+      reject(new Error("Timed out waiting for PORTAL_GAME_DATA_LOADED"));
+    }, timeoutMs);
+
+    const onLoaded = (payload) => {
+      window.clearTimeout(timer);
+      listeners.delete(onLoaded);
+      resolve(payload);
+    };
+
+    listeners.add(onLoaded);
+    post("PORTAL_GAME_DATA_LOAD_REQUEST");
+  });
+}
+
+export function savePortalGameData(data) {
+  post("PORTAL_GAME_DATA_SAVE", normalizeObject(data));
+}
+
+export function mergeAndSavePortalGameData(currentData, patch) {
+  const next = { ...normalizeObject(currentData), ...normalizeObject(patch) };
+  savePortalGameData(next);
+  return next;
+}
+
+export function updateHighScore(currentData, runScore) {
+  const prev = Number(normalizeObject(currentData).highScore ?? 0);
+  const score = Number(runScore);
+  if (!Number.isFinite(score)) return normalizeObject(currentData);
+  const next = { ...normalizeObject(currentData), highScore: Math.max(prev, score) };
+  savePortalGameData(next);
+  return next;
+}
+```
+
+Recommended bootstrapping pattern in your entry file:
+
+```js
+import {
+  initPortalGameDataBridge,
+  fetchPortalGameData,
+  updateHighScore,
+} from "./portalGameData.js";
+
+let portalData = {};
+const cleanupPortalBridge = initPortalGameDataBridge();
+fetchPortalGameData().then((loaded) => { portalData = loaded; }).catch(() => { portalData = {}; });
+
+// Later, when you compute a score:
+// portalData = updateHighScore(portalData, computedScore);
+```
+
+---
+
+## Game-Specific Hook Points
+
+### Circuit Breaker (`circuit-breaker`)
+
+- Current score source: `app.engine.score`
+- Good hook point:
+  - `.game-sources/CircuitBreakerV3/js/app/endlessSubmit.js`
+  - inside `showEndlessRoundComplete(app)`, after `app.engine.score += 150`
+- Save call:
+  - `portalData = updateHighScore(portalData, app.engine.score)`
+
+### Sonic Lab (`sonic-lab`)
+
+- Current score source: `state.points`
+- Good hook point:
+  - `.game-sources/SonicLab/js/dialog.js`
+  - right after `state.points = data.totalPoints ?? state.points`
+- Save call:
+  - `portalData = updateHighScore(portalData, state.points)`
+
+### Matrix Meadow (`matrix-meadow`)
+
+- Current score source: `state.score`
+- Good hook point:
+  - `.game-sources/Matrix-Meadow-Academy/js/alignment-game.js`
+  - inside `applyMatrix()`, correct branch, after `state.score += pts`
+- Save call:
+  - `portalData = updateHighScore(portalData, state.score)`
+
+---
+
 ## Local Development Checklist
 
 1. Game appears in metadata:

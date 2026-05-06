@@ -28,6 +28,7 @@ import type { User } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
 import ProfilePopup from "@/components/ProfilePopup";
 import FriendsTab from "@/components/profile/FriendsTab";
+import LeaderboardsTab from "@/components/profile/LeaderboardsTab";
 import { pageTheme } from "@/lib/theme/pageTheme";
 import classes from "./profile.module.css";
 
@@ -77,19 +78,71 @@ export default function ProfilePage() {
   }, []);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) { router.push("/"); return; }
+    let active = true;
+
+    const loadCurrentUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (!active) return;
+
+      if (!data.user) {
+        setUser(null);
+        setProfile(null);
+        setEditDrawerOpened(false);
+        setLoading(false);
+        router.replace("/");
+        return;
+      }
+
       setUser(data.user);
-      loadProfileData(data.user.id).then(() => setLoading(false));
+      await loadProfileData(data.user.id);
+      if (active) setLoading(false);
+    };
+
+    void loadCurrentUser();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!active) return;
+
+      if (!session?.user) {
+        setUser(null);
+        setProfile(null);
+        setEditDrawerOpened(false);
+        setLoading(false);
+        router.replace("/");
+        return;
+      }
+
+      setUser(session.user);
+      void loadProfileData(session.user.id);
     });
+
+    return () => {
+      active = false;
+      authListener.subscription.unsubscribe();
+    };
   }, [router, loadProfileData]);
 
-  if (loading || !user) {
+  useEffect(() => {
+    if (loading || user) return;
+
+    router.replace("/");
+    const fallbackRedirect = window.setTimeout(() => {
+      window.location.replace("/");
+    }, 150);
+
+    return () => window.clearTimeout(fallbackRedirect);
+  }, [loading, user, router]);
+
+  if (loading) {
     return (
       <Container size="lg" py={80}>
         <Stack align="center"><Loader color="#1b41ff" /></Stack>
       </Container>
     );
+  }
+
+  if (!user) {
+    return null;
   }
 
   const displayName = profile?.display_name || user.user_metadata?.display_name || generateUsername(user.id);
@@ -308,9 +361,7 @@ export default function ProfilePage() {
               </Tabs.Panel>
 
               <Tabs.Panel value="leaderboards" pt="lg">
-                <Text style={{ ...font, color: "var(--text-secondary)", fontSize: 14, textAlign: "center", padding: "48px 0" }}>
-                  {t('leaderboardsSoon')}
-                </Text>
+                <LeaderboardsTab initialGameSlug={lastPlayed?.slug ?? null} />
               </Tabs.Panel>
             </Tabs>
           </Box>
@@ -320,7 +371,14 @@ export default function ProfilePage() {
       {user && (
         <ProfilePopup
           opened={editDrawerOpened}
-          onClose={() => { setEditDrawerOpened(false); setEditInitialAction(null); loadProfileData(user.id); }}
+          onClose={() => {
+            setEditDrawerOpened(false);
+            setEditInitialAction(null);
+            void supabase.auth.getUser().then(({ data }) => {
+              if (!data.user) return;
+              void loadProfileData(data.user.id);
+            });
+          }}
           user={user}
           initialView="edit"
           initialAction={editInitialAction}

@@ -27,11 +27,26 @@ export default function FriendsTab({ dashboard, onRefresh }: FriendsTabProps) {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
+  const [, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     // Mark current batch of requests as "seen" for header badge purposes.
     window.dispatchEvent(new CustomEvent("friends:markSeen"));
   }, []);
+
+  useEffect(() => {
+    // Re-render every minute so "last seen" labels stay accurate.
+    const ticker = window.setInterval(() => setNow(Date.now()), 60000);
+    return () => window.clearInterval(ticker);
+  }, []);
+
+  useEffect(() => {
+    // Keep presence/game badges reasonably fresh while the friends tab is open.
+    const poller = window.setInterval(() => {
+      void onRefresh();
+    }, 60000);
+    return () => window.clearInterval(poller);
+  }, [onRefresh]);
 
   const sortedFriends = useMemo(
     () =>
@@ -137,31 +152,49 @@ export default function FriendsTab({ dashboard, onRefresh }: FriendsTabProps) {
                 onClick={() => router.push(`/profile/${friend.userId}`)}
               >
                 <Group gap="sm" wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
-                  <Box
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: "50%",
-                      overflow: "hidden",
-                      flexShrink: 0,
-                      border: "2px solid var(--border-color)",
-                    }}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={friend.avatarUrl || "/images/bobcat.png"}
-                      alt=""
+                  <Box style={{ position: "relative", width: 40, height: 40, flexShrink: 0 }}>
+                    <Box
                       style={{
                         width: "100%",
                         height: "100%",
-                        objectFit: "cover",
-                        objectPosition: "center",
-                        display: "block",
+                        borderRadius: "50%",
+                        overflow: "hidden",
+                        border: "2px solid var(--border-color)",
                       }}
-                      onError={(e) => {
-                        e.currentTarget.src = "/images/bobcat.png";
-                      }}
-                    />
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={friend.avatarUrl || "/images/bobcat.png"}
+                        alt=""
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          objectPosition: "center",
+                          display: "block",
+                        }}
+                        onError={(e) => {
+                          e.currentTarget.src = "/images/bobcat.png";
+                        }}
+                      />
+                    </Box>
+                    {friend.isOnline && (
+                      <Box
+                        aria-label={t("friendOnline")}
+                        title={t("friendOnline")}
+                        style={{
+                          position: "absolute",
+                          right: -1,
+                          bottom: -1,
+                          width: 12,
+                          height: 12,
+                          borderRadius: "50%",
+                          background: "#22c55e",
+                          border: "2px solid var(--surface-primary)",
+                          boxShadow: "0 0 0 1px rgba(0,0,0,0.15)",
+                        }}
+                      />
+                    )}
                   </Box>
                   <Stack gap={2} style={{ marginLeft: 10 }}>
                     <Text
@@ -278,10 +311,9 @@ function formatLastSeen(
   lastSeen: string | null,
   t: ReturnType<typeof useTranslations<"profilePage">>
 ): string {
-  if (!lastSeen) return t("justNow");
+  if (!lastSeen) return t("minutesAgo", { m: 1 });
   const diff = Date.now() - new Date(lastSeen).getTime();
-  const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return t("justNow");
+  const minutes = Math.max(1, Math.floor(diff / 60000));
   if (minutes < 60) return t("minutesAgo", { m: minutes });
   const hours = Math.floor(minutes / 60);
   if (hours < 24) return t("hoursAgo", { h: hours });

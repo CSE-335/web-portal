@@ -28,7 +28,12 @@ export default function FriendsPresenceSync() {
 
     markOnline();
 
-    const interval = window.setInterval(markOnline, 45000);
+    const interval = window.setInterval(() => {
+      // Only heartbeat while tab is visible; hidden tabs should not keep resetting last_seen.
+      if (document.visibilityState === "visible") {
+        markOnline();
+      }
+    }, 45000);
     const onVisibility = () => {
       if (document.visibilityState === "visible") markOnline();
       else markOffline();

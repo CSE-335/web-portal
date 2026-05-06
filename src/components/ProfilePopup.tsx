@@ -221,6 +221,8 @@ export default function ProfilePopup({
   const handleSignOut = async () => {
     await signOutUser();
     onClose();
+    router.replace("/");
+    router.refresh();
   };
 
   const triggerAvatarPick = () => {

@@ -1,5 +1,7 @@
 import { supabase } from "./client";
 
+const PRESENCE_STALE_MS = 2 * 60 * 1000;
+
 type FriendshipRow = {
   id: string;
   requester_id: string;
@@ -149,13 +151,24 @@ export async function upsertUserPresence(options: {
   const userId = await getCurrentUserId();
   if (!userId) return;
 
-  await supabase.from("user_presence").upsert({
+  const payload = {
     user_id: userId,
     is_online: options.isOnline,
     current_game_slug: options.currentGameSlug ?? null,
     last_seen: new Date().toISOString(),
     updated_at: new Date().toISOString(),
-  });
+  };
+
+  const { error } = await supabase.from("user_presence").upsert(payload);
+  if (!error) return;
+
+  // If the game slug is rejected by DB constraints, still persist online/offline + last_seen.
+  if (options.currentGameSlug) {
+    await supabase.from("user_presence").upsert({
+      ...payload,
+      current_game_slug: null,
+    });
+  }
 }
 
 export async function getFriendsDashboard(): Promise<FriendsDashboard> {
@@ -217,13 +230,18 @@ export async function getFriendsDashboard(): Promise<FriendsDashboard> {
     const avatarUrl = profile?.avatarUrl ?? null;
 
     if (row.status === "accepted") {
+      const resolvedLastSeen = presence?.last_seen ?? row.responded_at ?? row.created_at;
+      const presenceAgeMs = presence?.last_seen
+        ? Date.now() - new Date(presence.last_seen).getTime()
+        : Number.POSITIVE_INFINITY;
+      const isActuallyOnline = Boolean(presence?.is_online) && presenceAgeMs < PRESENCE_STALE_MS;
       friends.push({
         userId: otherId,
         displayName,
         avatarUrl,
-        isOnline: Boolean(presence?.is_online),
-        currentGameSlug: presence?.current_game_slug ?? null,
-        lastSeen: presence?.last_seen ?? null,
+        isOnline: isActuallyOnline,
+        currentGameSlug: isActuallyOnline ? (presence?.current_game_slug ?? null) : null,
+        lastSeen: resolvedLastSeen,
         friendshipId: row.id,
       });
       continue;
