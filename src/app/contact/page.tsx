@@ -10,7 +10,7 @@ import {
   pageTheme,
 } from "@/lib/theme/pageTheme";
 
-const CONTACT_EMAIL = "llnlcoolstemgames@gmail.com";
+const CONTACT_EMAIL = "llnlcoolstemgames@outlook.com";
 
 const cardStyle = { ...staticInfoCardSurface, padding: staticInfoCardPadding };
 

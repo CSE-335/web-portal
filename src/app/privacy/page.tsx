@@ -40,12 +40,12 @@ export default function PrivacyPage() {
                   1. Introduction
                 </Title>
                 <Text style={staticInfoBody}>
-                  Welcome to LLNL STEM Games. We are committed to protecting your privacy and ensuring that your personal
-                  information is handled in a safe and responsible manner.
+                  Welcome to LLNL STEM Games. We are committed to handling your information responsibly and being clear
+                  about what data is used in this site.
                 </Text>
                 <Text style={staticInfoBody}>
-                  This Privacy Policy explains how we collect, use, store, and protect your information when you use our
-                  website and services.
+                  This Privacy Policy explains what data we collect, how we use it, when we share it with service
+                  providers, and what choices you have when you use our website and services.
                 </Text>
               </Stack>
 
@@ -63,7 +63,8 @@ export default function PrivacyPage() {
                 <Text style={staticInfoBody}>When you create an account, we collect:</Text>
                 <List withPadding listStyleType="disc" style={staticInfoList}>
                   <ListItem>Email address</ListItem>
-                  <ListItem>Password — stored securely and encrypted</ListItem>
+                  <ListItem>Password credentials handled by our authentication provider (Supabase Auth)</ListItem>
+                  <ListItem>Profile fields you choose to provide (for example display name, avatar URL, bio, locale)</ListItem>
                 </List>
 
                 <Title order={3} style={staticInfoSubSectionTitle}>
@@ -71,20 +72,24 @@ export default function PrivacyPage() {
                 </Title>
                 <Text style={staticInfoBody}>We collect information related to your activity on our platform, including:</Text>
                 <List withPadding listStyleType="disc" style={staticInfoList}>
-                  <ListItem>Game scores</ListItem>
-                  <ListItem>Progress in levels</ListItem>
-                  <ListItem>Achievements and statistics</ListItem>
-                  <ListItem>In-game interactions and performance data</ListItem>
+                  <ListItem>Per-game save data and progress state for signed-in users</ListItem>
+                  <ListItem>In-app assistant conversation lines stored in browser session storage</ListItem>
                 </List>
 
                 <Title order={3} style={staticInfoSubSectionTitle}>
                   c. Automatically Collected Information
                 </Title>
-                <Text style={staticInfoBody}>We may also collect:</Text>
+                <Text style={staticInfoBody}>We may also process technical information, such as:</Text>
                 <List withPadding listStyleType="disc" style={staticInfoList}>
-                  <ListItem>IP address</ListItem>
-                  <ListItem>Browser type and device information</ListItem>
-                  <ListItem>Mobile sensor data</ListItem>
+                  <ListItem>IP address used for security features like API rate limiting</ListItem>
+                  <ListItem>Locale preference cookie for language selection</ListItem>
+                  <ListItem>
+                    Data you submit through forms (for example feedback name/email/comments and contact messages)
+                  </ListItem>
+                  <ListItem>
+                    Optional audio/text content sent to AI or text-to-speech providers when you use assistant features
+                  </ListItem>
+                  <ListItem>Game-provided sensor or interaction data when a specific game requests it</ListItem>
                 </List>
               </Stack>
 
@@ -99,10 +104,9 @@ export default function PrivacyPage() {
                 <List withPadding listStyleType="disc" style={staticInfoList}>
                   <ListItem>Create and manage your account</ListItem>
                   <ListItem>Save your progress and game data</ListItem>
-                  <ListItem>Provide personalized gameplay experiences</ListItem>
-                  <ListItem>Improve our games and platform performance</ListItem>
-                  <ListItem>Monitor and prevent cheating, abuse, or unauthorized access</ListItem>
-                  <ListItem>Communicate with you about updates, changes, or support requests</ListItem>
+                  <ListItem>Provide in-game assistant and tutoring features</ListItem>
+                  <ListItem>Operate, secure, and troubleshoot the platform</ListItem>
+                  <ListItem>Respond to feedback, questions, and support requests</ListItem>
                 </List>
               </Stack>
 
@@ -113,10 +117,14 @@ export default function PrivacyPage() {
                 <Title order={2} style={staticInfoSectionTitle}>
                   4. How We Store and Protect Your Information
                 </Title>
-                <Text style={staticInfoBody}>We implement reasonable security measures to protect your data, including:</Text>
+                <Text style={staticInfoBody}>
+                  We implement reasonable security measures to protect data, including access controls and secure
+                  infrastructure provided by our platform and cloud vendors.
+                </Text>
                 <List withPadding listStyleType="disc" style={staticInfoList}>
-                  <ListItem>Encryption of passwords</ListItem>
-                  <ListItem>Secure databases and restricted access controls</ListItem>
+                  <ListItem>Authentication and account management through Supabase Auth</ListItem>
+                  <ListItem>Database-backed storage for account and gameplay records</ListItem>
+                  <ListItem>Security headers and rate limiting on sensitive API routes</ListItem>
                 </List>
                 <Text style={staticInfoBody}>
                   However, no method of transmission over the internet is 100% secure, and we cannot guarantee absolute
@@ -134,9 +142,15 @@ export default function PrivacyPage() {
                 <Text style={staticInfoBody}>
                   We do <strong style={{ color: "var(--about-text)" }}>not sell your personal information</strong>.
                 </Text>
-                <Text style={staticInfoBody}>We may share your data only in the following cases:</Text>
+                <Text style={staticInfoBody}>We may share data with service providers that process information on our behalf:</Text>
                 <List withPadding listStyleType="disc" style={staticInfoList}>
-                  <ListItem>With service providers who help operate our website (e.g., hosting services)</ListItem>
+                  <ListItem>Supabase (authentication and database services)</ListItem>
+                  <ListItem>OpenAI and ElevenLabs (assistant and text-to-speech features, when used)</ListItem>
+                  <ListItem>Resend (feedback email delivery)</ListItem>
+                  <ListItem>Upstash (API rate limiting infrastructure)</ListItem>
+                </List>
+                <Text style={staticInfoBody}>We may also disclose information:</Text>
+                <List withPadding listStyleType="disc" style={staticInfoList}>
                   <ListItem>If required by law or legal process</ListItem>
                   <ListItem>To protect the rights, safety, and security of our users and platform</ListItem>
                 </List>
@@ -149,14 +163,20 @@ export default function PrivacyPage() {
                 <Title order={2} style={staticInfoSectionTitle}>
                   6. Data Retention
                 </Title>
-                <Text style={staticInfoBody}>We retain your information as long as your account is active or as needed to:</Text>
+                <Text style={staticInfoBody}>
+                  We retain account and gameplay information while your account is active, and as needed to:
+                </Text>
                 <List withPadding listStyleType="disc" style={staticInfoList}>
                   <ListItem>Provide our services</ListItem>
                   <ListItem>Comply with legal obligations</ListItem>
                   <ListItem>Resolve disputes and enforce agreements</ListItem>
                 </List>
                 <Text style={staticInfoBody}>
-                  You may request deletion of your account and associated data at any time.
+                  Browser session data (such as assistant conversation history stored in session storage) is controlled by
+                  your browser and is typically cleared when the session ends.
+                </Text>
+                <Text style={staticInfoBody}>
+                  You may request deletion of your account and associated platform data at any time.
                 </Text>
               </Stack>
 
@@ -174,7 +194,11 @@ export default function PrivacyPage() {
                   <ListItem>Request deletion of your data</ListItem>
                   <ListItem>Opt out of certain communications</ListItem>
                 </List>
-                <Text style={staticInfoBody}>To exercise these rights, contact us.</Text>
+                <Text style={staticInfoBody}>
+                  You can also manage certain data directly in the product, such as deleting your account and changing your
+                  locale preference.
+                </Text>
+                <Text style={staticInfoBody}>To exercise privacy rights requests, contact us.</Text>
               </Stack>
 
               <Divider color="var(--border-color)" />
@@ -185,11 +209,13 @@ export default function PrivacyPage() {
                   8. Children&apos;s Privacy
                 </Title>
                 <Text style={staticInfoBody}>
-                  Our website is not intended for children under the age of 13. We do not knowingly collect personal
-                  information from children without parental consent.
+                  Some of our educational experiences may be used by students, but users under 13 should use the site with
+                  parent/guardian or school supervision where required by applicable law.
                 </Text>
                 <Text style={staticInfoBody}>
-                  If we become aware that such information has been collected, we will take steps to delete it.
+                  We do not knowingly collect personal information from children in violation of applicable child privacy
+                  laws. If you believe a child has provided personal information inappropriately, contact us and we will
+                  review and remove it when appropriate.
                 </Text>
               </Stack>
 
@@ -201,7 +227,8 @@ export default function PrivacyPage() {
                   9. Contact Us
                 </Title>
                 <Text style={staticInfoBody}>
-                  If you have any questions about this Privacy Policy, please visit our contact page.
+                  If you have questions about this Privacy Policy or want to submit a privacy request, please visit our
+                  contact page.
                 </Text>
               </Stack>
 
