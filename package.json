@@ -5,6 +5,9 @@
   "workspaces": [
     "packages/*"
   ],
+  "overrides": {
+    "fast-xml-parser": "^5.7.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",

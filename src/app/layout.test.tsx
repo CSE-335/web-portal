@@ -15,6 +15,12 @@ jest.mock('@/components/layout/Footer/Footer', () => {
   };
 });
 
+jest.mock('@/components/FriendsPresenceSync', () => {
+  return function MockFriendsPresenceSync() {
+    return null;
+  };
+});
+
 describe('RootLayout', () => {
   function extractBody(layout: ReactNode): ReactElement {
     if (!isValidElement<{ children?: ReactNode }>(layout)) {

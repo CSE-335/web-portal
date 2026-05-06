@@ -103,17 +103,18 @@ This keeps game code minimal while preserving additive updates.
 
 ---
 
-## Leaderboard Contract (Portal Side Ready)
+## Leaderboard Contract (Game-Side Scoring)
 
-The profile leaderboards API currently ranks users by the **highest numeric score** found in
-`game_data.data_json`.
+Keep the game-side scoring shape simple and consistent so both legacy and new leaderboard flows
+can validate the same score.
 
 Preferred convention for all games:
 
-- Write a top-level number: `highScore`
-- Optionally also write top-level `score` (fallback compatibility)
+- Always write a top-level number: `highScore`
+- Optionally also write top-level `score` (compatibility fallback while migrating)
+- Keep score numeric only (no strings, no nested arrays)
 
-For the three game repos you called out, the portal already accepts these aliases too:
+For the three game repos you called out, the portal still accepts these aliases:
 
 - `circuit-breaker`: `highScore`, `score`, `circuitBreaker.highScore`, `circuitBreaker.score`
 - `sonic-lab`: `highScore`, `score`, `points`, `sonicLab.highScore`, `sonicLab.points`
@@ -128,11 +129,58 @@ Recommended game-side pattern:
 ```ts
 const previous = Number(data.highScore ?? 0);
 const nextBest = Math.max(previous, runScore);
-mergeAndPersist({ highScore: nextBest });
+mergeAndPersist({ highScore: nextBest, score: nextBest });
 ```
 
 If your native metric is "lower is better" (e.g. time), normalize to higher-is-better before
 saving (`highScore = -elapsedMs` or a similar transform).
+
+### Testing the New `submit_leaderboard_score` Function
+
+Use this when you want to test the hardened SQL leaderboard path (`leaderboard_scores`) after
+updating your game scoring logic.
+
+1. Sign in to the portal as a normal user.
+2. Play your game and save data so `highScore` is present in `game_data`.
+3. Submit a score through RPC from a logged-in browser context (not SQL editor).
+
+Example (browser console on your app origin, while logged in):
+
+```ts
+const { data } = await supabase.auth.getSession();
+const accessToken = data.session?.access_token;
+if (!accessToken) throw new Error("No active Supabase session.");
+
+const res = await fetch("/rest/v1/rpc/submit_leaderboard_score", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    apikey: "<your NEXT_PUBLIC_SUPABASE_ANON_KEY>",
+    Authorization: `Bearer ${accessToken}`,
+  },
+  body: JSON.stringify({
+    p_game_slug: "your-game-slug",
+    p_score: 123,
+    p_only_if_higher: true,
+    p_score_meta: { source: "manual-test" },
+  }),
+});
+console.log(await res.json());
+```
+
+If you do not have the `supabase` client object available in your console, test the RPC with your
+existing portal server route instead (server-side Supabase client) so the JWT is attached
+automatically.
+
+Quick DB verification:
+
+```sql
+select game_slug, display_name, score, recorded_at
+from public.leaderboard_public
+where game_slug = 'your-game-slug'
+order by score desc
+limit 20;
+```
 
 ---
 
