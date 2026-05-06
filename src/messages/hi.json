@@ -59,7 +59,17 @@
     "menuContactUs": "संपर्क करें",
     "menuPartner": "पार्टनर — LLNL",
     "menuLanguage": "भाषा",
-    "changeBanner": "बैनर बदलें"
+    "changeBanner": "बैनर बदलें",
+    "changeAvatar": "प्रोफ़ाइल फ़ोटो बदलें",
+    "avatarInvalidType": "JPG, PNG, WebP या GIF उपयोग करें।",
+    "avatarTooLarge": "छवि {maxMb} MB या उससे छोटी होनी चाहिए।",
+    "avatarUploadFailed": "छवि अपलोड नहीं हो सकी। पुनः प्रयास करें।",
+    "avatarCropTitle": "फ़ोटो समायोजित करें",
+    "avatarCropZoom": "ज़ूम",
+    "avatarCropHint": "स्थान बदलने के लिए खींचें। स्लाइडर से ज़ूम करें।",
+    "avatarCropCancel": "रद्द करें",
+    "avatarCropApply": "लागू करें",
+    "avatarCropEncodeFailed": "छवि प्रोसेस नहीं हो सकी। दूसरी फ़ाइल आज़माएँ।"
   },
   "profilePage": {
     "editProfile": "प्रोफ़ाइल संपादित करें",

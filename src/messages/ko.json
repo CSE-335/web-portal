@@ -59,7 +59,17 @@
     "menuContactUs": "문의하기",
     "menuPartner": "파트너 — LLNL",
     "menuLanguage": "언어",
-    "changeBanner": "배너 변경"
+    "changeBanner": "배너 변경",
+    "changeAvatar": "프로필 사진 변경",
+    "avatarInvalidType": "JPG, PNG, WebP 또는 GIF를 사용하세요.",
+    "avatarTooLarge": "이미지는 {maxMb}MB 이하여야 합니다.",
+    "avatarUploadFailed": "업로드에 실패했습니다. 다시 시도하세요.",
+    "avatarCropTitle": "사진 조정",
+    "avatarCropZoom": "확대",
+    "avatarCropHint": "드래그하여 위치를 조정하고 슬라이더로 확대/축소하세요.",
+    "avatarCropCancel": "취소",
+    "avatarCropApply": "적용",
+    "avatarCropEncodeFailed": "이미지를 처리할 수 없습니다. 다른 파일을 시도하세요."
   },
   "profilePage": {
     "editProfile": "프로필 수정",

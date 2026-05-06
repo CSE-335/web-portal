@@ -49,6 +49,7 @@ export default function ProfilePage() {
   const [bannerHovered, setBannerHovered] = useState(false);
   const [avatarHovered, setAvatarHovered] = useState(false);
   const [editDrawerOpened, setEditDrawerOpened] = useState(false);
+  const [editInitialAction, setEditInitialAction] = useState<"avatar" | "banner" | null>(null);
   const [now] = useState(() => Date.now());
 
   const loadProfileData = useCallback(async (userId: string) => {
@@ -102,6 +103,7 @@ export default function ProfilePage() {
         style={{ position: "relative", height: 240, borderRadius: "14px 14px 0 0", overflow: "hidden", cursor: "pointer" }}
         onMouseEnter={() => setBannerHovered(true)}
         onMouseLeave={() => setBannerHovered(false)}
+        onClick={() => { setEditInitialAction("banner"); setEditDrawerOpened(true); }}
       >
         {bannerUrl
           ? <Image src={bannerUrl} alt="Banner" fill style={{ objectFit: "cover" }} />
@@ -128,10 +130,11 @@ export default function ProfilePage() {
             style={{ position: "relative", cursor: "pointer", flexShrink: 0 }}
             onMouseEnter={() => setAvatarHovered(true)}
             onMouseLeave={() => setAvatarHovered(false)}
+            onClick={() => { setEditInitialAction("avatar"); setEditDrawerOpened(true); }}
           >
             <Box style={{ width: 120, height: 120, borderRadius: 14, overflow: "hidden", border: "4px solid var(--surface-primary)", boxShadow: "var(--shadow-card)" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={avatarUrl} alt="Avatar" width={120} height={120} style={{ objectFit: "cover", display: "block" }} onError={(e) => { e.currentTarget.src = "/images/bobcat.png"; }} />
+              <img src={avatarUrl} alt="Avatar" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} onError={(e) => { e.currentTarget.src = "/images/bobcat.png"; }} />
             </Box>
             {avatarHovered && (
               <Box style={{ position: "absolute", inset: 0, borderRadius: 14, background: "rgba(0,0,0,0.55)", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -161,7 +164,7 @@ export default function ProfilePage() {
           {/* Edit button */}
           <Box ml="auto" pb={8}>
             <UnstyledButton
-              onClick={() => setEditDrawerOpened(true)}
+              onClick={() => { setEditInitialAction(null); setEditDrawerOpened(true); }}
               style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 18px", ...pageTheme.primaryButton, boxShadow: "0 2px 8px rgba(27, 65, 255, 0.35)", ...font, fontWeight: 500, fontSize: 13, transition: "transform 0.1s ease" }}
               onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.95)")}
               onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
@@ -273,9 +276,10 @@ export default function ProfilePage() {
       {user && (
         <ProfilePopup
           opened={editDrawerOpened}
-          onClose={() => { setEditDrawerOpened(false); loadProfileData(user.id); }}
+          onClose={() => { setEditDrawerOpened(false); setEditInitialAction(null); loadProfileData(user.id); }}
           user={user}
           initialView="edit"
+          initialAction={editInitialAction}
         />
       )}
     </Container>

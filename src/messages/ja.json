@@ -59,7 +59,17 @@
     "menuContactUs": "お問い合わせ",
     "menuPartner": "パートナー — LLNL",
     "menuLanguage": "言語",
-    "changeBanner": "バナーを変更"
+    "changeBanner": "バナーを変更",
+    "changeAvatar": "プロフィール写真を変更",
+    "avatarInvalidType": "JPG、PNG、WebP、GIF を使用してください。",
+    "avatarTooLarge": "画像は {maxMb} MB 以下にしてください。",
+    "avatarUploadFailed": "アップロードに失敗しました。もう一度お試しください。",
+    "avatarCropTitle": "写真を調整",
+    "avatarCropZoom": "ズーム",
+    "avatarCropHint": "ドラッグで位置を変え、スライダーで拡大・縮小します。",
+    "avatarCropCancel": "キャンセル",
+    "avatarCropApply": "適用",
+    "avatarCropEncodeFailed": "画像を処理できませんでした。別のファイルを試してください。"
   },
   "profilePage": {
     "editProfile": "プロフィールを編集",

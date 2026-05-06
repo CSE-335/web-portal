@@ -59,7 +59,17 @@
     "menuContactUs": "联系我们",
     "menuPartner": "合作伙伴 — LLNL",
     "menuLanguage": "语言",
-    "changeBanner": "更改横幅"
+    "changeBanner": "更改横幅",
+    "changeAvatar": "更改头像",
+    "avatarInvalidType": "请使用 JPG、PNG、WebP 或 GIF。",
+    "avatarTooLarge": "图片大小不能超过 {maxMb} MB。",
+    "avatarUploadFailed": "上传失败，请重试。",
+    "avatarCropTitle": "调整照片",
+    "avatarCropZoom": "缩放",
+    "avatarCropHint": "拖动调整位置，使用滑块缩放。",
+    "avatarCropCancel": "取消",
+    "avatarCropApply": "应用",
+    "avatarCropEncodeFailed": "无法处理该图片，请换一张。"
   },
   "profilePage": {
     "editProfile": "编辑资料",

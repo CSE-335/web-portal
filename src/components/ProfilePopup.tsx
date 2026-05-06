@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from 'next-intl';
 import { useMantineColorScheme } from "@mantine/core";
@@ -15,18 +15,23 @@ import {
   UnstyledButton,
   Box,
   Group,
+  Loader,
 } from "@mantine/core";
 import type { User } from "@supabase/supabase-js";
 import { signOutUser } from "@/lib/supabase/auth";
 import { generateUsername } from "@/lib/utils/generateUsername";
 import { getUserProfile, updateUserProfile, validateUsername, isUsernameTaken } from "@/lib/supabase/user-profile";
+import { AVATAR_MAX_MB, uploadUserAvatar, uploadUserBanner, validateAvatarFileForUpload } from "@/lib/supabase/avatar-storage";
 import AccountSettingsPopup from "./AccountSettingsPopup";
+import AvatarCropModal from "./AvatarCropModal";
+import BannerCropModal from "./BannerCropModal";
 
 interface ProfilePopupProps {
   opened: boolean;
   onClose: () => void;
   user: User;
   initialView?: "main" | "edit";
+  initialAction?: "avatar" | "banner" | null;
 }
 
 type View = "main" | "edit";
@@ -112,7 +117,13 @@ function BackHeader({ title, onBack, onClose }: { title: string; onBack: () => v
   );
 }
 
-export default function ProfilePopup({ opened, onClose, user, initialView = "main" }: ProfilePopupProps) {
+export default function ProfilePopup({
+  opened,
+  onClose,
+  user,
+  initialView = "main",
+  initialAction = null,
+}: ProfilePopupProps) {
   const [accountSettingsOpened, setAccountSettingsOpened] = useState(false);
   const [view, setView] = useState<View>(initialView);
   const [prevOpened, setPrevOpened] = useState(false);
@@ -125,10 +136,22 @@ export default function ProfilePopup({ opened, onClose, user, initialView = "mai
   const [editLocation, setEditLocation] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarError, setAvatarError] = useState<string | null>(null);
+  const [bannerUploading, setBannerUploading] = useState(false);
+  const [bannerError, setBannerError] = useState<string | null>(null);
+  const [avatarCropSrc, setAvatarCropSrc] = useState<string | null>(null);
+  const [bannerCropSrc, setBannerCropSrc] = useState<string | null>(null);
+  const avatarFileInputRef = useRef<HTMLInputElement>(null);
+  const bannerFileInputRef = useRef<HTMLInputElement>(null);
+  const autoActionTriggeredRef = useRef<"avatar" | "banner" | null>(null);
 
   const displayName = user.user_metadata?.display_name || generateUsername(user.id);
-  const [profileAvatarUrl, setProfileAvatarUrl] = useState<string | null>(null);
-  const avatarUrl = profileAvatarUrl || user.user_metadata?.avatar_url || "/images/bobcat.png";
+  const [draftAvatarUrl, setDraftAvatarUrl] = useState<string | null>(null);
+  const [draftBannerUrl, setDraftBannerUrl] = useState<string | null>(null);
+  const [avatarChanged, setAvatarChanged] = useState(false);
+  const [bannerChanged, setBannerChanged] = useState(false);
+  const avatarUrl = draftAvatarUrl || user.user_metadata?.avatar_url || "/images/bobcat.png";
   const email = user.email ?? "";
 
   // Reset view on open
@@ -146,17 +169,145 @@ export default function ProfilePopup({ opened, onClose, user, initialView = "mai
       getUserProfile(user.id).then((profile) => {
         setEditUsername(profile?.display_name || displayName);
         setEditLocation(profile?.locale || null);
-        setProfileAvatarUrl(profile?.avatar_url || null);
+        setDraftAvatarUrl(profile?.avatar_url || null);
+        setDraftBannerUrl(profile?.banner_url || null);
+        setAvatarChanged(false);
+        setBannerChanged(false);
       }).catch(() => {
-        setProfileAvatarUrl(null);
+        setDraftAvatarUrl(null);
+        setDraftBannerUrl(null);
+        setAvatarChanged(false);
+        setBannerChanged(false);
       });
     }
   }, [opened, user.id, displayName]);
+
+  useEffect(() => {
+    if (!opened) {
+      autoActionTriggeredRef.current = null;
+      setAvatarCropSrc((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return null;
+      });
+      setBannerCropSrc((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return null;
+      });
+    }
+  }, [opened]);
 
   const handleSignOut = async () => {
     await signOutUser();
     onClose();
   };
+
+  const triggerAvatarPick = () => {
+    if (avatarUploading || bannerUploading) return;
+    setAvatarError(null);
+    setBannerError(null);
+    avatarFileInputRef.current?.click();
+  };
+
+  const triggerBannerPick = () => {
+    if (avatarUploading || bannerUploading) return;
+    setAvatarError(null);
+    setBannerError(null);
+    bannerFileInputRef.current?.click();
+  };
+
+  const closeAvatarCrop = () => {
+    if (avatarCropSrc) {
+      URL.revokeObjectURL(avatarCropSrc);
+      setAvatarCropSrc(null);
+    }
+  };
+
+  const closeBannerCrop = () => {
+    if (bannerCropSrc) {
+      URL.revokeObjectURL(bannerCropSrc);
+      setBannerCropSrc(null);
+    }
+  };
+
+  const uploadAvatarFile = async (file: File): Promise<boolean> => {
+    setAvatarError(null);
+    setSaveMessage("");
+    setAvatarUploading(true);
+    const upload = await uploadUserAvatar(file);
+    if (!upload.ok) {
+      setAvatarUploading(false);
+      if (upload.code === "invalid_type") setAvatarError(t("avatarInvalidType"));
+      else if (upload.code === "too_large") setAvatarError(t("avatarTooLarge", { maxMb: AVATAR_MAX_MB }));
+      else if (upload.code === "not_authenticated") setAvatarError(t("avatarUploadFailed"));
+      else setAvatarError(t("avatarUploadFailed"));
+      return false;
+    }
+
+    setAvatarUploading(false);
+    setDraftAvatarUrl(upload.publicUrl);
+    setAvatarChanged(true);
+    return true;
+  };
+
+  const handleAvatarFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.currentTarget.files?.[0];
+    e.currentTarget.value = "";
+    if (!file) return;
+
+    setAvatarError(null);
+    setSaveMessage("");
+
+    const pre = await validateAvatarFileForUpload(file);
+    if (!pre.ok) {
+      if (pre.code === "invalid_type") setAvatarError(t("avatarInvalidType"));
+      else if (pre.code === "too_large") setAvatarError(t("avatarTooLarge", { maxMb: AVATAR_MAX_MB }));
+      return;
+    }
+
+    setAvatarCropSrc(URL.createObjectURL(file));
+  };
+
+  const uploadBannerFile = async (file: File): Promise<boolean> => {
+    setBannerUploading(true);
+    const upload = await uploadUserBanner(file);
+    if (!upload.ok) {
+      setBannerUploading(false);
+      setBannerError(t("avatarUploadFailed"));
+      return false;
+    }
+
+    setDraftBannerUrl(upload.publicUrl);
+    setBannerChanged(true);
+    setBannerUploading(false);
+    return true;
+  };
+
+  const handleBannerFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.currentTarget.files?.[0];
+    e.currentTarget.value = "";
+    if (!file) return;
+
+    setAvatarError(null);
+    setBannerError(null);
+    setSaveMessage("");
+
+    const pre = await validateAvatarFileForUpload(file);
+    if (!pre.ok) {
+      if (pre.code === "invalid_type") setBannerError(t("avatarInvalidType"));
+      else if (pre.code === "too_large") setBannerError(t("avatarTooLarge", { maxMb: AVATAR_MAX_MB }));
+      return;
+    }
+
+    setBannerCropSrc(URL.createObjectURL(file));
+  };
+
+  useEffect(() => {
+    if (!opened || view !== "edit" || !initialAction) return;
+    if (autoActionTriggeredRef.current === initialAction) return;
+    autoActionTriggeredRef.current = initialAction;
+    if (initialAction === "avatar") triggerAvatarPick();
+    if (initialAction === "banner") triggerBannerPick();
+  }, [opened, view, initialAction]);
 
   const handleUsernameChange = (value: string) => {
     setEditUsername(value);
@@ -191,11 +342,15 @@ export default function ProfilePopup({ opened, onClose, user, initialView = "mai
     const result = await updateUserProfile({
       display_name: editUsername || null,
       locale: editLocation,
+      ...(avatarChanged && { avatar_url: draftAvatarUrl }),
+      ...(bannerChanged && { banner_url: draftBannerUrl }),
     });
     setSaving(false);
     if (result.error) {
       setSaveMessage(result.error);
     } else {
+      setAvatarChanged(false);
+      setBannerChanged(false);
       setSaveMessage(t('saved'));
       setTimeout(() => setView("main"), 800);
     }
@@ -205,7 +360,11 @@ export default function ProfilePopup({ opened, onClose, user, initialView = "mai
     <>
       <Drawer
         opened={opened}
-        onClose={onClose}
+        onClose={() => {
+          closeAvatarCrop();
+          closeBannerCrop();
+          onClose();
+        }}
         position="right"
         size={340}
         withCloseButton={false}
@@ -228,21 +387,88 @@ export default function ProfilePopup({ opened, onClose, user, initialView = "mai
         {view === "edit" ? (
           // Edit view
           <Stack gap="md">
-            <BackHeader title={t('editTitle')} onBack={() => setView("main")} onClose={onClose} />
+            <BackHeader
+              title={t('editTitle')}
+              onBack={() => setView("main")}
+              onClose={() => {
+                closeAvatarCrop();
+                closeBannerCrop();
+                onClose();
+              }}
+            />
 
             <Stack align="center" gap="sm">
-              <Box style={{ position: "relative" }}>
-                <Box style={{ width: 90, height: 90, borderRadius: "50%", overflow: "hidden", border: "3px solid var(--text-muted)" }}>
+              <input
+                ref={avatarFileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                style={{ display: "none" }}
+                aria-hidden
+                onChange={handleAvatarFileChange}
+              />
+              <input
+                ref={bannerFileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                style={{ display: "none" }}
+                aria-hidden
+                onChange={handleBannerFileChange}
+              />
+              <UnstyledButton
+                type="button"
+                onClick={triggerAvatarPick}
+                disabled={avatarUploading}
+                aria-label={t("changeAvatar")}
+                style={{
+                  position: "relative",
+                  cursor: avatarUploading ? "wait" : "pointer",
+                  padding: 0,
+                  border: "none",
+                  background: "none",
+                  opacity: avatarUploading ? 0.85 : 1,
+                }}
+              >
+                <Box style={{ position: "relative", width: 90, height: 90, borderRadius: "50%", overflow: "hidden", border: "3px solid var(--text-muted)" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={avatarUrl} alt="Profile" width={90} height={90} style={{ objectFit: "cover" }} onError={(e) => { e.currentTarget.src = "/images/bobcat.png"; }} />
+                  <img src={avatarUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} onError={(e) => { e.currentTarget.src = "/images/bobcat.png"; }} />
+                  {avatarUploading && (
+                    <Box style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <Loader size="sm" color="white" />
+                    </Box>
+                  )}
                 </Box>
-                <Box style={{ position: "absolute", bottom: 0, right: 0, width: 28, height: 28, borderRadius: "50%", background: "linear-gradient(135deg, #1b41ff, #0054f0)", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid var(--surface-primary)" }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <Box
+                  component="span"
+                  style={{ position: "absolute", bottom: 0, right: 0, width: 28, height: 28, borderRadius: "50%", background: "linear-gradient(135deg, #1b41ff, #0054f0)", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid var(--surface-primary)", pointerEvents: "none" }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                     <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
                     <circle cx="12" cy="13" r="4" />
                   </svg>
                 </Box>
-              </Box>
+              </UnstyledButton>
+              {avatarError && (
+                <Text style={{ fontFamily: "var(--font-alexandria), sans-serif", fontSize: 12, color: "#ef4444", textAlign: "center" }}>
+                  {avatarError}
+                </Text>
+              )}
+              <Button
+                variant="subtle"
+                loading={bannerUploading}
+                onClick={triggerBannerPick}
+                style={{
+                  color: "var(--text-primary)",
+                  fontFamily: "var(--font-alexandria), sans-serif",
+                  fontWeight: 600,
+                }}
+              >
+                {t('changeBanner')}
+              </Button>
+              {bannerError && (
+                <Text style={{ fontFamily: "var(--font-alexandria), sans-serif", fontSize: 12, color: "#ef4444", textAlign: "center" }}>
+                  {bannerError}
+                </Text>
+              )}
             </Stack>
 
             <Divider styles={{ root: { borderColor: "var(--border-color)" } }} />
@@ -302,7 +528,7 @@ export default function ProfilePopup({ opened, onClose, user, initialView = "mai
         ) : (
           // Main view
           <>
-            <UnstyledButton onClick={onClose} style={{ position: "absolute", top: 12, right: 14, color: "var(--text-primary)", display: "flex", alignItems: "center", zIndex: 10 }}>
+            <UnstyledButton onClick={() => { closeAvatarCrop(); closeBannerCrop(); onClose(); }} style={{ position: "absolute", top: 12, right: 14, color: "var(--text-primary)", display: "flex", alignItems: "center", zIndex: 10 }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18" />
                 <line x1="6" y1="6" x2="18" y2="18" />
@@ -312,7 +538,7 @@ export default function ProfilePopup({ opened, onClose, user, initialView = "mai
             <Stack gap="md" align="center" pt={36}>
               <Box style={{ width: 80, height: 80, borderRadius: "50%", overflow: "hidden", border: "3px solid rgba(110, 144, 182, 0.8)", boxShadow: "0 0 12px rgba(27, 65, 255, 0.35), 0 0 4px rgba(110, 144, 182, 0.3)" }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={avatarUrl} alt="Profile" width={80} height={80} style={{ objectFit: "cover" }} onError={(e) => { e.currentTarget.src = "/images/bobcat.png"; }} />
+                <img src={avatarUrl} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} onError={(e) => { e.currentTarget.src = "/images/bobcat.png"; }} />
               </Box>
 
               <Stack gap={2} align="center">
@@ -413,6 +639,19 @@ export default function ProfilePopup({ opened, onClose, user, initialView = "mai
         opened={accountSettingsOpened}
         onClose={() => setAccountSettingsOpened(false)}
         user={user}
+      />
+
+      <AvatarCropModal
+        opened={avatarCropSrc !== null}
+        imageSrc={avatarCropSrc}
+        onClose={closeAvatarCrop}
+        onSave={uploadAvatarFile}
+      />
+      <BannerCropModal
+        opened={bannerCropSrc !== null}
+        imageSrc={bannerCropSrc}
+        onClose={closeBannerCrop}
+        onSave={uploadBannerFile}
       />
     </>
   );

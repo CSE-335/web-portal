@@ -139,9 +139,14 @@ export default function UtilityNav({
               <img
                 src={avatarUrl}
                 alt="Profile"
-                width={isMobile ? 32 : 50}
-                height={isMobile ? 32 : 50}
-                style={{ borderRadius: "50%", objectFit: "cover" }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  objectPosition: "center",
+                  display: "block",
+                }}
                 onError={(e) => { e.currentTarget.src = "/images/bobcat.png"; }}
               />
             </ActionIcon>

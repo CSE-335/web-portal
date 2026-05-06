@@ -59,7 +59,17 @@
     "menuContactUs": "اتصل بنا",
     "menuPartner": "شريك — LLNL",
     "menuLanguage": "اللغة",
-    "changeBanner": "تغيير اللافتة"
+    "changeBanner": "تغيير اللافتة",
+    "changeAvatar": "تغيير صورة الملف الشخصي",
+    "avatarInvalidType": "استخدم JPG أو PNG أو WebP أو GIF.",
+    "avatarTooLarge": "يجب ألا يتجاوز حجم الصورة {maxMb} ميغابايت.",
+    "avatarUploadFailed": "تعذر رفع الصورة. حاول مرة أخرى.",
+    "avatarCropTitle": "ضبط الصورة",
+    "avatarCropZoom": "تكبير",
+    "avatarCropHint": "اسحب لإعادة الموضع. استخدم الشريط للتكبير أو التصغير.",
+    "avatarCropCancel": "إلغاء",
+    "avatarCropApply": "تطبيق",
+    "avatarCropEncodeFailed": "تعذر معالجة الصورة. جرّب ملفًا آخر."
   },
   "profilePage": {
     "editProfile": "تعديل الملف الشخصي",

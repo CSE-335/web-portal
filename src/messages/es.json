@@ -59,7 +59,17 @@
     "menuContactUs": "Contáctanos",
     "menuPartner": "Socio — LLNL",
     "menuLanguage": "Idioma",
-    "changeBanner": "Cambiar banner"
+    "changeBanner": "Cambiar banner",
+    "changeAvatar": "Cambiar foto de perfil",
+    "avatarInvalidType": "Usa JPG, PNG, WebP o GIF.",
+    "avatarTooLarge": "La imagen debe pesar {maxMb} MB o menos.",
+    "avatarUploadFailed": "No se pudo subir la imagen. Inténtalo de nuevo.",
+    "avatarCropTitle": "Ajustar foto",
+    "avatarCropZoom": "Zoom",
+    "avatarCropHint": "Arrastra para mover. Usa el control para acercar o alejar.",
+    "avatarCropCancel": "Cancelar",
+    "avatarCropApply": "Aplicar",
+    "avatarCropEncodeFailed": "No se pudo procesar la imagen. Prueba otro archivo."
   },
   "profilePage": {
     "editProfile": "Editar perfil",

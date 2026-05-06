@@ -59,7 +59,17 @@
     "menuContactUs": "Связаться с нами",
     "menuPartner": "Партнёр — LLNL",
     "menuLanguage": "Язык",
-    "changeBanner": "Изменить баннер"
+    "changeBanner": "Изменить баннер",
+    "changeAvatar": "Изменить фото профиля",
+    "avatarInvalidType": "Используйте JPG, PNG, WebP или GIF.",
+    "avatarTooLarge": "Размер файла не более {maxMb} МБ.",
+    "avatarUploadFailed": "Не удалось загрузить изображение. Попробуйте снова.",
+    "avatarCropTitle": "Настроить фото",
+    "avatarCropZoom": "Масштаб",
+    "avatarCropHint": "Перетащите для позиции. Ползунок — увеличение.",
+    "avatarCropCancel": "Отмена",
+    "avatarCropApply": "Применить",
+    "avatarCropEncodeFailed": "Не удалось обработать изображение. Выберите другой файл."
   },
   "profilePage": {
     "editProfile": "Редактировать профиль",
