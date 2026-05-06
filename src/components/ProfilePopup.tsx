@@ -142,6 +142,10 @@ export default function ProfilePopup({
   const [bannerError, setBannerError] = useState<string | null>(null);
   const [avatarCropSrc, setAvatarCropSrc] = useState<string | null>(null);
   const [bannerCropSrc, setBannerCropSrc] = useState<string | null>(null);
+  const [avatarDraftFile, setAvatarDraftFile] = useState<File | null>(null);
+  const [bannerDraftFile, setBannerDraftFile] = useState<File | null>(null);
+  const [avatarPreviewObjectUrl, setAvatarPreviewObjectUrl] = useState<string | null>(null);
+  const [bannerPreviewObjectUrl, setBannerPreviewObjectUrl] = useState<string | null>(null);
   const avatarFileInputRef = useRef<HTMLInputElement>(null);
   const bannerFileInputRef = useRef<HTMLInputElement>(null);
   const autoActionTriggeredRef = useRef<"avatar" | "banner" | null>(null);
@@ -171,11 +175,19 @@ export default function ProfilePopup({
         setEditLocation(profile?.locale || null);
         setDraftAvatarUrl(profile?.avatar_url || null);
         setDraftBannerUrl(profile?.banner_url || null);
+        setAvatarPreviewObjectUrl(null);
+        setBannerPreviewObjectUrl(null);
+        setAvatarDraftFile(null);
+        setBannerDraftFile(null);
         setAvatarChanged(false);
         setBannerChanged(false);
       }).catch(() => {
         setDraftAvatarUrl(null);
         setDraftBannerUrl(null);
+        setAvatarPreviewObjectUrl(null);
+        setBannerPreviewObjectUrl(null);
+        setAvatarDraftFile(null);
+        setBannerDraftFile(null);
         setAvatarChanged(false);
         setBannerChanged(false);
       });
@@ -193,6 +205,16 @@ export default function ProfilePopup({
         if (prev) URL.revokeObjectURL(prev);
         return null;
       });
+      setAvatarPreviewObjectUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return null;
+      });
+      setBannerPreviewObjectUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return null;
+      });
+      setAvatarDraftFile(null);
+      setBannerDraftFile(null);
     }
   }, [opened]);
 
@@ -231,20 +253,11 @@ export default function ProfilePopup({
 
   const uploadAvatarFile = async (file: File): Promise<boolean> => {
     setAvatarError(null);
-    setSaveMessage("");
-    setAvatarUploading(true);
-    const upload = await uploadUserAvatar(file);
-    if (!upload.ok) {
-      setAvatarUploading(false);
-      if (upload.code === "invalid_type") setAvatarError(t("avatarInvalidType"));
-      else if (upload.code === "too_large") setAvatarError(t("avatarTooLarge", { maxMb: AVATAR_MAX_MB }));
-      else if (upload.code === "not_authenticated") setAvatarError(t("avatarUploadFailed"));
-      else setAvatarError(t("avatarUploadFailed"));
-      return false;
-    }
-
-    setAvatarUploading(false);
-    setDraftAvatarUrl(upload.publicUrl);
+    if (avatarPreviewObjectUrl) URL.revokeObjectURL(avatarPreviewObjectUrl);
+    const previewUrl = URL.createObjectURL(file);
+    setAvatarPreviewObjectUrl(previewUrl);
+    setAvatarDraftFile(file);
+    setDraftAvatarUrl(previewUrl);
     setAvatarChanged(true);
     return true;
   };
@@ -268,17 +281,13 @@ export default function ProfilePopup({
   };
 
   const uploadBannerFile = async (file: File): Promise<boolean> => {
-    setBannerUploading(true);
-    const upload = await uploadUserBanner(file);
-    if (!upload.ok) {
-      setBannerUploading(false);
-      setBannerError(t("avatarUploadFailed"));
-      return false;
-    }
-
-    setDraftBannerUrl(upload.publicUrl);
+    setBannerError(null);
+    if (bannerPreviewObjectUrl) URL.revokeObjectURL(bannerPreviewObjectUrl);
+    const previewUrl = URL.createObjectURL(file);
+    setBannerPreviewObjectUrl(previewUrl);
+    setBannerDraftFile(file);
+    setDraftBannerUrl(previewUrl);
     setBannerChanged(true);
-    setBannerUploading(false);
     return true;
   };
 
@@ -339,16 +348,62 @@ export default function ProfilePopup({
     setSaving(true);
     setSaveMessage("");
     setUsernameError(null);
+    setAvatarError(null);
+    setBannerError(null);
+
+    let nextAvatarUrl: string | null | undefined = undefined;
+    let nextBannerUrl: string | null | undefined = undefined;
+
+    if (avatarChanged && avatarDraftFile) {
+      setAvatarUploading(true);
+      const upload = await uploadUserAvatar(avatarDraftFile);
+      setAvatarUploading(false);
+      if (!upload.ok) {
+        setSaving(false);
+        if (upload.code === "invalid_type") setAvatarError(t("avatarInvalidType"));
+        else if (upload.code === "too_large") setAvatarError(t("avatarTooLarge", { maxMb: AVATAR_MAX_MB }));
+        else setAvatarError(t("avatarUploadFailed"));
+        return;
+      }
+      nextAvatarUrl = upload.publicUrl;
+    }
+
+    if (bannerChanged && bannerDraftFile) {
+      setBannerUploading(true);
+      const upload = await uploadUserBanner(bannerDraftFile);
+      setBannerUploading(false);
+      if (!upload.ok) {
+        setSaving(false);
+        if (upload.code === "invalid_type") setBannerError(t("avatarInvalidType"));
+        else if (upload.code === "too_large") setBannerError(t("avatarTooLarge", { maxMb: AVATAR_MAX_MB }));
+        else setBannerError(t("avatarUploadFailed"));
+        return;
+      }
+      nextBannerUrl = upload.publicUrl;
+    }
+
     const result = await updateUserProfile({
       display_name: editUsername || null,
       locale: editLocation,
-      ...(avatarChanged && { avatar_url: draftAvatarUrl }),
-      ...(bannerChanged && { banner_url: draftBannerUrl }),
+      ...(nextAvatarUrl !== undefined && { avatar_url: nextAvatarUrl }),
+      ...(nextBannerUrl !== undefined && { banner_url: nextBannerUrl }),
     });
     setSaving(false);
     if (result.error) {
       setSaveMessage(result.error);
     } else {
+      if (nextAvatarUrl !== undefined) {
+        if (avatarPreviewObjectUrl) URL.revokeObjectURL(avatarPreviewObjectUrl);
+        setAvatarPreviewObjectUrl(null);
+        setAvatarDraftFile(null);
+        setDraftAvatarUrl(nextAvatarUrl);
+      }
+      if (nextBannerUrl !== undefined) {
+        if (bannerPreviewObjectUrl) URL.revokeObjectURL(bannerPreviewObjectUrl);
+        setBannerPreviewObjectUrl(null);
+        setBannerDraftFile(null);
+        setDraftBannerUrl(nextBannerUrl);
+      }
       setAvatarChanged(false);
       setBannerChanged(false);
       setSaveMessage(t('saved'));
@@ -428,7 +483,7 @@ export default function ProfilePopup({
                   opacity: avatarUploading ? 0.85 : 1,
                 }}
               >
-                <Box style={{ position: "relative", width: 90, height: 90, borderRadius: "50%", overflow: "hidden", border: "3px solid var(--text-muted)" }}>
+                <Box style={{ position: "relative", width: 90, height: 90, borderRadius: "50%", overflow: "hidden", border: avatarChanged ? "3px solid #1b41ff" : "3px solid var(--text-muted)" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={avatarUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} onError={(e) => { e.currentTarget.src = "/images/bobcat.png"; }} />
                   {avatarUploading && (
@@ -453,17 +508,39 @@ export default function ProfilePopup({
                 </Text>
               )}
               <Button
-                variant="subtle"
+                variant="filled"
                 loading={bannerUploading}
                 onClick={triggerBannerPick}
                 style={{
-                  color: "var(--text-primary)",
+                  background: "linear-gradient(to bottom, #1b41ff 0%, #0054f0 100%)",
+                  color: "#fbe6e6",
                   fontFamily: "var(--font-alexandria), sans-serif",
-                  fontWeight: 600,
+                  fontWeight: 700,
+                  borderRadius: "18px",
+                  border: "none",
+                  height: "36px",
+                  padding: "0 18px",
                 }}
               >
                 {t('changeBanner')}
               </Button>
+              <Text style={{ fontFamily: "var(--font-alexandria), sans-serif", fontSize: 11, color: "var(--text-secondary)" }}>
+                Preview shown below. Changes apply after Save Changes.
+              </Text>
+              <Box style={{ width: "100%", maxWidth: 260 }}>
+                <Text style={{ fontFamily: "var(--font-alexandria), sans-serif", fontSize: 11, color: "var(--text-secondary)", marginBottom: 6 }}>
+                  Banner Preview
+                </Text>
+                <Box style={{ width: "100%", height: 58, borderRadius: 10, overflow: "hidden", border: "1px solid var(--border-color)", background: "var(--surface-secondary)" }}>
+                  {draftBannerUrl
+                    ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={draftBannerUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
+                    )
+                    : <Box style={{ width: "100%", height: "100%", background: "var(--profile-banner-bg)" }} />
+                  }
+                </Box>
+              </Box>
               {bannerError && (
                 <Text style={{ fontFamily: "var(--font-alexandria), sans-serif", fontSize: 12, color: "#ef4444", textAlign: "center" }}>
                   {bannerError}
