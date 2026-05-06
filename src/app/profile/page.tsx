@@ -21,11 +21,13 @@ import { supabase } from "@/lib/supabase/client";
 import { getUserProfile } from "@/lib/supabase/user-profile";
 import { getUserLikedGames, getUserLikesCount } from "@/lib/supabase/game-likes";
 import { getPlayStreak, getRecentActivity } from "@/lib/supabase/play-sessions";
+import { getFriendsDashboard, type FriendsDashboard } from "@/lib/supabase/friends";
 import { generateUsername } from "@/lib/utils/generateUsername";
 import { getGameBySlug } from "@/data/games";
 import type { User } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
 import ProfilePopup from "@/components/ProfilePopup";
+import FriendsTab from "@/components/profile/FriendsTab";
 import { pageTheme } from "@/lib/theme/pageTheme";
 import classes from "./profile.module.css";
 
@@ -46,6 +48,11 @@ export default function ProfilePage() {
   const [playStreak, setPlayStreak] = useState(0);
   const [likedGames, setLikedGames] = useState<{ game_slug: string; created_at: string }[]>([]);
   const [recentActivity, setRecentActivity] = useState<{ game_slug: string; started_at: string; duration_seconds: number | null }[]>([]);
+  const [friendsDashboard, setFriendsDashboard] = useState<FriendsDashboard>({
+    friends: [],
+    incomingRequests: [],
+    outgoingRequests: [],
+  });
   const [bannerHovered, setBannerHovered] = useState(false);
   const [avatarHovered, setAvatarHovered] = useState(false);
   const [editDrawerOpened, setEditDrawerOpened] = useState(false);
@@ -53,18 +60,20 @@ export default function ProfilePage() {
   const [now] = useState(() => Date.now());
 
   const loadProfileData = useCallback(async (userId: string) => {
-    const [profileData, likes, streak, liked, activity] = await Promise.all([
+    const [profileData, likes, streak, liked, activity, friends] = await Promise.all([
       getUserProfile(userId),
       getUserLikesCount(userId),
       getPlayStreak(userId),
       getUserLikedGames(userId),
       getRecentActivity(userId),
+      getFriendsDashboard(),
     ]);
     setProfile(profileData);
     setLikesCount(likes);
     setPlayStreak(streak);
     setLikedGames(liked);
     setRecentActivity(activity);
+    setFriendsDashboard(friends);
   }, []);
 
   useEffect(() => {
@@ -232,6 +241,31 @@ export default function ProfilePage() {
             }}>
               <Tabs.List>
                 <Tabs.Tab value="liked">{t('tabLiked')}</Tabs.Tab>
+                <Tabs.Tab value="friends">
+                  {t('tabFriends')}
+                  {friendsDashboard.incomingRequests.length > 0 && (
+                    <span
+                      style={{
+                        marginLeft: 8,
+                        minWidth: 18,
+                        height: 18,
+                        padding: "0 6px",
+                        borderRadius: 999,
+                        background: "#ef4444",
+                        color: "#ffffff",
+                        fontSize: 11,
+                        fontWeight: 700,
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {friendsDashboard.incomingRequests.length > 9
+                        ? "9+"
+                        : friendsDashboard.incomingRequests.length}
+                    </span>
+                  )}
+                </Tabs.Tab>
                 <Tabs.Tab value="leaderboards">{t('tabLeaderboards')}</Tabs.Tab>
               </Tabs.List>
 
@@ -261,6 +295,16 @@ export default function ProfilePage() {
                     })}
                   </SimpleGrid>
                 )}
+              </Tabs.Panel>
+
+              <Tabs.Panel value="friends" pt="lg">
+                <FriendsTab
+                  dashboard={friendsDashboard}
+                  onRefresh={async () => {
+                    const next = await getFriendsDashboard();
+                    setFriendsDashboard(next);
+                  }}
+                />
               </Tabs.Panel>
 
               <Tabs.Panel value="leaderboards" pt="lg">

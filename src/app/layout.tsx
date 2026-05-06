@@ -19,6 +19,7 @@ const roboto = Roboto({
 });
 import Header from "@/components/layout/Header/Header";
 import Footer from "@/components/layout/Footer/Footer";
+import FriendsPresenceSync from "@/components/FriendsPresenceSync";
 
 import { defaultTheme } from "@/themes/default";
 
@@ -47,6 +48,7 @@ export default async function RootLayout({
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <MantineProvider theme={defaultTheme} defaultColorScheme="dark">
+            <FriendsPresenceSync />
             <Header />
             <Container mih="100dvh" px={{ base: "xs", sm: "md" }} py={{ base: "sm", md: "md" }}>
               {children}

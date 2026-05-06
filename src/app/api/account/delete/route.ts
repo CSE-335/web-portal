@@ -25,6 +25,8 @@ export async function POST(request: Request) {
     await admin.from("game_data").delete().eq("user_id", user.id);
     await admin.from("play_sessions").delete().eq("user_id", user.id);
     await admin.from("game_likes").delete().eq("user_id", user.id);
+    await admin.from("user_presence").delete().eq("user_id", user.id);
+    await admin.from("friendships").delete().or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`);
     await admin.from("user_profiles").delete().eq("auth_user_id", user.id);
 
     const { error: deleteError } = await admin.auth.admin.deleteUser(user.id);
