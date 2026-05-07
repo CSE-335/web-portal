@@ -5,6 +5,7 @@ import {
   createSessionClient,
   getAuthenticatedUserId,
   getGameIdBySlug,
+  type AdminClient,
 } from "@/lib/supabase/game-data";
 import type { Database, Json } from "@/lib/supabase/database.types";
 
@@ -74,9 +75,7 @@ function extractHighScore(data: Json, slug: string | null): number | null {
 }
 
 async function getFriendIdsForUser(
-  adminSupabase: ReturnType<typeof createAdminClient> extends { ok: true; supabase: infer C }
-    ? C
-    : never,
+  adminSupabase: AdminClient,
   authUserId: string
 ): Promise<Set<string>> {
   const { data, error } = await adminSupabase
@@ -101,9 +100,7 @@ async function getFriendIdsForUser(
 }
 
 async function loadProfilesForUserIds(
-  adminSupabase: ReturnType<typeof createAdminClient> extends { ok: true; supabase: infer C }
-    ? C
-    : never,
+  adminSupabase: AdminClient,
   userIds: string[]
 ): Promise<Map<string, Pick<UserProfileRow, "auth_user_id" | "display_name" | "avatar_url">>> {
   if (userIds.length === 0) return new Map();

@@ -39,17 +39,15 @@ export default async function FriendProfilePage({ params }: FriendProfilePagePro
   }
 
   // Likes are filtered through RLS and only visible when viewer is allowed (self or friend via game_likes policy).
-  const [{ data: likedRows }, friendshipsResult] = await Promise.all([
-    sessionSupabase && viewerId
-      ? sessionSupabase
-          .from("game_likes")
-          .select("game_slug, created_at")
-          .eq("user_id", userId)
-          .order("created_at", { ascending: false })
-      : Promise.resolve({
+  const { data: likedRows } = await (sessionSupabase && viewerId
+    ? sessionSupabase
+        .from("game_likes")
+        .select("game_slug, created_at")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+    : Promise.resolve({
         data: [] as { game_slug: string; created_at: string }[],
-      }),
-  ]);
+      }));
 
   // Friends list for this profile uses the admin client to bypass friendship RLS
   // and show that user's full friend list.
