@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* Reserve vertical scrollbar space so layout width does not flip when `overflow-y` toggles
+   (common at end-of-page), which can re-fire `matchMedia` and/or flex overflow layouts. */
+html {
+  scrollbar-gutter: stable;
+}
+
 /* Arabic RTL */
 html[lang="ar"] p,
 html[lang="ar"] h1,
@@ -26,6 +32,8 @@ html[lang="ar"] button {
   --border-subtle: rgba(255, 255, 255, 0.06);
   --shadow-card: 0 16px 36px rgba(0, 0, 0, 0.22);
   --input-bg: #2e3660;
+  --input-wrapper-bg: #525b85;
+  --input-wrapper-border: 1.5px solid rgba(120, 134, 191, 0.75);
   --overlay-bg: rgba(255, 255, 255, 0.08);
   --overlay-border: rgba(255, 255, 255, 0.12);
   --card-panel-bg: rgba(39, 50, 103, 0.92);
@@ -52,6 +60,9 @@ html[lang="ar"] button {
   --locale-dropdown-bg: #1f2542;
   --locale-dropdown-border: rgba(255,255,255,0.1);
   --locale-dropdown-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  --search-popup-bg: #2a2f4e;
+  --search-popup-text: #ffffff;
+  --search-popup-hover: rgba(255,255,255,0.08);
   --player-bg: rgba(34, 38, 63, 0.95);
   --player-border: rgba(255,255,255,0.1);
   --player-embed-bg: linear-gradient(180deg, #2A2F56 0%, #202542 100%);
@@ -63,6 +74,31 @@ html[lang="ar"] button {
   --detail-card-bg: rgba(255,255,255,0.05);
   --detail-card-border: rgba(255,255,255,0.1);
   --detail-label: rgba(255,255,255,0.5);
+  --link-color: #8fb4ff;
+  --button-primary-bg: linear-gradient(to bottom, #1b41ff 0%, #0054f0 100%);
+  --button-primary-text: #fbe6e6;
+  --option-bg: #525b85;
+  --profile-banner-bg: linear-gradient(135deg, #1b41ff 0%, #0054f0 50%, #1a2060 100%);
+  --about-page-bg: #2A305B;
+  --about-wrapper-bg: #2f3566;
+  --about-container-bg: #353c71;
+  --about-text: #ffffff;
+  --about-avatar-placeholder-bg: rgba(209, 213, 219, 0.35);
+  --about-border-strong: rgba(255, 255, 255, 0.22);
+  /* Softer blend into banner art + reads as part of dark UI (blue-violet, not flat navy slab) */
+  --welcome-overlay-mobile-bg: linear-gradient(
+    115deg,
+    rgba(36, 42, 78, 0.97) 0%,
+    rgba(40, 50, 98, 0.88) 38%,
+    rgba(52, 64, 118, 0.42) 68%,
+    transparent 92%
+  );
+  --welcome-banner-title-color: var(--title-color);
+  --welcome-banner-heading-shadow: 0 1px 4px rgba(0, 0, 0, 0.55), 0 0 20px rgba(255, 255, 255, 0.08);
+  --tutorial-table-row-odd: rgba(255, 255, 255, 0.035);
+  --tutorial-table-row-hover: rgba(255, 255, 255, 0.08);
+  --play-button-bg: #176bff;
+  --play-button-bg-hover: #0f5ae0;
 }
 
 [data-mantine-color-scheme="light"] {
@@ -105,6 +141,9 @@ html[lang="ar"] button {
   --locale-dropdown-bg: #002570;
   --locale-dropdown-border: rgba(255, 255, 255, 0.15);
   --locale-dropdown-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --search-popup-bg: #eef0f5;
+  --search-popup-text: #0057a8;
+  --search-popup-hover: rgba(0,87,168,0.08);
   --player-bg: #ffffff;
   --player-border: rgba(0, 48, 135, 0.12);
   --player-embed-bg: #f0f2f6;
@@ -116,6 +155,60 @@ html[lang="ar"] button {
   --detail-card-bg: rgba(0, 48, 135, 0.05);
   --detail-card-border: rgba(0, 48, 135, 0.12);
   --detail-label: #718096;
+  --link-color: #2F5DCC;
+  --button-primary-bg: linear-gradient(to bottom, #0d4dbe 0%, #003087 100%);
+  --button-primary-text: #ffffff;
+  --option-bg: #f0f2f6;
+  --profile-banner-bg: linear-gradient(135deg, #0d4dbe 0%, #0057a8 55%, #003087 100%);
+  --about-page-bg: #93949e;
+  --about-wrapper-bg: #e0e1e9;
+  --about-container-bg: #ffffff;
+  --about-text: #111827;
+  --about-avatar-placeholder-bg: #e2e8f0;
+  --about-border-strong: rgba(0, 48, 135, 0.2);
+  /* Fade into banner art (same geometry as dark mode, frosted white) */
+  --welcome-overlay-mobile-bg: linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.97) 0%,
+    rgba(255, 255, 255, 0.88) 38%,
+    rgba(255, 255, 255, 0.42) 68%,
+    transparent 92%
+  );
+  --welcome-banner-title-color: #0f2847;
+  --welcome-banner-heading-shadow: 0 1px 0 rgba(255, 255, 255, 0.75);
+  --tutorial-table-row-odd: rgba(0, 48, 135, 0.04);
+  --tutorial-table-row-hover: rgba(0, 87, 168, 0.06);
+  --play-button-bg: #0a40a8;
+  --play-button-bg-hover: #0d4dbe;
+}
+
+/* Mantine tokens: match app semantic colors (globals load after Mantine core styles.css) */
+:root[data-mantine-color-scheme="dark"],
+:host([data-mantine-color-scheme="dark"]) {
+  --mantine-color-body: var(--surface-primary);
+  --mantine-color-text: var(--text-primary);
+  --mantine-color-dimmed: var(--text-secondary);
+  --mantine-color-bright: var(--text-primary);
+  --mantine-color-default: var(--surface-secondary);
+  --mantine-color-default-hover: color-mix(in srgb, var(--surface-secondary) 92%, white);
+  --mantine-color-default-color: var(--text-primary);
+  --mantine-color-default-border: var(--border-color);
+  --mantine-color-placeholder: rgba(176, 198, 230, 0.55);
+  --mantine-color-anchor: var(--link-color);
+}
+
+:root[data-mantine-color-scheme="light"],
+:host([data-mantine-color-scheme="light"]) {
+  --mantine-color-body: var(--app-bg-gradient);
+  --mantine-color-text: var(--text-primary);
+  --mantine-color-dimmed: var(--text-secondary);
+  --mantine-color-bright: var(--text-primary);
+  --mantine-color-default: var(--surface-secondary);
+  --mantine-color-default-hover: color-mix(in srgb, var(--surface-secondary) 88%, black);
+  --mantine-color-default-color: var(--text-primary);
+  --mantine-color-default-border: var(--border-color);
+  --mantine-color-placeholder: #6b7280;
+  --mantine-color-anchor: var(--link-color);
 }
 
 /* Light mode banner */
@@ -143,6 +236,17 @@ html[lang="ar"] button {
 }
 [data-mantine-color-scheme="light"] .site-header input::placeholder {
   color: rgba(255,255,255,0.6) !important;
+}
+
+/* Search popup theming (homepage + shared) */
+.search-popup {
+  background: var(--search-popup-bg) !important;
+}
+.search-popup-btn {
+  color: var(--search-popup-text) !important;
+}
+.search-popup-btn:hover {
+  background: var(--search-popup-hover) !important;
 }
 
 /* Dark mode search */
@@ -295,5 +399,149 @@ button.banner-close-btn:hover[data-variant] {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
   --button-hover: #0d4dbe !important;
   --ai-hover: #0d4dbe !important;
+}
+
+.play-btn-game-card:hover {
+  background-color: var(--play-button-bg-hover) !important;
+}
+
+.nav-tooltip {
+  position: relative;
+  display: inline-flex;
+}
+
+.nav-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  z-index: 1000;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(13, 18, 38, 0.96);
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.nav-tooltip::before {
+  content: "";
+  position: absolute;
+  top: calc(100% + 3px);
+  left: 50%;
+  z-index: 1001;
+  border: 5px solid transparent;
+  border-bottom-color: rgba(13, 18, 38, 0.96);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.nav-tooltip:hover::after,
+.nav-tooltip:focus-within::after,
+.nav-tooltip:hover::before,
+.nav-tooltip:focus-within::before {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+[data-mantine-color-scheme="light"] .nav-tooltip::after {
+  background: #f8fafc;
+  color: #1a1d2e;
+  box-shadow: 0 8px 24px rgba(0, 48, 135, 0.14);
+  border: 1px solid rgba(0, 48, 135, 0.12);
+}
+
+[data-mantine-color-scheme="light"] .nav-tooltip::before {
+  border-bottom-color: #f8fafc;
+}
+
+.nav-login-btn {
+  box-shadow: 0 3px 10px rgba(27, 65, 255, 0.35);
+  transition: filter 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease !important;
+}
+
+.nav-login-btn:hover {
+  filter: brightness(1.12);
+  box-shadow: 0 5px 16px rgba(27, 65, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.nav-login-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* /tutorial shortcut matrix — plain HTML table (no Mantine Table RSC quirks) */
+.tutorial-shortcuts-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--text-body);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tutorial-shortcuts-table thead {
+  background: var(--surface-secondary);
+}
+
+.tutorial-shortcuts-table th,
+.tutorial-shortcuts-table td {
+  padding: 0.55rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.tutorial-shortcuts-table th {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.tutorial-shortcuts-table tbody tr:nth-child(odd) {
+  background: var(--tutorial-table-row-odd);
+}
+
+.tutorial-shortcuts-table tbody tr:hover {
+  background: var(--tutorial-table-row-hover);
+}
+
+.tutorial-shortcuts-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tutorial-kbd {
+  display: inline-block;
+  padding: 0.1em 0.45em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8em;
+  line-height: 1.4;
+  border-radius: 4px;
+  border: 1px solid var(--tag-border);
+  background: var(--tag-bg);
+  color: var(--text-tag);
+}
+
+@media (max-width: 35em) {
+  .tutorial-shortcuts-table--mobile th,
+  .tutorial-shortcuts-table--mobile td {
+    padding: 0.45rem 0.55rem;
+    font-size: 0.8125rem;
+  }
+
+  .tutorial-shortcuts-table--mobile th:first-child,
+  .tutorial-shortcuts-table--mobile td:first-child {
+    min-width: 9rem;
+  }
 }
 

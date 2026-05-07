@@ -21,11 +21,15 @@ import { supabase } from "@/lib/supabase/client";
 import { getUserProfile } from "@/lib/supabase/user-profile";
 import { getUserLikedGames, getUserLikesCount } from "@/lib/supabase/game-likes";
 import { getPlayStreak, getRecentActivity } from "@/lib/supabase/play-sessions";
+import { getFriendsDashboard, type FriendsDashboard } from "@/lib/supabase/friends";
 import { generateUsername } from "@/lib/utils/generateUsername";
 import { getGameBySlug } from "@/data/games";
 import type { User } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
 import ProfilePopup from "@/components/ProfilePopup";
+import FriendsTab from "@/components/profile/FriendsTab";
+import LeaderboardsTab from "@/components/profile/LeaderboardsTab";
+import { pageTheme } from "@/lib/theme/pageTheme";
 import classes from "./profile.module.css";
 
 type UserProfileRow = Database["public"]["Tables"]["user_profiles"]["Row"];
@@ -45,35 +49,91 @@ export default function ProfilePage() {
   const [playStreak, setPlayStreak] = useState(0);
   const [likedGames, setLikedGames] = useState<{ game_slug: string; created_at: string }[]>([]);
   const [recentActivity, setRecentActivity] = useState<{ game_slug: string; started_at: string; duration_seconds: number | null }[]>([]);
+  const [friendsDashboard, setFriendsDashboard] = useState<FriendsDashboard>({
+    friends: [],
+    incomingRequests: [],
+    outgoingRequests: [],
+  });
   const [bannerHovered, setBannerHovered] = useState(false);
   const [avatarHovered, setAvatarHovered] = useState(false);
   const [editDrawerOpened, setEditDrawerOpened] = useState(false);
+  const [editInitialAction, setEditInitialAction] = useState<"avatar" | "banner" | null>(null);
   const [now] = useState(() => Date.now());
 
   const loadProfileData = useCallback(async (userId: string) => {
-    const [profileData, likes, streak, liked, activity] = await Promise.all([
+    const [profileData, likes, streak, liked, activity, friends] = await Promise.all([
       getUserProfile(userId),
       getUserLikesCount(userId),
       getPlayStreak(userId),
       getUserLikedGames(userId),
       getRecentActivity(userId),
+      getFriendsDashboard(),
     ]);
     setProfile(profileData);
     setLikesCount(likes);
     setPlayStreak(streak);
     setLikedGames(liked);
     setRecentActivity(activity);
+    setFriendsDashboard(friends);
   }, []);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) { router.push("/"); return; }
+    let active = true;
+
+    const loadCurrentUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (!active) return;
+
+      if (!data.user) {
+        setUser(null);
+        setProfile(null);
+        setEditDrawerOpened(false);
+        setLoading(false);
+        router.replace("/");
+        return;
+      }
+
       setUser(data.user);
-      loadProfileData(data.user.id).then(() => setLoading(false));
+      await loadProfileData(data.user.id);
+      if (active) setLoading(false);
+    };
+
+    void loadCurrentUser();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!active) return;
+
+      if (!session?.user) {
+        setUser(null);
+        setProfile(null);
+        setEditDrawerOpened(false);
+        setLoading(false);
+        router.replace("/");
+        return;
+      }
+
+      setUser(session.user);
+      void loadProfileData(session.user.id);
     });
+
+    return () => {
+      active = false;
+      authListener.subscription.unsubscribe();
+    };
   }, [router, loadProfileData]);
 
-  if (loading || !user) {
+  useEffect(() => {
+    if (loading || user) return;
+
+    router.replace("/");
+    const fallbackRedirect = window.setTimeout(() => {
+      window.location.replace("/");
+    }, 150);
+
+    return () => window.clearTimeout(fallbackRedirect);
+  }, [loading, user, router]);
+
+  if (loading) {
     return (
       <Container size="lg" py={80}>
         <Stack align="center"><Loader color="#1b41ff" /></Stack>
@@ -81,10 +141,15 @@ export default function ProfilePage() {
     );
   }
 
+  if (!user) {
+    return null;
+  }
+
   const displayName = profile?.display_name || user.user_metadata?.display_name || generateUsername(user.id);
   const avatarUrl = profile?.avatar_url || user.user_metadata?.avatar_url || "/images/bobcat.png";
   const bannerUrl = profile?.banner_url || null;
-  const locale = profile?.locale || null;
+  const locale = profile?.locale?.trim() || null;
+  const locationLabel = locale || t('locationUnknown');
   const memberSince = user.created_at ? new Date(user.created_at) : new Date();
   const memberDays = Math.floor((now - memberSince.getTime()) / 86400000);
   const lastPlayed = recentActivity.length > 0 ? getGameBySlug(recentActivity[0].game_slug) : null;
@@ -100,10 +165,11 @@ export default function ProfilePage() {
         style={{ position: "relative", height: 240, borderRadius: "14px 14px 0 0", overflow: "hidden", cursor: "pointer" }}
         onMouseEnter={() => setBannerHovered(true)}
         onMouseLeave={() => setBannerHovered(false)}
+        onClick={() => { setEditInitialAction("banner"); setEditDrawerOpened(true); }}
       >
         {bannerUrl
           ? <Image src={bannerUrl} alt="Banner" fill style={{ objectFit: "cover" }} />
-          : <Box style={{ width: "100%", height: "100%", background: "linear-gradient(135deg, #1b41ff 0%, #0054f0 50%, #1a2060 100%)" }} />
+          : <Box style={{ width: "100%", height: "100%", background: "var(--profile-banner-bg)" }} />
         }
         {bannerHovered && (
           <Box style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -126,10 +192,11 @@ export default function ProfilePage() {
             style={{ position: "relative", cursor: "pointer", flexShrink: 0 }}
             onMouseEnter={() => setAvatarHovered(true)}
             onMouseLeave={() => setAvatarHovered(false)}
+            onClick={() => { setEditInitialAction("avatar"); setEditDrawerOpened(true); }}
           >
             <Box style={{ width: 120, height: 120, borderRadius: 14, overflow: "hidden", border: "4px solid var(--surface-primary)", boxShadow: "var(--shadow-card)" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={avatarUrl} alt="Avatar" width={120} height={120} style={{ objectFit: "cover", display: "block" }} />
+              <img src={avatarUrl} alt="Avatar" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} onError={(e) => { e.currentTarget.src = "/images/bobcat.png"; }} />
             </Box>
             {avatarHovered && (
               <Box style={{ position: "absolute", inset: 0, borderRadius: 14, background: "rgba(0,0,0,0.55)", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -142,27 +209,25 @@ export default function ProfilePage() {
           </Box>
 
           {/* User info */}
-          <Stack gap={3} pb={6}>
+          <Stack gap={4} pb={2} style={{ minWidth: 0, flex: "1 1 auto" }}>
             <Title order={2} style={{ ...font, color: "var(--text-primary)", fontWeight: 700, fontSize: 26, lineHeight: 1.1 }}>
               {displayName}
             </Title>
-            {locale && (
-              <Group gap={4}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ color: "var(--text-secondary)" }} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-                <Text style={{ ...font, color: "var(--text-secondary)", fontSize: 13 }}>{locale}</Text>
-              </Group>
-            )}
-            <Text style={{ ...font, color: "var(--text-muted)", fontSize: 12 }}>{user.email}</Text>
+            <Group gap={5} wrap="nowrap" style={{ color: "var(--text-secondary)", minWidth: 0 }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style={{ flexShrink: 0 }}>
+                <path d="M12 2C8.14 2 5 5.14 5 9c0 5.25 6.1 12.26 6.36 12.56a.86.86 0 0 0 1.28 0C12.9 21.26 19 14.25 19 9c0-3.86-3.14-7-7-7Zm0 9.8A2.8 2.8 0 1 1 12 6.2a2.8 2.8 0 0 1 0 5.6Z" />
+              </svg>
+              <Text style={{ ...font, color: "var(--text-secondary)", fontSize: 13, fontWeight: 500 }} lineClamp={1}>
+                {locationLabel}
+              </Text>
+            </Group>
           </Stack>
 
           {/* Edit button */}
           <Box ml="auto" pb={8}>
             <UnstyledButton
-              onClick={() => setEditDrawerOpened(true)}
-              style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 18px", borderRadius: 20, background: "linear-gradient(135deg, #2B5FFF 0%, #1B41FF 40%, #0054F0 100%)", border: "none", color: "white", boxShadow: "0 2px 8px rgba(27, 65, 255, 0.35)", ...font, fontWeight: 500, fontSize: 13, transition: "transform 0.1s ease" }}
+              onClick={() => { setEditInitialAction(null); setEditDrawerOpened(true); }}
+              style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 18px", ...pageTheme.primaryButton, boxShadow: "0 2px 8px rgba(27, 65, 255, 0.35)", ...font, fontWeight: 500, fontSize: 13, transition: "transform 0.1s ease" }}
               onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.95)")}
               onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
               onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
@@ -229,6 +294,31 @@ export default function ProfilePage() {
             }}>
               <Tabs.List>
                 <Tabs.Tab value="liked">{t('tabLiked')}</Tabs.Tab>
+                <Tabs.Tab value="friends">
+                  {t('tabFriends')}
+                  {friendsDashboard.incomingRequests.length > 0 && (
+                    <span
+                      style={{
+                        marginLeft: 8,
+                        minWidth: 18,
+                        height: 18,
+                        padding: "0 6px",
+                        borderRadius: 999,
+                        background: "#ef4444",
+                        color: "#ffffff",
+                        fontSize: 11,
+                        fontWeight: 700,
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {friendsDashboard.incomingRequests.length > 9
+                        ? "9+"
+                        : friendsDashboard.incomingRequests.length}
+                    </span>
+                  )}
+                </Tabs.Tab>
                 <Tabs.Tab value="leaderboards">{t('tabLeaderboards')}</Tabs.Tab>
               </Tabs.List>
 
@@ -260,10 +350,18 @@ export default function ProfilePage() {
                 )}
               </Tabs.Panel>
 
+              <Tabs.Panel value="friends" pt="lg">
+                <FriendsTab
+                  dashboard={friendsDashboard}
+                  onRefresh={async () => {
+                    const next = await getFriendsDashboard();
+                    setFriendsDashboard(next);
+                  }}
+                />
+              </Tabs.Panel>
+
               <Tabs.Panel value="leaderboards" pt="lg">
-                <Text style={{ ...font, color: "var(--text-secondary)", fontSize: 14, textAlign: "center", padding: "48px 0" }}>
-                  {t('leaderboardsSoon')}
-                </Text>
+                <LeaderboardsTab initialGameSlug={lastPlayed?.slug ?? null} />
               </Tabs.Panel>
             </Tabs>
           </Box>
@@ -273,9 +371,17 @@ export default function ProfilePage() {
       {user && (
         <ProfilePopup
           opened={editDrawerOpened}
-          onClose={() => { setEditDrawerOpened(false); loadProfileData(user.id); }}
+          onClose={() => {
+            setEditDrawerOpened(false);
+            setEditInitialAction(null);
+            void supabase.auth.getUser().then(({ data }) => {
+              if (!data.user) return;
+              void loadProfileData(data.user.id);
+            });
+          }}
           user={user}
           initialView="edit"
+          initialAction={editInitialAction}
         />
       )}
     </Container>

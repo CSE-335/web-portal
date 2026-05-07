@@ -1,104 +1,118 @@
 # How to Add New Games in the Portal
 
-This guide explains how to add a new web game to the STEM Game Portal using the metadata-driven setup.
+This portal syncs game repositories from a manifest, builds them locally, and bakes the built output into `public/staticGames/`.
 
 ## Overview
-The portal is designed for scalability. New games are defined in a central metadata file and automatically routed through a shared dynamic page system, eliminating the need to build unique pages for every entry.
-
-**The Workflow:**
-1.  Add game metadata to the central registry.
-2.  Upload the thumbnail image.
-3.  Verify the live game URL.
-4.  (Optional) Feature it on the homepage.
-
----
-
-## Folder Structure
-Ensure your files are placed in the following directories:
+The portal expects every game repo to follow the same structure:
 
 ```text
-src/
-  app/
-    page.tsx            # Homepage
-    games/
-      [slug]/
-        page.tsx        # Dynamic Game Template
-  components/
-    GameEmbed.tsx       # Iframe Wrapper
-  data/
-    games.ts            # <--- ADD METADATA HERE
-public/
-  images/               # <--- ADD THUMBNAILS HERE
+data/
+  game.json
+  thumbnail.png
+dist/
+package.json
 ```
 
----
+Every game repo must support:
+- `npm ci`
+- `npm run build`
+- build output in `dist/`
+- metadata in `data/game.json`
+- thumbnail in `data/thumbnail.png`
 
-## Step 1: Add Game Metadata
-Open `src/data/games.ts` and add a new object to the `games` array.
+The portal uses `data/game.json` as the source of truth for the game id and display metadata.
 
-### Field Definitions
-| Field | Description | Example |
-| :--- | :--- | :--- |
-| `slug` | Unique ID used in the URL route. | `matrix-meadow` |
-| `title` | Display name for cards and headers. | `Matrix Meadow Academy` |
-| `subject` | Category (Science, Technology, Engineering, Math). | `Mathematics` |
-| `description` | Short summary for previews. | `Practice matrix multiplication...` |
-| `iframeSrc` | The live URL of the hosted game. | `https://game-url.vercel.app` |
-| `thumbnailSrc` | Path to the image in `/public/images`. | `/images/thumb.png` |
-| `embedHeight` | (Optional) Custom height for the iframe. | `800px` |
-| `featured` | (Optional) Boolean to pin to homepage. | `true` |
+## Step 1: Add The Repo URL To The Manifest
+Open `games.config.mjs` and add the repo URL to the `gameRepos` array.
 
-### Example Entry
-```typescript
+Example:
+
+```js
+export const gameRepos = [
+  'https://github.com/etchre/python-programming-game.git',
+  'https://github.com/example/new-game.git',
+];
+```
+
+## Step 2: Verify The Game Repo Structure
+Each game repo must include:
+
+### `data/game.json`
+
+Required fields:
+- `game-id`
+
+Common optional fields:
+- `title`
+- `subject`
+- `description`
+- `longDescription`
+- `embedHeight`
+- `featured`
+- `tags`
+
+Example:
+
+```json
 {
-  slug: "matrix-meadow",
-  title: "Matrix Meadow Academy",
-  subject: "Mathematics",
-  description: "Practice matrix multiplication through interactive challenges.",
-  iframeSrc: "https://your-game-url-here.vercel.app",
-  thumbnailSrc: "/images/matrix-meadow-thumb.png",
-  embedHeight: "800px",
-  featured: true,
+  "game-id": "matrix-meadow",
+  "title": "Matrix Meadow Academy",
+  "subject": "Mathematics",
+  "description": "Practice matrix multiplication through interactive challenges.",
+  "longDescription": [
+    "Long-form description paragraph 1.",
+    "Long-form description paragraph 2."
+  ],
+  "embedHeight": "800px",
+  "featured": true,
+  "tags": ["math", "matrices"]
 }
 ```
 
----
+### `data/thumbnail.png`
+- Recommended size: 1280 x 720
+- Format: PNG preferred
 
-## Step 2: Add the Thumbnail Image
-Place your image in `public/images/`.
-* **Recommended Size:** 1280 x 720 (16:9 aspect ratio).
-* **Format:** PNG or WebP preferred.
+### Vite Base Path
+The built game must serve correctly from:
 
----
-
-## Step 3: Hosting & Security
-The portal uses `<iframe>` tags to embed games.
-> [!IMPORTANT]
-> Some hosts block embedding via **X-Frame-Options** or **Content-Security-Policy** headers. If the game doesn't load, ensure the hosting provider allows your portal's domain to embed the content.
-
----
-
-## Step 4: Testing & Display
-Once the metadata is saved, the game is automatically live at:
-`yourdomain.com/games/[slug]`
-
-### Showing Games on the Homepage
-To scale effectively, the homepage should render sections dynamically based on the `subject` field:
-
-```typescript
-const mathGames = games.filter((game) => game.subject === "Mathematics");
+```text
+/staticGames/<game-id>/
 ```
 
----
+For Vite games, the `base` setting should be derived from `data/game.json`.
 
-## ✅ Checklist
-- [ ] Unique `slug` defined in `games.ts`.
-- [ ] Thumbnail exists in `public/images/` and matches `thumbnailSrc`.
-- [ ] `iframeSrc` is a valid, live URL.
-- [ ] Game loads correctly at its dynamic route.
-- [ ] Host security headers allow iframe embedding.
+## Step 3: Sync And Build The Games
+Run:
 
-## ⚠️ Common Issues
-* **Broken Image:** Check if the path in `thumbnailSrc` starts with a leading slash (e.g., `/images/...`).
-* **Blank Iframe:** Check the browser console for "Refused to display in a frame" errors (Security header issue).
-* **404 Error:** Ensure the `slug` in the URL matches the `slug` in `games.ts` exactly.
+```bash
+npm run setup-games
+```
+
+This script will:
+1. Clone or update every repo from `games.config.mjs` into `.game-sources/`
+2. Build each game
+3. Copy built files into `public/staticGames/<game-id>/`
+4. Copy thumbnails into `public/gameThumbnails/<game-id>.png`
+5. Regenerate `src/data/games.ts`
+
+## Step 4: Test In The Portal
+After running `npm run setup-games`, the game will be available at:
+
+```text
+/games/<game-id>
+```
+
+Checklist:
+- Repo URL added to `games.config.mjs`
+- `data/game.json` includes a valid `game-id`
+- `data/thumbnail.png` exists
+- `npm run build` produces `dist/`
+- Game loads correctly at `/games/<game-id>`
+- Built assets use `/staticGames/<game-id>/` as their base path
+
+## Common Issues
+- Blank iframe: the built app may be using the wrong asset base path
+- Missing game in the portal: `data/game.json` may be missing or invalid
+- Missing thumbnail: `data/thumbnail.png` may be absent
+- Old game version still showing: rerun `npm run setup-games` to resync the cached repo

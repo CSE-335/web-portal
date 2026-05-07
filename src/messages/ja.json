@@ -2,7 +2,10 @@
   "nav": {
     "searchPlaceholder": "STEMゲームを検索...",
     "logIn": "ログイン",
-    "language": "言語"
+    "language": "言語",
+    "toggleTheme": "配色を切り替え",
+    "favorites": "お気に入り",
+    "account": "アカウント"
   },
   "footer": {
     "links": {
@@ -56,10 +59,21 @@
     "menuContactUs": "お問い合わせ",
     "menuPartner": "パートナー — LLNL",
     "menuLanguage": "言語",
-    "changeBanner": "バナーを変更"
+    "changeBanner": "バナーを変更",
+    "changeAvatar": "プロフィール写真を変更",
+    "avatarInvalidType": "JPG、PNG、WebP、GIF を使用してください。",
+    "avatarTooLarge": "画像は {maxMb} MB 以下にしてください。",
+    "avatarUploadFailed": "アップロードに失敗しました。もう一度お試しください。",
+    "avatarCropTitle": "写真を調整",
+    "avatarCropZoom": "ズーム",
+    "avatarCropHint": "ドラッグで位置を変え、スライダーで拡大・縮小します。",
+    "avatarCropCancel": "キャンセル",
+    "avatarCropApply": "適用",
+    "avatarCropEncodeFailed": "画像を処理できませんでした。別のファイルを試してください。"
   },
   "profilePage": {
     "editProfile": "プロフィールを編集",
+    "locationUnknown": "場所不明",
     "stats": "統計",
     "memberFor": "メンバー歴",
     "today": "今日",
@@ -126,14 +140,18 @@
     "play": "プレイ",
     "randomGame": "ランダムゲーム",
     "backToTop": "トップへ戻る",
-    "educational": "教育的"
+    "returnToMain": "メインページに戻る"
   },
   "home": {
     "welcome1": "LLNLへようこそ",
     "welcome2": "STEMゲーム",
+    "tutorialSubtitle": "はじめての方へ：各ボタンの説明とアシスタントを開く方法はチュートリアルをご覧ください。",
     "interactiveLearning": "インタラクティブ学習",
     "saveProgress": "進捗を保存",
-    "playAnyDevice": "どのデバイスでもプレイ"
+    "playAnyDevice": "どのデバイスでもプレイ",
+    "quickPlayTitle": "クイックプレイ",
+    "quickPlayDescription": "ゲーム名で検索し、一致する結果を選んで開始します。",
+    "quickPlayNoResults": "ゲームが見つかりません。別の検索を試してください。"
   },
   "gameCard": {
     "tags": "タグ",
@@ -153,24 +171,80 @@
   "gameDescription": {
     "title": "ゲーム説明"
   },
-  "games": {
-    "matrix-meadow": {
-      "description": "インタラクティブなモンスタースケーリングチャレンジとAI支援フィードバックを通じて行列の掛け算を練習しましょう。",
-      "long1": "Matrix Meadow Academyは行列の掛け算を視覚的なモンスタースケーリングチャレンジに変え、学生が画面上で直接クリーチャーを変換して学びます。問題を個別に解くのではなく、プレイヤーは行列を適用して目標の形状に合わせ、抽象的な線形代数をより具体的で直感的にします。",
-      "long2": "ゲームはスケーリング変換、行列構造、数値入力と視覚的出力の関係などの核心的な概念に焦点を当てています。各問題を即座の視覚的結果に結びつけることで、学生は行列の掛け算がサイズと形をどのように変えるかをよりよく理解できます。",
-      "long3": "AI支援フィードバックは、変換が成功した理由や失敗した理由を理解するのを助け、パターン認識を強化し、ガイド付き練習を通じて修正を促します。"
-    },
-    "sonic-fingerprint-lab": {
-      "description": "インタラクティブなサウンドラボを通じて音声パターン、周波数、声ベースの分析を探索しましょう。",
-      "long1": "Sonic Fingerprint Labは、学生が周波数ベースのパターンを通じて音をどのように視覚化、比較、分析できるかを探索するインタラクティブな科学ゲームです。",
-      "long2": "ゲームはピッチ、波形の振る舞い、周波数の違いなどの概念を、受動的な暗記ではなく実践的な実験を通じて紹介します。",
-      "long3": "AI支援フィードバックはプレイヤーの結果を解釈し、音声データの意味のある違いを指摘し、周波数パターンと音声・音響特性の関係についてより深い理解へと導きます。"
-    },
-    "biology-virus-outbreak-simulator": {
-      "description": "インタラクティブなモデリングとAI支援フィードバックを通じてウイルスの発生を探索し、疫学の概念を学びましょう。",
-      "long1": "Biology Virus Outbreak Simulatorは、学生がウイルスの発生がどのように広がり進化するかを探索するインタラクティブな科学ゲームです。",
-      "long2": "ゲームは感染のダイナミクス、免疫、公衆衛生介入などの概念を実践的な実験を通じて紹介します。",
-      "long3": "AI支援フィードバックはプレイヤーに介入の効果についての洞察を提供し、ウイルスの伝播と制御に影響を与える要因の複雑な相互作用を理解するのに役立ちます。"
-    }
+  "tutorial": {
+    "metaTitle": "クイックガイド — サイトの使い方",
+    "metaDescription": "ヘッダー、ゲームページのボタン、AIチューターについての簡単な説明です。",
+    "pageTitle": "クイックガイド",
+    "intro": "はじめての方へ。このページでは主な操作方法を説明します。ゲームごとにプレイ画面上のメニューもあり、ゲームにより異なる場合があります。",
+    "backToHome": "ホームに戻る",
+    "siteOverviewTitle": "どのページの上部にもあるもの",
+    "themeLabel": "テーマ",
+    "themeDesc": "ライトモードまたはダークモード。",
+    "languageLabel": "言語",
+    "languageDesc": "サイトの表示言語を切り替えます。",
+    "heartLabel": "ハート",
+    "heartDesc": "お気に入り（利用にはサインインが必要です）。",
+    "profileLabel": "ログイン / プロフィール",
+    "profileDesc": "アカウントと設定。",
+    "homepageExtra": "ホームページでは教科タグや",
+    "andConj": "と",
+    "playingTitle": "ゲームをプレイしているとき",
+    "guestBannerTitle": "ゲスト向けバナー（未サインインの場合）",
+    "guestLogIn": "ログイン",
+    "guestLogInDesc": "進行状況をアカウントに保存し、別の訪問でも続けられます。",
+    "guestClose": "閉じる",
+    "guestCloseDesc": "ページを再読み込みするまでバナーを隠します。",
+    "barUnderGame": "ゲーム下のバー",
+    "returnMainLabel": "メインページに戻る",
+    "returnMainDesc": "ホームの一覧へ戻ります。",
+    "heartGameLabel": "ハート",
+    "heartGameDesc": "ログイン時にこのゲームをお気に入りにできます。",
+    "askAiLabel": "AIチューターに聞く",
+    "askAiDesc": "Laurie と Livvy を開きます。もう一度タップすると、この訪問中は完全に閉じます。",
+    "muteLabel": "ミュート / ミュート解除",
+    "muteDesc": "チューターの音声のオン／オフ（チューターバー内のスピーカーと同じ考え方）。",
+    "fullscreenLabel": "全画面表示",
+    "fullscreenDescBefore": "プレイ領域を広げます。ブラウザの全画面終了（多くの場合は",
+    "fullscreenDescAfter": "）で戻ります。",
+    "gamePageFooterBefore": "その下は読み取り専用のゲーム説明です。ページ最下部には",
+    "gamePageFooterAfter": "があります（ゲームページでは「ランダムゲーム」は出ません——すでにプレイ中だからです）。",
+    "tutorsTitle": "AIチューター（Laurie と Livvy）",
+    "tutorsOpen1": "次で開きます:",
+    "tutorsOpen2": "最初は読み込みテキストが出ることがあります。また小さな",
+    "tutorsPill": "チューター",
+    "tutorsOpen3": "のピルがあります。タップすると再び広げられます。",
+    "speechBubblesLabel": "吹き出し",
+    "speechBubblesDesc": "— タップ（または Space / Enter）で進め、終わったら閉じます。",
+    "speechBubblesEsc": "より早く抜けられます。",
+    "hintExplainSummaryLabel": "ヒント / 説明 / 要約",
+    "hintExplainSummaryDesc": "— ゲーム内の状況に応じた追加のヘルプ（ゲームが最近チューター用の文脈を送ったとき）。",
+    "autoAdvanceLabel": "自動進行",
+    "autoAdvanceDescStart": "— チューター音声が ",
+    "autoAdvanceVoiceOff": "オフ",
+    "autoAdvanceDescMid": " のとき行の間を進みます。音声オンでは通常は再生ペースが進行を決めます。",
+    "speakerLabel": "スピーカー",
+    "speakerDesc": "— チューターバーでの音声オン／オフ（ゲーム上部ツールバーのミュートと同じ設定）。",
+    "historyLabel": "履歴 / ノート",
+    "historyDesc": "— チューターメッセージのログを開きます。小さな ✕ はそのパネルだけ閉じます。",
+    "skipLabel": "スキップ (×)",
+    "skipDesc": "— 現在のチューターシーンをすばやく終了します。",
+    "chatBoxLabel": "チャット欄",
+    "chatBoxDesc": "— 質問を入力（最大500文字）。",
+    "chatBoxEnterSends": "送信;",
+    "chatBoxNewLine": "は改行です。",
+    "chatBoxMic": "マイク = 対応環境では押し続けて音声入力。",
+    "bannersLabel": "赤または黄のバナー",
+    "bannersDesc": "— 利用制限や音声クォータ。内容を読み、✕で閉じられます。",
+    "handyKeys": "便利なキー",
+    "thKey": "キー",
+    "thDoes": "動作",
+    "rowInChat": "チャット内",
+    "rowOr": "または",
+    "rowEnterSend": "メッセージを送信",
+    "rowShiftEnterDesc": "チャットで改行（送信しない）",
+    "rowAdvanceDialogue": "チューター会話を進める（チャット入力中でないとき）",
+    "rowCloseDialogue": "現在のチューター会話を閉じる",
+    "tryGame": "試してみますか？",
+    "openSampleGame": "お試しゲームを開く"
   }
 }

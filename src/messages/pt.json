@@ -2,7 +2,10 @@
   "nav": {
     "searchPlaceholder": "Pesquisar jogos STEM...",
     "logIn": "Entrar",
-    "language": "Idioma"
+    "language": "Idioma",
+    "toggleTheme": "Alternar esquema de cores",
+    "favorites": "Favoritos",
+    "account": "Conta"
   },
   "footer": {
     "links": {
@@ -56,10 +59,21 @@
     "menuContactUs": "Fale conosco",
     "menuPartner": "Parceiro — LLNL",
     "menuLanguage": "Idioma",
-    "changeBanner": "Alterar banner"
+    "changeBanner": "Alterar banner",
+    "changeAvatar": "Alterar foto do perfil",
+    "avatarInvalidType": "Use JPG, PNG, WebP ou GIF.",
+    "avatarTooLarge": "A imagem deve ter no máximo {maxMb} MB.",
+    "avatarUploadFailed": "Não foi possível enviar a imagem. Tente novamente.",
+    "avatarCropTitle": "Ajustar foto",
+    "avatarCropZoom": "Zoom",
+    "avatarCropHint": "Arraste para reposicionar. Use o controle para ampliar.",
+    "avatarCropCancel": "Cancelar",
+    "avatarCropApply": "Aplicar",
+    "avatarCropEncodeFailed": "Não foi possível processar a imagem. Tente outro arquivo."
   },
   "profilePage": {
     "editProfile": "Editar perfil",
+    "locationUnknown": "Localização desconhecida",
     "stats": "Estatísticas",
     "memberFor": "Membro há",
     "today": "Hoje",
@@ -126,14 +140,18 @@
     "play": "Jogar",
     "randomGame": "Jogo aleatório",
     "backToTop": "Voltar ao topo",
-    "educational": "Educativo"
+    "returnToMain": "Voltar à página principal"
   },
   "home": {
     "welcome1": "Bem-vindo ao LLNL",
     "welcome2": "Jogos STEM",
+    "tutorialSubtitle": "Novo aqui? Veja o tutorial sobre cada botão e como abrir os assistentes.",
     "interactiveLearning": "Aprendizado interativo",
     "saveProgress": "Salve seu progresso",
-    "playAnyDevice": "Jogue em qualquer dispositivo"
+    "playAnyDevice": "Jogue em qualquer dispositivo",
+    "quickPlayTitle": "Jogo rápido",
+    "quickPlayDescription": "Pesquise um jogo pelo nome e escolha um resultado correspondente.",
+    "quickPlayNoResults": "Nenhum jogo encontrado. Tente outra busca."
   },
   "gameCard": {
     "tags": "Tags",
@@ -153,24 +171,80 @@
   "gameDescription": {
     "title": "Descrição do jogo"
   },
-  "games": {
-    "matrix-meadow": {
-      "description": "Pratique multiplicação de matrizes através de desafios interativos de escalonamento de monstros e feedback assistido por IA.",
-      "long1": "Matrix Meadow Academy transforma a multiplicação de matrizes em um desafio visual de escalonamento de monstros onde os alunos aprendem transformando criaturas diretamente na tela. Em vez de resolver problemas isoladamente, os jogadores aplicam matrizes para corresponder às formas alvo, tornando a álgebra linear abstrata mais concreta e intuitiva.",
-      "long2": "O jogo foca em ideias fundamentais como transformações de escala, estrutura matricial e a relação entre entrada numérica e saída visual. Ao vincular cada problema a um resultado visual imediato, os alunos podem entender melhor como a multiplicação de matrizes altera tamanho e forma.",
-      "long3": "O feedback assistido por IA apoia o processo de aprendizagem ajudando os jogadores a entender por que uma transformação funcionou ou falhou, reforçando o reconhecimento de padrões e incentivando a correção através da prática guiada."
-    },
-    "sonic-fingerprint-lab": {
-      "description": "Explore padrões de áudio, frequências e análise baseada em voz através de um laboratório de som interativo.",
-      "long1": "Sonic Fingerprint Lab é um jogo de ciências interativo onde os alunos exploram como o som pode ser visualizado, comparado e analisado através de padrões baseados em frequência. Ao usar sua própria voz e sinais gravados, os jogadores se envolvem diretamente com a ideia de que cada som deixa uma assinatura acústica mensurável.",
-      "long2": "O jogo introduz conceitos como tom, comportamento de forma de onda e diferenças de frequência através de experimentação prática em vez de memorização passiva. Os alunos podem observar como mudanças na entrada de som afetam os padrões resultantes.",
-      "long3": "O feedback assistido por IA ajuda a interpretar os resultados do jogador, apontar diferenças significativas em seus dados de som e guiá-los para uma compreensão mais sólida de como os padrões de frequência se relacionam com características vocais e acústicas."
-    },
-    "biology-virus-outbreak-simulator": {
-      "description": "Explore surtos de vírus e aprenda sobre conceitos epidemiológicos através de modelagem interativa e feedback assistido por IA.",
-      "long1": "Biology Virus Outbreak Simulator é um jogo de ciências interativo onde os alunos exploram como os surtos de vírus se espalham e evoluem. Ao responder perguntas, os jogadores podem observar o impacto de diferentes fatores na progressão de uma epidemia.",
-      "long2": "O jogo introduz conceitos como dinâmica de infecção, imunidade e intervenções de saúde pública através de experimentação prática. Os alunos podem analisar as consequências de suas decisões e ajustar suas estratégias de acordo.",
-      "long3": "O feedback assistido por IA dá aos jogadores insights sobre a eficácia de suas intervenções, ajudando-os a entender a complexa interação de fatores que influenciam a transmissão e o controle de vírus."
-    }
+  "tutorial": {
+    "metaTitle": "Guia rápido — como usar o site",
+    "metaDescription": "Um tour rápido pelo topo da página, botões na página do jogo e tutores de IA.",
+    "pageTitle": "Guia rápido",
+    "intro": "É a sua primeira vez? Esta página resume os controles principais. Cada jogo também tem menus dentro da área de jogo — e podem ser diferentes.",
+    "backToHome": "Voltar à página inicial",
+    "siteOverviewTitle": "No topo de todas as páginas",
+    "themeLabel": "Tema",
+    "themeDesc": "modo claro ou escuro.",
+    "languageLabel": "Idioma",
+    "languageDesc": "altera o idioma do site.",
+    "heartLabel": "Coração",
+    "heartDesc": "os seus favoritos (inicie sessão para usar).",
+    "profileLabel": "Iniciar sessão / perfil",
+    "profileDesc": "conta e definições.",
+    "homepageExtra": "Na página inicial também vê etiquetas por disciplina,",
+    "andConj": "e",
+    "playingTitle": "Enquanto joga",
+    "guestBannerTitle": "Banner de convidado (se não estiver autenticado)",
+    "guestLogIn": "Iniciar sessão",
+    "guestLogInDesc": "guarda o progresso na sua conta entre visitas.",
+    "guestClose": "Fechar",
+    "guestCloseDesc": "oculta o banner até recarregar a página.",
+    "barUnderGame": "Barra por baixo do jogo",
+    "returnMainLabel": "Regressar à página principal",
+    "returnMainDesc": "voltar à lista inicial.",
+    "heartGameLabel": "Coração",
+    "heartGameDesc": "favoritar este jogo quando estiver com sessão iniciada.",
+    "askAiLabel": "Pedir aos tutores de IA",
+    "askAiDesc": "abre Laurie e Livvy. Toque de novo para fechá-los por completo nesta visita.",
+    "muteLabel": "Silenciar / ativar som",
+    "muteDesc": "voz do tutor ligada ou desligada (como os ícones de som na barra do tutor).",
+    "fullscreenLabel": "Ecrã inteiro",
+    "fullscreenDescBefore": "área de jogo maior; use sair do ecrã inteiro no navegador (muitas vezes",
+    "fullscreenDescAfter": ") para voltar.",
+    "gamePageFooterBefore": "Abaixo está a descrição do jogo (só leitura). No fim da página há",
+    "gamePageFooterAfter": "(nas páginas de jogo não aparece «Jogo aleatório» — já está num jogo).",
+    "tutorsTitle": "Tutores de IA (Laurie e Livvy)",
+    "tutorsOpen1": "Abra com",
+    "tutorsOpen2": "Pode ver primeiro texto a carregar — ou uma pequena pastilha",
+    "tutorsPill": "Tutores",
+    "tutorsOpen3": "; toque para expandir de novo.",
+    "speechBubblesLabel": "Balões de diálogo",
+    "speechBubblesDesc": "— toque (ou Espaço / Enter) para avançar e feche quando terminar.",
+    "speechBubblesEsc": "sai mais cedo.",
+    "hintExplainSummaryLabel": "Dica / Explicar / Resumo",
+    "hintExplainSummaryDesc": "— ajuda extra para o seu momento no jogo (quando o jogo enviou recentemente contexto ao tutor).",
+    "autoAdvanceLabel": "Avanço automático",
+    "autoAdvanceDescStart": "— salta entre linhas quando a voz do tutor está ",
+    "autoAdvanceVoiceOff": "desligada",
+    "autoAdvanceDescMid": "; com a voz ligada, normalmente quem marca o ritmo é a reprodução.",
+    "speakerLabel": "Altifalante",
+    "speakerDesc": "— som ligado/desligado na barra do tutor (o mesmo que silenciar na barra do jogo).",
+    "historyLabel": "Histórico / bloco de notas",
+    "historyDesc": "— abre o registo de mensagens do tutor; o ✕ pequeno só fecha esse painel.",
+    "skipLabel": "Saltar (×)",
+    "skipDesc": "— termina rapidamente a cena atual do tutor.",
+    "chatBoxLabel": "Caixa de chat",
+    "chatBoxDesc": "— escreva uma pergunta (até 500 caracteres).",
+    "chatBoxEnterSends": "envia;",
+    "chatBoxNewLine": "é uma nova linha.",
+    "chatBoxMic": "Micro = mantenha premido para ditar onde estiver disponível.",
+    "bannersLabel": "Faixas vermelhas ou amarelas",
+    "bannersDesc": "— limites ou quota de voz; leia o aviso e feche com ✕ quando quiser.",
+    "handyKeys": "Teclas úteis",
+    "thKey": "Tecla",
+    "thDoes": "O que faz",
+    "rowInChat": "no chat",
+    "rowOr": "ou",
+    "rowEnterSend": "Envia a sua mensagem",
+    "rowShiftEnterDesc": "Nova linha no chat (sem enviar)",
+    "rowAdvanceDialogue": "Avança o diálogo do tutor (se não estiver a escrever no chat)",
+    "rowCloseDialogue": "Fecha o diálogo atual do tutor",
+    "tryGame": "Quer experimentar?",
+    "openSampleGame": "Abrir um jogo de exemplo"
   }
 }

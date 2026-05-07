@@ -107,8 +107,10 @@ const config: Config = {
   transformIgnorePatterns: [
     '/node_modules/(?!next-intl|use-intl)/',
   ],
-  // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
-  // modulePathIgnorePatterns: [],
+  modulePathIgnorePatterns: [
+    '<rootDir>/.game-sources/',
+    '<rootDir>/games/',
+  ],
 
   // Activates notifications for test results
   // notify: false,
@@ -204,8 +206,10 @@ const config: Config = {
   // Indicates whether each individual test should be reported during the run
   // verbose: undefined,
 
-  // An array of regexp patterns that are matched against all source file paths before re-running tests in watch mode
-  // watchPathIgnorePatterns: [],
+  watchPathIgnorePatterns: [
+    '<rootDir>/.game-sources/',
+    '<rootDir>/games/',
+  ],
 
   // Whether to use watchman for file crawling
   // watchman: true,

@@ -22,17 +22,51 @@ import type {
   DialogueLine,
 } from "./types";
 import { DEFAULT_CONFIG, INITIAL_STATE, assistantReducer } from "./config";
-import { streamEvent, buildFollowUpEvent } from "./services/assistantApi";
+import {
+  streamEvent,
+  buildFollowUpEvent,
+  AssistantRequestError,
+} from "./services/assistantApi";
 import { loadConversation, saveConversation } from "./services/sessionStore";
+
+function isAbortError(err: unknown): boolean {
+  if (err instanceof DOMException || err instanceof Error) {
+    return err.name === "AbortError";
+  }
+  return false;
+}
+
+/** Iframe/game events can arrive in bursts; coalesce those. Chat and toolbar actions should not wait. */
+function eventDebounceMsFor(
+  event: GameEvent,
+  defaultMs: number,
+): number {
+  switch (event.eventType) {
+    case "user_message":
+    case "hint_request":
+    case "recap_request":
+      return 0;
+    default:
+      return defaultMs;
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Context shape
 // ---------------------------------------------------------------------------
 
+export interface GameSessionDefaults {
+  gameId: string;
+  levelId: string;
+  targetConcept: string;
+}
+
 interface AssistantContextValue {
   state: AssistantState;
   dispatch: React.Dispatch<AssistantAction>;
   config: AssistantConfig;
+  registerGameSession: (defaults: GameSessionDefaults) => void;
+  unregisterGameSession: () => void;
   sendGameEvent: (event: GameEvent) => void;
   sendUserMessage: (text: string) => void;
   requestFollowUp: (actionType: string) => void;
@@ -64,21 +98,74 @@ export function AssistantProvider({
 
   const conversationRef = useRef<DialogueLine[]>([]);
   const lastEventRef = useRef<GameEvent | null>(null);
+  const sessionGameRef = useRef<GameSessionDefaults | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const activeGameIdRef = useRef<string>("general");
+
+  const cancelInFlight = useCallback(() => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+      debounceRef.current = null;
+    }
+    abortRef.current?.abort();
+    abortRef.current = null;
+    dispatch({ type: "SET_GENERATING", payload: false });
+  }, []);
+
+  const registerGameSession = useCallback(
+    (defaults: GameSessionDefaults) => {
+      const nextGameId = defaults.gameId;
+      const prevGameId = activeGameIdRef.current;
+
+      sessionGameRef.current = defaults;
+      activeGameIdRef.current = nextGameId;
+
+      // If the game changed, cancel any in-flight stream and reset UI log.
+      if (prevGameId !== nextGameId) {
+        cancelInFlight();
+        dispatch({ type: "RESET_CONVERSATION" });
+        dispatch({ type: "CLOSE_PANEL" });
+        dispatch({ type: "MINIMIZE" });
+      }
+
+      conversationRef.current = loadConversation(nextGameId);
+    },
+    [cancelInFlight],
+  );
+
+  const unregisterGameSession = useCallback(() => {
+    sessionGameRef.current = null;
+  }, []);
 
   const restoredRef = useRef(false);
   if (!restoredRef.current && typeof window !== "undefined") {
-    conversationRef.current = loadConversation();
+    conversationRef.current = loadConversation(activeGameIdRef.current);
     restoredRef.current = true;
   }
 
   const sendGameEvent = useCallback(
     (event: GameEvent) => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
+      // New event means the previous in-flight response is no longer relevant.
+      // `cancelInFlight` already clears the debounce timer + aborts the fetch.
+      cancelInFlight();
+
+      // Ensure we never reuse conversation across games.
+      if (activeGameIdRef.current !== event.gameId) {
+        activeGameIdRef.current = event.gameId;
+        conversationRef.current = loadConversation(event.gameId);
+        dispatch({ type: "RESET_CONVERSATION" });
+        dispatch({ type: "CLOSE_PANEL" });
+        dispatch({ type: "MINIMIZE" });
+      }
+
+      // Flip to the loading state synchronously so TTS stops and the UI shows
+      // the "twins are discussing..." pill immediately, not after the debounce.
+      lastEventRef.current = event;
+      dispatch({ type: "START_STREAMING" });
 
       debounceRef.current = setTimeout(() => {
-        dispatch({ type: "START_STREAMING" });
-        lastEventRef.current = event;
+        abortRef.current = new AbortController();
 
         streamEvent(
           config.apiEndpoint,
@@ -92,23 +179,56 @@ export function AssistantProvider({
             onFinish(summary, allLines) {
               dispatch({ type: "FINISH_STREAMING", payload: { summary } });
               conversationRef.current.push(...allLines);
-              saveConversation(conversationRef.current);
+              saveConversation(
+                activeGameIdRef.current,
+                conversationRef.current,
+              );
             },
             onError(msg) {
-              dispatch({ type: "SET_ERROR", payload: msg });
+              dispatch({ type: "SET_ERROR", payload: { message: msg } });
             },
           },
+          abortRef.current.signal,
         ).catch((err) => {
+          if (isAbortError(err)) return;
+          if (err instanceof AssistantRequestError) {
+            dispatch({
+              type: "SET_ERROR",
+              payload: {
+                message: err.message,
+                ...(err.cooldownUntilMs != null
+                  ? { cooldownUntilMs: err.cooldownUntilMs }
+                  : {}),
+              },
+            });
+            return;
+          }
           const msg = err instanceof Error ? err.message : "Network error";
-          dispatch({ type: "SET_ERROR", payload: msg });
+          dispatch({ type: "SET_ERROR", payload: { message: msg } });
         });
-      }, config.eventDebounceMs);
+      }, eventDebounceMsFor(event, config.eventDebounceMs));
     },
-    [config.apiEndpoint, config.maxLines, config.eventDebounceMs],
+    [
+      config.apiEndpoint,
+      config.maxLines,
+      config.eventDebounceMs,
+      cancelInFlight,
+    ],
   );
 
   const sendUserMessage = useCallback(
     (text: string) => {
+      const lastEvt = lastEventRef.current;
+      const session = sessionGameRef.current;
+      const inferredGameId = lastEvt?.gameId ?? session?.gameId ?? "general";
+      if (activeGameIdRef.current !== inferredGameId) {
+        activeGameIdRef.current = inferredGameId;
+        conversationRef.current = loadConversation(inferredGameId);
+        dispatch({ type: "RESET_CONVERSATION" });
+        dispatch({ type: "CLOSE_PANEL" });
+        dispatch({ type: "MINIMIZE" });
+      }
+
       const userLine: DialogueLine = {
         speaker: "You",
         text,
@@ -116,15 +236,14 @@ export function AssistantProvider({
       };
 
       conversationRef.current.push(userLine);
-      saveConversation(conversationRef.current);
+      saveConversation(activeGameIdRef.current, conversationRef.current);
       dispatch({ type: "ADD_USER_MESSAGE", payload: userLine });
 
-      const lastEvt = lastEventRef.current;
       const event: GameEvent = {
-        gameId: lastEvt?.gameId ?? "general",
-        levelId: lastEvt?.levelId ?? "chat",
+        gameId: lastEvt?.gameId ?? session?.gameId ?? "general",
+        levelId: lastEvt?.levelId ?? session?.levelId ?? "chat",
         eventType: "user_message",
-        targetConcept: lastEvt?.targetConcept ?? "general",
+        targetConcept: lastEvt?.targetConcept ?? session?.targetConcept ?? "general",
         hintCount: 0,
         timeSpentSeconds: 0,
         additionalContext: { userMessage: text },
@@ -150,22 +269,36 @@ export function AssistantProvider({
 
   const advanceLine = useCallback(() => dispatch({ type: "ADVANCE_LINE" }), []);
   const dismissDialogue = useCallback(() => {
+    cancelInFlight();
     dispatch({ type: "RESET_DIALOGUE" });
-    dispatch({ type: "CLOSE_PANEL" });
-  }, []);
+    dispatch({ type: "SET_ERROR", payload: { message: null } });
+    dispatch({ type: "MINIMIZE" });
+  }, [cancelInFlight]);
 
   const value = useMemo<AssistantContextValue>(
     () => ({
       state,
       dispatch,
       config,
+      registerGameSession,
+      unregisterGameSession,
       sendGameEvent,
       sendUserMessage,
       requestFollowUp,
       advanceLine,
       dismissDialogue,
     }),
-    [state, config, sendGameEvent, sendUserMessage, requestFollowUp, advanceLine, dismissDialogue],
+    [
+      state,
+      config,
+      registerGameSession,
+      unregisterGameSession,
+      sendGameEvent,
+      sendUserMessage,
+      requestFollowUp,
+      advanceLine,
+      dismissDialogue,
+    ],
   );
 
   return (

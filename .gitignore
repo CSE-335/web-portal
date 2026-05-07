@@ -11,12 +11,14 @@
 !.yarn/versions
 
 # testing
-/coverage
 
 # next.js
 /.next/
 /out/
 /.open-next/
+
+# cloudflare
+/.wrangler/
 
 # production
 /build
@@ -25,6 +27,8 @@
 .DS_Store
 *.pem
 .claude
+.swc
+*.code-workspace
 
 # debug
 npm-debug.log*
@@ -42,5 +46,22 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# workspace packages (built before publish / on npm install)
+/packages/*/dist/
+
 *storybook.log
 storybook-static
+
+# game repo cache and generated artifacts
+# Cached external game repos synced from games.config.mjs
+/.game-sources/
+# Legacy local game checkouts kept outside the tracked build flow
+/games/
+# Built game files served via iframe (copied from each game's dist/)
+/public/staticGames/
+# Game thumbnails (copied from each game's data/thumbnail.png)
+/public/gameThumbnails/
+# Game registry auto-generated from cached game repos
+/src/data/games.ts
+# Build cache for setup-games script (tracks synced repo commit hashes)
+.game-build-cache.json

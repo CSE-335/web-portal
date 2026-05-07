@@ -95,7 +95,8 @@ export async function signInWithGoogle(
   redirectTo?: string
 ): Promise<{ error: string | null }> {
   const origin = typeof window !== "undefined" ? window.location.origin : "";
-  const callbackUrl = redirectTo ? `${origin}${redirectTo}` : origin;
+  const callbackPath = redirectTo ?? "/auth/callback";
+  const callbackUrl = `${origin}${callbackPath}`;
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: { redirectTo: callbackUrl },
@@ -129,6 +130,6 @@ export async function ensureUserProfile(): Promise<void> {
       auth_user_id: user.id,
       display_name: displayName,
       avatar_url: user.user_metadata?.avatar_url ?? null,
-    } as never);
+    });
   }
 }

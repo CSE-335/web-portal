@@ -8,7 +8,7 @@ export default function Footer() {
   const t = useTranslations('footer');
 
   const footerLinks = [
-    { key: 'allGames' as const, href: "/games" },
+    { key: 'allGames' as const, href: "/" },
     { key: 'aboutUs' as const, href: "/about" },
     { key: 'contactUs' as const, href: "/contact" },
     { key: 'privacy' as const, href: "/privacy" },

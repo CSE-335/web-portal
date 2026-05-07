@@ -1,9 +1,21 @@
 import { parsePartialJson } from "ai";
+import { parseRetryAfterSeconds } from "@/lib/parseRetryAfter";
 import type {
   GameEvent,
   DialogueLine,
   AssistantAPIResponse,
 } from "../types";
+
+/** Thrown when the assistant HTTP request fails; may include server rate-limit timing. */
+export class AssistantRequestError extends Error {
+  readonly cooldownUntilMs: number | null;
+
+  constructor(message: string, options?: { cooldownUntilMs?: number | null }) {
+    super(message);
+    this.name = "AssistantRequestError";
+    this.cooldownUntilMs = options?.cooldownUntilMs ?? null;
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Stream callbacks
@@ -35,10 +47,12 @@ export async function streamEvent(
   conversationHistory: DialogueLine[],
   maxLines: number,
   callbacks: StreamCallbacks,
+  signal?: AbortSignal,
 ): Promise<void> {
   const res = await fetch(apiEndpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    signal,
     body: JSON.stringify({
       event,
       conversationHistory: conversationHistory.slice(-12),
@@ -47,10 +61,18 @@ export async function streamEvent(
   });
 
   if (!res.ok) {
+    const retrySec =
+      res.status === 429 ? parseRetryAfterSeconds(res) : null;
+    const cooldownUntilMs =
+      retrySec != null && Number.isFinite(retrySec) && retrySec >= 0
+        ? Date.now() + Math.ceil(retrySec) * 1000
+        : null;
     const errBody = await res.json().catch(() => ({}));
-    throw new Error(
-      (errBody as { error?: string }).error || `API returned ${res.status}`,
-    );
+    const msg =
+      (errBody as { error?: string }).error || `API returned ${res.status}`;
+    throw new AssistantRequestError(msg, {
+      ...(cooldownUntilMs != null ? { cooldownUntilMs } : {}),
+    });
   }
 
   const contentType = res.headers.get("content-type") || "";

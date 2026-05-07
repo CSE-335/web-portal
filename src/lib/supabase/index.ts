@@ -1,6 +1,9 @@
 // Central exports for all Supabase modules
 export { supabase } from "./client";
-export { createServerSupabaseClient } from "./server";
+export {
+  createAnonymousSupabaseServerClient,
+  createServerSupabaseClient,
+} from "./server";
 export {
   signUpNewUser,
   
@@ -24,4 +27,12 @@ export {
   getPlayStreak,
   getRecentActivity,
 } from "./play-sessions";
+export {
+  sendFriendRequestByUsername,
+  respondToFriendRequest,
+  removeFriend,
+  getFriendsDashboard,
+  upsertUserPresence,
+} from "./friends";
+export type { FriendPresence, FriendRequestItem, FriendsDashboard } from "./friends";
 export type { Database } from "./database.types";

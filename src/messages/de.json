@@ -2,7 +2,10 @@
   "nav": {
     "searchPlaceholder": "STEM-Spiele suchen...",
     "logIn": "Anmelden",
-    "language": "Sprache"
+    "language": "Sprache",
+    "toggleTheme": "Farbschema umschalten",
+    "favorites": "Favoriten",
+    "account": "Konto"
   },
   "footer": {
     "links": {
@@ -56,10 +59,21 @@
     "menuContactUs": "Kontakt",
     "menuPartner": "Partner — LLNL",
     "menuLanguage": "Sprache",
-    "changeBanner": "Banner ändern"
+    "changeBanner": "Banner ändern",
+    "changeAvatar": "Profilfoto ändern",
+    "avatarInvalidType": "Bitte JPG, PNG, WebP oder GIF verwenden.",
+    "avatarTooLarge": "Bild darf höchstens {maxMb} MB groß sein.",
+    "avatarUploadFailed": "Upload fehlgeschlagen. Bitte erneut versuchen.",
+    "avatarCropTitle": "Foto anpassen",
+    "avatarCropZoom": "Zoom",
+    "avatarCropHint": "Zum Verschieben ziehen. Mit dem Schieberegler zoomen.",
+    "avatarCropCancel": "Abbrechen",
+    "avatarCropApply": "Übernehmen",
+    "avatarCropEncodeFailed": "Bild konnte nicht verarbeitet werden. Andere Datei wählen."
   },
   "profilePage": {
     "editProfile": "Profil bearbeiten",
+    "locationUnknown": "Standort unbekannt",
     "stats": "Statistiken",
     "memberFor": "Mitglied seit",
     "today": "Heute",
@@ -126,14 +140,18 @@
     "play": "Spielen",
     "randomGame": "Zufälliges Spiel",
     "backToTop": "Nach oben",
-    "educational": "Lehrreich"
+    "returnToMain": "Zur Hauptseite zurückkehren"
   },
   "home": {
     "welcome1": "Willkommen bei LLNL",
     "welcome2": "STEM-Spiele",
+    "tutorialSubtitle": "Neu hier? Tutorial ansehen: wofür jede Schaltfläche ist und wie du die Assistenten-Bots öffnest.",
     "interactiveLearning": "Interaktives Lernen",
     "saveProgress": "Speichere deinen Fortschritt",
-    "playAnyDevice": "Spiele auf jedem Gerät"
+    "playAnyDevice": "Spiele auf jedem Gerät",
+    "quickPlayTitle": "Schnellstart",
+    "quickPlayDescription": "Suche ein Spiel nach Namen und wähle dann ein passendes Ergebnis aus.",
+    "quickPlayNoResults": "Keine Spiele gefunden. Versuche eine andere Suche."
   },
   "gameCard": {
     "tags": "Tags",
@@ -153,24 +171,80 @@
   "gameDescription": {
     "title": "Spielbeschreibung"
   },
-  "games": {
-    "matrix-meadow": {
-      "description": "Übe Matrixmultiplikation durch interaktive Monster-Skalierungsherausforderungen und KI-gestütztes Feedback.",
-      "long1": "Matrix Meadow Academy verwandelt Matrixmultiplikation in eine visuelle Monster-Skalierungsherausforderung, bei der Schüler durch das direkte Transformieren von Kreaturen auf dem Bildschirm lernen. Anstatt Aufgaben isoliert zu lösen, wenden Spieler Matrizen an, um Zielformen zu erreichen, wodurch abstrakte lineare Algebra konkreter und intuitiver wird.",
-      "long2": "Das Spiel konzentriert sich auf Kernkonzepte wie Skalierungstransformationen, Matrixstruktur und die Beziehung zwischen numerischer Eingabe und visueller Ausgabe. Durch die Verknüpfung jedes Problems mit einem sofortigen visuellen Ergebnis können Schüler besser verstehen, wie Matrixmultiplikation Größe und Form verändert.",
-      "long3": "KI-gestütztes Feedback unterstützt den Lernprozess, indem es den Spielern hilft zu verstehen, warum eine Transformation funktioniert hat oder fehlgeschlagen ist, Mustererkennung stärkt und Korrektur durch angeleitete Übung fördert."
-    },
-    "sonic-fingerprint-lab": {
-      "description": "Erkunde Audiomuster, Frequenzen und stimmbasierte Analyse durch ein interaktives Klanglab.",
-      "long1": "Sonic Fingerprint Lab ist ein interaktives Wissenschaftsspiel, in dem Schüler erkunden, wie Klang durch frequenzbasierte Muster visualisiert, verglichen und analysiert werden kann. Durch die Verwendung ihrer eigenen Stimme und aufgezeichneter Signale beschäftigen sich Spieler direkt mit der Idee, dass jeder Klang eine messbare akustische Signatur hinterlässt.",
-      "long2": "Das Spiel führt Konzepte wie Tonhöhe, Wellenformverhalten und Frequenzunterschiede durch praktisches Experimentieren statt passives Auswendiglernen ein. Schüler können beobachten, wie Änderungen der Klangeingabe die resultierenden Muster beeinflussen.",
-      "long3": "KI-gestütztes Feedback hilft bei der Interpretation der Spielerergebnisse, weist auf bedeutsame Unterschiede in ihren Klangdaten hin und führt sie zu einem besseren Verständnis der Beziehung zwischen Frequenzmustern und stimmlichen sowie akustischen Eigenschaften."
-    },
-    "biology-virus-outbreak-simulator": {
-      "description": "Erkunde Virusausbrüche und lerne epidemiologische Konzepte durch interaktive Modellierung und KI-gestütztes Feedback.",
-      "long1": "Biology Virus Outbreak Simulator ist ein interaktives Wissenschaftsspiel, in dem Schüler erkunden, wie sich Virusausbrüche ausbreiten und entwickeln. Durch das Beantworten von Fragen können Spieler die Auswirkungen verschiedener Faktoren auf den Verlauf einer Epidemie beobachten.",
-      "long2": "Das Spiel führt Konzepte wie Infektionsdynamik, Immunität und öffentliche Gesundheitsinterventionen durch praktisches Experimentieren ein. Schüler können die Folgen ihrer Entscheidungen analysieren und ihre Strategien entsprechend anpassen.",
-      "long3": "KI-gestütztes Feedback gibt Spielern Einblicke in die Wirksamkeit ihrer Interventionen und hilft ihnen, das komplexe Zusammenspiel der Faktoren zu verstehen, die die Virusübertragung und -kontrolle beeinflussen."
-    }
+  "tutorial": {
+    "metaTitle": "Kurzanleitung — So nutzt du die Seite",
+    "metaDescription": "Ein kurzer Überblick über die Kopfzeile, Spielseiten-Buttons und die KI-Tutor:innen.",
+    "pageTitle": "Kurzanleitung",
+    "intro": "Neu hier? Diese Seite erklärt die wichtigsten Bedienelemente. Jedes Spiel hat außerdem eigene Menüs im Spielfeld — die können unterschiedlich sein.",
+    "backToHome": "Zurück zur Startseite",
+    "siteOverviewTitle": "Oben auf jeder Seite",
+    "themeLabel": "Design",
+    "themeDesc": "heller oder dunkler Modus.",
+    "languageLabel": "Sprache",
+    "languageDesc": "ändert die Sprache der Website.",
+    "heartLabel": "Herz",
+    "heartDesc": "deine gespeicherten Favoriten (zum Nutzen anmelden).",
+    "profileLabel": "Anmelden / Profil",
+    "profileDesc": "Konto und Einstellungen.",
+    "homepageExtra": "Auf der Startseite siehst du außerdem Fach-Tags,",
+    "andConj": "und",
+    "playingTitle": "Während du ein Spiel spielst",
+    "guestBannerTitle": "Gast-Hinweis (wenn du nicht angemeldet bist)",
+    "guestLogIn": "Anmelden",
+    "guestLogInDesc": "speichert deinen Fortschritt im Konto über Besuche hinweg.",
+    "guestClose": "Schließen",
+    "guestCloseDesc": "blendet den Hinweis aus, bis du die Seite neu lädst.",
+    "barUnderGame": "Leiste unter dem Spiel",
+    "returnMainLabel": "Zurück zur Hauptseite",
+    "returnMainDesc": "zurück zur Startliste.",
+    "heartGameLabel": "Herz",
+    "heartGameDesc": "Spiel als Favorit speichern, wenn du angemeldet bist.",
+    "askAiLabel": "KI-Tutor:innen fragen",
+    "askAiDesc": "öffnet Laurie und Livvy. Nochmal tippen, um sie für diesen Besuch vollständig zu schließen.",
+    "muteLabel": "Stumm / Ton an",
+    "muteDesc": "Tutor-Stimme ein oder aus (wie die Lautsprecher-Icons in der Tutor-Leiste).",
+    "fullscreenLabel": "Vollbild",
+    "fullscreenDescBefore": "größerer Spielbereich; im Browser Vollbild beenden (oft",
+    "fullscreenDescAfter": "), um zurückzukehren.",
+    "gamePageFooterBefore": "Darunter steht die Spielbeschreibung (nur lesen). Unten auf der Seite gibt es",
+    "gamePageFooterAfter": "(auf Spielseiten fehlt „Zufallsspiel“ — du bist ja schon in einem Spiel).",
+    "tutorsTitle": "KI-Tutor:innen (Laurie und Livvy)",
+    "tutorsOpen1": "Öffnen mit",
+    "tutorsOpen2": "Zuerst kann Lade-Text erscheinen — oder eine kleine",
+    "tutorsPill": "Tutor:innen",
+    "tutorsOpen3": "-Pille; antippen, um sie wieder auszuklappen.",
+    "speechBubblesLabel": "Sprechblasen",
+    "speechBubblesDesc": "— tippen (oder Leertaste / Eingabe) zum Weiterklicken, dann schließen, wenn du fertig bist.",
+    "speechBubblesEsc": "beendet früher.",
+    "hintExplainSummaryLabel": "Tipp / Erklären / Zusammenfassung",
+    "hintExplainSummaryDesc": "— zusätzliche Hilfe für deine Stelle im Spiel (wenn das Spiel kürzlich Tutor-Kontext gesendet hat).",
+    "autoAdvanceLabel": "Automatisch weiter",
+    "autoAdvanceDescStart": "— springt zwischen Zeilen, wenn die Tutor-Stimme ",
+    "autoAdvanceVoiceOff": "aus",
+    "autoAdvanceDescMid": " ist; mit Ton bestimmt meist die Wiedergabe das Tempo.",
+    "speakerLabel": "Lautsprecher",
+    "speakerDesc": "— Ton in der Tutor-Leiste (dieselbe Einstellung wie Stumm in der Spiel-Leiste).",
+    "historyLabel": "Verlauf / Notizbuch",
+    "historyDesc": "— öffnet das Tutor-Nachrichtenprotokoll; das kleine ✕ schließt nur dieses Panel.",
+    "skipLabel": "Überspringen (×)",
+    "skipDesc": "— beendet die aktuelle Tutor-Szene schnell.",
+    "chatBoxLabel": "Chat-Feld",
+    "chatBoxDesc": "— Frage eingeben (bis 500 Zeichen).",
+    "chatBoxEnterSends": "sendet;",
+    "chatBoxNewLine": "ist eine neue Zeile.",
+    "chatBoxMic": "Mikro = halten zum Diktieren, wo unterstützt.",
+    "bannersLabel": "Rote oder gelbe Banner",
+    "bannersDesc": "— Limits oder Sprach-Kontingent; Hinweis lesen, mit ✕ schließen.",
+    "handyKeys": "Nützliche Tasten",
+    "thKey": "Taste",
+    "thDoes": "Wirkung",
+    "rowInChat": "im Chat",
+    "rowOr": "oder",
+    "rowEnterSend": "Nachricht senden",
+    "rowShiftEnterDesc": "Neue Zeile im Chat (ohne Senden)",
+    "rowAdvanceDialogue": "Tutor-Dialog vorwärts (wenn du nicht im Chat tippst)",
+    "rowCloseDialogue": "Aktuellen Tutor-Dialog schließen",
+    "tryGame": "Lust auszuprobieren?",
+    "openSampleGame": "Beispielspiel öffnen"
   }
 }

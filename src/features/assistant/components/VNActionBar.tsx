@@ -18,7 +18,11 @@ import {
   HistoryIcon,
 } from "./icons";
 
-export default function VNActionBar() {
+export interface VNActionBarProps {
+  compact?: boolean;
+}
+
+export default function VNActionBar({ compact }: VNActionBarProps) {
   const { state, dispatch, requestFollowUp, dismissDialogue } = useAssistant();
 
   if (!state.currentDialogue) return null;
@@ -34,10 +38,20 @@ export default function VNActionBar() {
         width: "100%",
         maxWidth: 680,
         margin: "8px auto 0",
+        ...(compact && {
+          overflowX: "auto",
+          paddingBottom: 4,
+          WebkitOverflowScrolling: "touch",
+        }),
       }}
     >
-      <Group gap="xs" justify="space-between">
-        <Group gap={6}>
+      <Group
+        gap="xs"
+        justify="space-between"
+        wrap={compact ? "nowrap" : "wrap"}
+        style={{ minWidth: compact ? "min-content" : undefined }}
+      >
+        <Group gap={6} wrap={compact ? "nowrap" : "wrap"}>
           <Button
             variant="subtle"
             color="blue"
@@ -73,7 +87,7 @@ export default function VNActionBar() {
           </Button>
         </Group>
 
-        <Group gap={8}>
+        <Group gap={8} wrap={compact ? "nowrap" : "wrap"}>
           <Tooltip label={state.autoplayEnabled ? "Stop auto-advance" : "Auto-advance"} zIndex={1000}>
             <ActionIcon
               variant="subtle"

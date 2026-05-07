@@ -16,6 +16,7 @@ import {
 import { useForm } from "@mantine/form";
 import SignupPopup from "./SignupPopup";
 import RecoverPasswordPopup from "./RecoverPasswordPopup";
+import OnboardingPopup from "./OnboardingPopup";
 import { signInUser, signInWithGoogle } from "@/lib/supabase/auth";
 
 interface LoginPopupProps {
@@ -43,10 +44,21 @@ const sharedInputStyles = {
   },
 };
 
+const authLinkRowProps = {
+  fz: 15,
+  fw: 500 as const,
+  ff: "var(--font-alexandria), Alexandria, sans-serif",
+  c: "var(--text-primary)",
+  ta: "center" as const,
+  lh: 1.45,
+  style: { wordBreak: "break-word" as const },
+};
+
 export default function LoginPopup({ opened, onClose }: LoginPopupProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [signupModalOpened, setSignupModalOpened] = useState(false);
   const [recoverModalOpened, setRecoverModalOpened] = useState(false);
+  const [onboardingOpened, setOnboardingOpened] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const t = useTranslations('login');
 
@@ -109,7 +121,7 @@ export default function LoginPopup({ opened, onClose }: LoginPopupProps) {
           },
           body: {
             overflowX: "hidden",
-            padding: "8px 48px 24px",
+            padding: "8px clamp(16px, 5vw, 48px) 24px",
           },
           title: {
             color: "var(--text-primary)",
@@ -170,32 +182,42 @@ export default function LoginPopup({ opened, onClose }: LoginPopupProps) {
                 </Text>
               )}
 
-              <Group justify="flex-start" gap={40} wrap="nowrap">
-                <Stack gap={0}>
-                  <Text style={{ fontFamily: "var(--font-alexandria), sans-serif", fontWeight: 500, fontSize: "15px", color: "var(--text-primary)" }}>
-                    {t('noAccount')}
-                  </Text>
+              <Stack gap={6} w="100%" miw={0}>
+                <Text {...authLinkRowProps}>
+                  {t('noAccount')}{" "}
                   <Text
                     component="span"
-                    style={{ color: "#2a7fff", cursor: "pointer", fontFamily: "var(--font-alexandria), sans-serif", fontWeight: 500, fontSize: "15px" }}
-                    onClick={() => { onClose(); setSignupModalOpened(true); }}
+                    inherit
+                    fz={15}
+                    fw={500}
+                    c="#2a7fff"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      onClose();
+                      setSignupModalOpened(true);
+                    }}
                   >
-                    {t('registerHere')}
+                    {t("registerHere")}
                   </Text>
-                </Stack>
-                <Stack gap={0} align="flex-start">
-                  <Text style={{ fontFamily: "var(--font-alexandria), sans-serif", fontWeight: 500, fontSize: "15px", color: "var(--text-primary)" }}>
-                    {t('forgotPassword')}
-                  </Text>
+                </Text>
+                <Text {...authLinkRowProps}>
+                  {t("forgotPassword")}{" "}
                   <Text
                     component="span"
-                    style={{ color: "#2a7fff", cursor: "pointer", fontFamily: "var(--font-alexandria), sans-serif", fontWeight: 500, fontSize: "15px" }}
-                    onClick={() => { onClose(); setRecoverModalOpened(true); }}
+                    inherit
+                    fz={15}
+                    fw={500}
+                    c="#2a7fff"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      onClose();
+                      setRecoverModalOpened(true);
+                    }}
                   >
-                    {t('recoverPassword')}
+                    {t("recoverPassword")}
                   </Text>
-                </Stack>
-              </Group>
+                </Text>
+              </Stack>
             </Stack>
           </form>
 
@@ -285,11 +307,17 @@ export default function LoginPopup({ opened, onClose }: LoginPopupProps) {
       <SignupPopup
         opened={signupModalOpened}
         onClose={() => setSignupModalOpened(false)}
+        onSignupComplete={() => setOnboardingOpened(true)}
       />
 
       <RecoverPasswordPopup
         opened={recoverModalOpened}
         onClose={() => setRecoverModalOpened(false)}
+      />
+
+      <OnboardingPopup
+        opened={onboardingOpened}
+        onClose={() => setOnboardingOpened(false)}
       />
     </>
   );

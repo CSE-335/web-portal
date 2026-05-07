@@ -1,55 +1,55 @@
 "use client";
 
-import { useRef } from "react";
 import { Box, Paper } from "@mantine/core";
 import SaveProgressBanner from "./SaveProgressBanner";
 import GameEmbed from "./GameEmbed";
 import GameToolbar from "./GameToolbar";
+import { useRef } from "react";
 
 type GamePlayerProps = {
-  slug: string;
   title: string;
   subject: string;
   iframeSrc: string;
   embedHeight?: string;
+  slug: string;
 };
 
 export default function GamePlayer({
-  slug,
   title,
   subject,
   iframeSrc,
-  embedHeight = "575px",
+  embedHeight = "760px",
+  slug,
 }: GamePlayerProps) {
   const embedRef = useRef<HTMLDivElement>(null);
 
   return (
     <Paper
       component="section"
-      radius={28}
       style={{
         overflow: "hidden",
+        borderRadius: "clamp(16px, 3vw, 28px)",
         background: "var(--player-bg)",
         border: "1px solid var(--player-border)",
         boxShadow: "var(--shadow-card)",
       }}
     >
-      <Box p="xs">
+      <Box p={{ base: 6, md: "xs" }}>
         <Box
           ref={embedRef}
           style={{
             position: "relative",
             overflow: "hidden",
-            borderRadius: 20,
+            borderRadius: "clamp(14px, 2.5vw, 20px)",
             background: "var(--player-embed-bg)",
           }}
         >
           <SaveProgressBanner />
-          <GameEmbed src={iframeSrc} title={title} height={embedHeight} />
+          <GameEmbed src={iframeSrc} title={title} height={embedHeight} slug={slug} />
         </Box>
       </Box>
 
-      <GameToolbar slug={slug} title={title} subject={subject} iframeSrc={iframeSrc} embedRef={embedRef} />
+      <GameToolbar slug={slug} title={title} subject={subject} embedRef={embedRef} />
     </Paper>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
-import { useState, useEffect } from "react";
-import { useMantineColorScheme } from "@mantine/core";
+import { useEffect, useState } from "react";
+import { useComputedColorScheme, useMantineColorScheme } from "@mantine/core";
 
 function SunIcon({ active }: { active: boolean }) {
   return (
@@ -36,16 +36,17 @@ function MoonIcon({ active }: { active: boolean }) {
 }
 
 export default function ThemeToggle() {
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+  const { setColorScheme } = useMantineColorScheme();
+  const computedColorScheme = useComputedColorScheme("dark", { getInitialValueInEffect: true });
   const [mounted, setMounted] = useState(false);
-
   useEffect(() => setMounted(true), []);
 
-  const isDark = !mounted || colorScheme === "dark";
+  // Always render as dark on server/first paint to avoid hydration mismatch
+  const isDark = !mounted || computedColorScheme === "dark";
 
   return (
     <button
-      onClick={() => toggleColorScheme()}
+      onClick={() => setColorScheme(isDark ? "light" : "dark")}
       aria-label="Toggle color scheme"
       style={{
         position: "relative",

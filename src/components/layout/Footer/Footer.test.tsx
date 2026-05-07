@@ -20,7 +20,7 @@ describe('Footer', () => {
   it('renders all navigation links with correct hrefs', () => {
     renderFooter();
     const expectedLinks = [
-      { name: 'ALL GAMES', href: '/games' },
+      { name: 'ALL GAMES', href: '/' },
       { name: 'ABOUT US', href: '/about' },
       { name: 'CONTACT US', href: '/contact' },
       { name: 'PRIVACY', href: '/privacy' },

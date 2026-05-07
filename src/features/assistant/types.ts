@@ -10,7 +10,6 @@ export type AssistantEventType =
   | "level_start"
   | "timeout"
   | "recap_request"
-  | "idle_nudge"
   | "user_message";
 
 export interface GameEvent {
@@ -66,6 +65,13 @@ export interface AssistantState {
   isOpen: boolean;
   isMinimized: boolean;
   isGenerating: boolean;
+  /**
+   * True while we are still fetching/decoding the audio for the FIRST line of a
+   * brand-new dialogue (and voice is enabled). The dialogue overlay stays hidden
+   * during this window so the latency lives in the "twins are discussing..."
+   * loading state instead of in awkward silence at the start of the dialogue.
+   */
+  isAudioBuffering: boolean;
   currentDialogue: AssistantResponse | null;
   currentLineIndex: number;
   autoplayEnabled: boolean;
@@ -73,6 +79,12 @@ export interface AssistantState {
   history: AssistantResponse[];
   historyOpen: boolean;
   error: string | null;
+  /** When set with a rate-limited assistant error, epoch ms when the limit window resets. */
+  errorCooldownUntilMs: number | null;
+  /** Non-fatal banner (e.g. TTS rate limit → browser fallback). */
+  warning: string | null;
+  /** Absolute time (ms) when server-indicated TTS cooldown ends; drives countdown in the banner. */
+  warningCooldownUntilMs: number | null;
 }
 
 export type AssistantAction =
@@ -80,7 +92,9 @@ export type AssistantAction =
   | { type: "CLOSE_PANEL" }
   | { type: "MINIMIZE" }
   | { type: "MAXIMIZE" }
+  | { type: "RESET_CONVERSATION" }
   | { type: "SET_GENERATING"; payload: boolean }
+  | { type: "SET_AUDIO_BUFFERING"; payload: boolean }
   | { type: "SET_DIALOGUE"; payload: AssistantResponse }
   | { type: "START_STREAMING" }
   | { type: "APPEND_LINES"; payload: DialogueLine[] }
@@ -90,7 +104,20 @@ export type AssistantAction =
   | { type: "TOGGLE_VOICE" }
   | { type: "TOGGLE_AUTOPLAY" }
   | { type: "TOGGLE_HISTORY" }
-  | { type: "SET_ERROR"; payload: string | null }
+  | {
+      type: "SET_ERROR";
+      payload: {
+        message: string | null;
+        cooldownUntilMs?: number | null;
+      };
+    }
+  | {
+      type: "SET_ASSISTANT_WARNING";
+      payload: {
+        message: string | null;
+        cooldownUntilMs?: number | null;
+      };
+    }
   | { type: "ADD_USER_MESSAGE"; payload: DialogueLine };
 
 // ---------------------------------------------------------------------------

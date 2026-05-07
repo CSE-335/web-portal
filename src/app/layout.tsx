@@ -19,6 +19,7 @@ const roboto = Roboto({
 });
 import Header from "@/components/layout/Header/Header";
 import Footer from "@/components/layout/Footer/Footer";
+import FriendsPresenceSync from "@/components/FriendsPresenceSync";
 
 import { defaultTheme } from "@/themes/default";
 
@@ -41,13 +42,15 @@ export default async function RootLayout({
         <ColorSchemeScript defaultColorScheme="dark" />
       </head>
       <body
+        suppressHydrationWarning
         className='antialiased min-h-screen'
         style={{ background: 'var(--app-bg-gradient)' }}
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <MantineProvider theme={defaultTheme} defaultColorScheme="dark">
+            <FriendsPresenceSync />
             <Header />
-            <Container mih="100vh">
+            <Container mih="100dvh" px={{ base: "xs", sm: "md" }} py={{ base: "sm", md: "md" }}>
               {children}
             </Container>
             <Footer />

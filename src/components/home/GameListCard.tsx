@@ -18,24 +18,20 @@ export default function GameListCard({
   subject,
   thumbnailSrc,
 }: GameListCardProps) {
-  const tGames = useTranslations('games');
   const tCard = useTranslations('gameCard');
   const tCommon = useTranslations('common');
-
-  const translatedDescription = tGames.has(`${slug}.description`)
-    ? tGames(`${slug}.description`)
-    : description;
 
   return (
     <article className="rounded-[20px] p-4" style={{ background: "var(--surface-card-game)", border: "1px solid var(--card-border)", boxShadow: "var(--shadow-card)" }}>
       <div className="grid gap-4 md:grid-cols-[1.05fr_1fr]">
-        <div className="overflow-hidden rounded-[20px]" style={{ background: "var(--card-img-bg)" }}>
+        <div className="relative h-[210px] w-full overflow-hidden rounded-[20px] md:h-[260px]" style={{ background: "var(--card-img-bg)" }}>
           <Image
             src={thumbnailSrc}
             alt={`${title} cover`}
-            width={900}
-            height={520}
-            className="h-full min-h-55 w-full object-cover"
+            width={640}
+            height={360}
+            sizes="(min-width: 768px) 640px, 100vw"
+            className="h-full w-full object-cover"
           />
         </div>
 
@@ -43,7 +39,7 @@ export default function GameListCard({
           <div>
             <h2 className="text-3xl font-extrabold tracking-tight" style={{ color: "var(--title-color)", textShadow: "var(--title-glow)" }}>{title}</h2>
             <p className="mt-3 max-w-xl text-lg leading-relaxed" style={{ color: "var(--text-body)" }}>
-              {translatedDescription}
+              {description}
             </p>
           </div>
 
@@ -56,15 +52,15 @@ export default function GameListCard({
                 <span className="rounded-[20px] px-3 py-1 text-xs font-medium" style={{ background: "var(--tag-bg)", border: "1px solid var(--tag-border)", color: "var(--text-tag)" }}>
                   {tCard.has(subject) ? tCard(subject) : subject}
                 </span>
-                <span className="rounded-[20px] px-3 py-1 text-xs font-medium" style={{ background: "var(--tag-bg)", border: "1px solid var(--tag-border)", color: "var(--text-tag)" }}>
-                  {tCommon('educational')}
-                </span>
               </div>
             </div>
 
             <Link
               href={`/games/${slug}`}
-              className="play-btn inline-flex rounded-[20px] bg-[#176BFF] px-6 py-2.5 text-base font-semibold text-white transition hover:bg-[#0f5ae0]"
+              className="play-btn play-btn-game-card inline-flex rounded-[20px] px-6 py-2.5 text-base font-semibold text-white transition hover:opacity-95"
+              style={{
+                backgroundColor: "var(--play-button-bg)",
+              }}
             >
               {tCommon('play')}
             </Link>

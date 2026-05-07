@@ -22,14 +22,16 @@ export default function GameCard({
   return (
     <Link
       href={href}
-      className={`group relative block w-full overflow-hidden rounded-[20px] border border-white/10 ${className}`}
+      className={`group relative block h-[210px] w-full overflow-hidden rounded-[20px] border border-white/10 md:h-[260px] ${className}`}
       style={{ background: CARD_GRADIENT }}
     >
       <Image
         src={imageSrc}
         alt={title}
-        fill
-        className="object-cover opacity-80 transition duration-300 group-hover:scale-[1.02] group-hover:opacity-90"
+        width={640}
+        height={360}
+        sizes="(min-width: 768px) 640px, 100vw"
+        className="h-full w-full object-cover opacity-80 transition duration-300 group-hover:scale-[1.02] group-hover:opacity-90"
       />
 
       <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/85 via-black/45 to-transparent p-4">

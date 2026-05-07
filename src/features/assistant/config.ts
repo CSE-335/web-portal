@@ -21,6 +21,7 @@ export const INITIAL_STATE: AssistantState = {
   isOpen: false,
   isMinimized: true,
   isGenerating: false,
+  isAudioBuffering: false,
   currentDialogue: null,
   currentLineIndex: 0,
   autoplayEnabled: false,
@@ -28,6 +29,9 @@ export const INITIAL_STATE: AssistantState = {
   history: [],
   historyOpen: false,
   error: null,
+  errorCooldownUntilMs: null,
+  warning: null,
+  warningCooldownUntilMs: null,
 };
 
 // ---------------------------------------------------------------------------
@@ -51,8 +55,33 @@ export function assistantReducer(
     case "MAXIMIZE":
       return { ...state, isMinimized: false };
 
+    case "RESET_CONVERSATION":
+      return {
+        ...state,
+        isGenerating: false,
+        isAudioBuffering: false,
+        currentDialogue: null,
+        currentLineIndex: 0,
+        history: [],
+        historyOpen: false,
+        error: null,
+        errorCooldownUntilMs: null,
+        warning: null,
+        warningCooldownUntilMs: null,
+      };
+
     case "SET_GENERATING":
-      return { ...state, isGenerating: action.payload, error: null };
+      return {
+        ...state,
+        isGenerating: action.payload,
+        // Stopping generation should also clear any pending audio-buffer flag.
+        isAudioBuffering: action.payload ? state.isAudioBuffering : false,
+        error: null,
+        errorCooldownUntilMs: null,
+      };
+
+    case "SET_AUDIO_BUFFERING":
+      return { ...state, isAudioBuffering: action.payload };
 
     case "SET_DIALOGUE":
       return {
@@ -60,8 +89,7 @@ export function assistantReducer(
         currentDialogue: action.payload,
         currentLineIndex: 0,
         isGenerating: false,
-        isOpen: true,
-        isMinimized: false,
+        isAudioBuffering: false,
         history: [...state.history, action.payload],
       };
 
@@ -69,11 +97,15 @@ export function assistantReducer(
       return {
         ...state,
         isGenerating: true,
-        isOpen: true,
-        isMinimized: false,
+        // Preemptively buffer audio when voice is on so the dialogue overlay does
+        // not flash in for one render before the TTS hook has a chance to react.
+        isAudioBuffering: state.voiceEnabled,
         currentDialogue: { lines: [], summary: "" },
         currentLineIndex: 0,
         error: null,
+        errorCooldownUntilMs: null,
+        warning: null,
+        warningCooldownUntilMs: null,
       };
 
     case "APPEND_LINES": {
@@ -108,10 +140,25 @@ export function assistantReducer(
       };
 
     case "RESET_DIALOGUE":
-      return { ...state, currentDialogue: null, currentLineIndex: 0 };
+      return {
+        ...state,
+        isAudioBuffering: false,
+        currentDialogue: null,
+        currentLineIndex: 0,
+        warning: null,
+        warningCooldownUntilMs: null,
+      };
 
-    case "TOGGLE_VOICE":
-      return { ...state, voiceEnabled: !state.voiceEnabled };
+    case "TOGGLE_VOICE": {
+      const nextVoiceEnabled = !state.voiceEnabled;
+      return {
+        ...state,
+        voiceEnabled: nextVoiceEnabled,
+        // Turning voice off mid-buffer must release the loader; turning it on
+        // does not retroactively add latency to an already-visible dialogue.
+        isAudioBuffering: nextVoiceEnabled ? state.isAudioBuffering : false,
+      };
+    }
 
     case "TOGGLE_AUTOPLAY":
       return { ...state, autoplayEnabled: !state.autoplayEnabled };
@@ -119,8 +166,39 @@ export function assistantReducer(
     case "TOGGLE_HISTORY":
       return { ...state, historyOpen: !state.historyOpen };
 
-    case "SET_ERROR":
-      return { ...state, error: action.payload, isGenerating: false };
+    case "SET_ERROR": {
+      const { message, cooldownUntilMs } = action.payload;
+      return {
+        ...state,
+        error: message,
+        errorCooldownUntilMs:
+          message === null
+            ? null
+            : cooldownUntilMs === undefined
+              ? null
+              : cooldownUntilMs,
+        isGenerating: false,
+        isAudioBuffering: false,
+        currentDialogue: null,
+        currentLineIndex: 0,
+        warning: null,
+        warningCooldownUntilMs: null,
+      };
+    }
+
+    case "SET_ASSISTANT_WARNING": {
+      const { message, cooldownUntilMs } = action.payload;
+      return {
+        ...state,
+        warning: message,
+        warningCooldownUntilMs:
+          message === null
+            ? null
+            : cooldownUntilMs === undefined
+              ? null
+              : cooldownUntilMs,
+      };
+    }
 
     case "ADD_USER_MESSAGE":
       return {
