@@ -26,7 +26,8 @@ export function getConfiguredGameRepos() {
 
 export function getRepoDirName(repoUrl) {
   const trimmed = repoUrl.replace(/\/+$/, '');
-  const repoName = trimmed.split('/').pop()?.replace(/\.git$/, '');
+  const normalized = trimmed.replace(/\\/g, '/');
+  const repoName = normalized.split('/').pop()?.replace(/\.git$/, '');
 
   if (!repoName) {
     throw new Error(`Could not derive a cache directory name from repo URL: ${repoUrl}`);

@@ -51,7 +51,7 @@ beforeAll(async () => {
       name: 'fake-game',
       version: '1.0.0',
       scripts: {
-        build: 'mkdir -p dist && cp index.html dist/index.html',
+        build: 'node -e "const fs=require(\'fs\'); fs.mkdirSync(\'dist\',{recursive:true}); fs.copyFileSync(\'index.html\',\'dist/index.html\');"',
       },
     }),
   );

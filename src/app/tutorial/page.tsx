@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Paper, Stack, Text, Title } from '@mantine/core';
+import { getTranslations } from 'next-intl/server';
 import {
   AutoplayIcon,
   CloseIcon,
@@ -16,12 +17,18 @@ import {
   VolumeOffIcon,
 } from '@/features/assistant/components/icons';
 
-export const metadata: Metadata = {
-  title: 'Quick guide — how to use the site',
-  description: 'A short, friendly tour of the header, game page buttons, and AI tutors.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('tutorial');
+  return {
+    title: t('metaTitle'),
+    description: t('metaDescription'),
+  };
+}
 
-export default function TutorialPage() {
+export default async function TutorialPage() {
+  const t = await getTranslations('tutorial');
+  const tCommon = await getTranslations('common');
+
   return (
     <main className="tutorial-page mx-auto w-full max-w-3xl">
       <Stack
@@ -36,11 +43,10 @@ export default function TutorialPage() {
             fz={{ base: '1.65rem', sm: '2rem' }}
             style={{ color: 'var(--text-primary)', lineHeight: 1.25 }}
           >
-            Quick guide
+            {t('pageTitle')}
           </Title>
           <Text mt="sm" style={{ color: 'var(--text-body)', lineHeight: 1.55 }} className="break-words">
-            New here? This page explains the main controls. Each game also has its own menus inside the play area—those
-            can differ from game to game.
+            {t('intro')}
           </Text>
           <Text mt="xs" size="sm" c="dimmed">
             <Link
@@ -48,7 +54,7 @@ export default function TutorialPage() {
               style={{ color: 'var(--link-color)' }}
               className="inline-flex min-h-10 items-center underline-offset-[3px] [touch-action:manipulation] hover:underline"
             >
-              Back to homepage
+              {t('backToHome')}
             </Link>
           </Text>
         </div>
@@ -64,19 +70,19 @@ export default function TutorialPage() {
             border: '1px solid var(--card-border)',
           }}
         >
-          <SectionTitle id="site-overview-heading">Top of every page</SectionTitle>
+          <SectionTitle id="site-overview-heading">{t('siteOverviewTitle')}</SectionTitle>
 
           <BulletWithIcon icon={<TutorialThemeIcons />}>
-            <strong>Theme</strong> — light or dark mode.
+            <strong>{t('themeLabel')}</strong> — {t('themeDesc')}
           </BulletWithIcon>
           <BulletWithIcon icon={<ImgIcon src="/images/language.svg" alt="" />}>
-            <strong>Language</strong> — change the site language.
+            <strong>{t('languageLabel')}</strong> — {t('languageDesc')}
           </BulletWithIcon>
           <BulletWithIcon icon={<ImgIcon src="/images/like.svg" alt="" />}>
-            <strong>Heart</strong> — your saved favorites (sign in to use).
+            <strong>{t('heartLabel')}</strong> — {t('heartDesc')}
           </BulletWithIcon>
           <BulletWithIcon icon={<ProfileSilhouette />}>
-            <strong>Log in / profile</strong> — account and settings.
+            <strong>{t('profileLabel')}</strong> — {t('profileDesc')}
           </BulletWithIcon>
 
           <Text
@@ -86,9 +92,9 @@ export default function TutorialPage() {
             className="break-words"
             style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', alignItems: 'center', lineHeight: 1.5 }}
           >
-            On the homepage you’ll also see subject tags,
-            <InlineImg src="/images/shuffle.svg" alt="" /> <strong>Random game</strong>, and
-            <InlineImg src="/images/arrow.svg" alt="" /> <strong>Back to the top</strong>.
+            {t('homepageExtra')}{' '}
+            <InlineImg src="/images/shuffle.svg" alt="" /> <strong>{tCommon('randomGame')}</strong>, {t('andConj')}{' '}
+            <InlineImg src="/images/arrow.svg" alt="" /> <strong>{tCommon('backToTop')}</strong>.
           </Text>
         </Paper>
 
@@ -102,30 +108,29 @@ export default function TutorialPage() {
             border: '1px solid var(--card-border)',
           }}
         >
-          <SectionTitle id="game-page-heading">When you’re playing a game</SectionTitle>
+          <SectionTitle id="game-page-heading">{t('playingTitle')}</SectionTitle>
 
           <Text mt="xs" mb="sm" fw={600} size="sm" style={{ color: 'var(--text-primary)' }}>
-            Guest banner (if you’re not signed in)
+            {t('guestBannerTitle')}
           </Text>
           <Bullet>
-            <strong>Log in</strong> — saves progress to your account across visits.
+            <strong>{t('guestLogIn')}</strong> — {t('guestLogInDesc')}
           </Bullet>
           <Bullet>
-            <strong>Close</strong> — hides the banner until you reload the page.
+            <strong>{t('guestClose')}</strong> — {t('guestCloseDesc')}
           </Bullet>
 
           <Text mt="md" mb="sm" fw={600} size="sm" style={{ color: 'var(--text-primary)' }}>
-            Bar under the game
+            {t('barUnderGame')}
           </Text>
           <BulletWithIcon icon={<ImgIcon src="/images/arrow.svg" alt="" flip />}>
-            <strong>Return to main page</strong> — back to the home list.
+            <strong>{t('returnMainLabel')}</strong> — {t('returnMainDesc')}
           </BulletWithIcon>
           <BulletWithIcon icon={<ImgIcon src="/images/like2.svg" alt="" />}>
-            <strong>Heart</strong> — favorite this game when you’re logged in.
+            <strong>{t('heartGameLabel')}</strong> — {t('heartGameDesc')}
           </BulletWithIcon>
           <BulletWithIcon icon={<ImgIcon src="/images/aichat.svg" alt="" />}>
-            <strong>Ask AI tutors</strong> — opens Laurie &amp; Livvy. Tap again to <strong>fully close</strong> them for
-            this visit.
+            <strong>{t('askAiLabel')}</strong> — {t('askAiDesc')}
           </BulletWithIcon>
           <BulletWithIcon
             icon={
@@ -152,17 +157,16 @@ export default function TutorialPage() {
               </IconBadge>
             }
           >
-            <strong>Mute / Unmute</strong> — tutor voice on or off (same idea as the speaker icons in the tutor bar).
+            <strong>{t('muteLabel')}</strong> — {t('muteDesc')}
           </BulletWithIcon>
           <BulletWithIcon icon={<ImgIcon src="/images/full.svg" alt="" />}>
-            <strong>Fullscreen</strong> — bigger play area; press your browser’s exit fullscreen (often{' '}
-            <kbd className="tutorial-kbd">Esc</kbd>) to leave.
+            <strong>{t('fullscreenLabel')}</strong> — {t('fullscreenDescBefore')}{' '}
+            <kbd className="tutorial-kbd">Esc</kbd> {t('fullscreenDescAfter')}
           </BulletWithIcon>
 
           <Text mt="md" mb={0} size="sm" style={{ color: 'var(--text-body)' }}>
-            Under that you’ll find the game’s description—it’s read-only info. At the bottom of the page there’s{' '}
-            <strong>Back to the top</strong>{' '}
-            <InlineImg src="/images/arrow.svg" alt="" /> (games don’t show “Random game” here—you’re already in one.)
+            {t('gamePageFooterBefore')}{' '}
+            <strong>{tCommon('backToTop')}</strong> <InlineImg src="/images/arrow.svg" alt="" /> {t('gamePageFooterAfter')}
           </Text>
         </Paper>
 
@@ -176,30 +180,35 @@ export default function TutorialPage() {
             border: '1px solid var(--card-border)',
           }}
         >
-          <SectionTitle id="tutors-heading">AI tutors (Laurie &amp; Livvy)</SectionTitle>
+          <SectionTitle id="tutors-heading">{t('tutorsTitle')}</SectionTitle>
 
           <Text
             mb="sm"
             className="break-words"
-            style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', alignItems: 'flex-start', color: 'var(--text-body)' }}
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '0.5rem',
+              alignItems: 'flex-start',
+              color: 'var(--text-body)',
+            }}
           >
             <span className="mt-0.5 shrink-0">
               <ImgIcon src="/images/aichat.svg" alt="" />
             </span>
             <span className="min-w-0 flex-1" style={{ lineHeight: 1.55 }}>
-              Open them with <strong>Ask AI tutors</strong>. You might see loading text first—or a small <strong>Tutors</strong>{' '}
-              pill; tap it to expand again.
+              {t('tutorsOpen1')} <strong>{t('askAiLabel')}</strong>. {t('tutorsOpen2')} <strong>{t('tutorsPill')}</strong>{' '}
+              {t('tutorsOpen3')}
             </span>
           </Text>
 
           <Bullet>
-            <strong>Speech bubbles</strong> — tap (or Space / Enter) to advance, then close when you’re done.{' '}
-            <kbd className="tutorial-kbd">Esc</kbd> exits sooner.
+            <strong>{t('speechBubblesLabel')}</strong> {t('speechBubblesDesc')} <kbd className="tutorial-kbd">Esc</kbd>{' '}
+            {t('speechBubblesEsc')}
           </Bullet>
 
           <BulletWithIcon icon={<TutorialTutorTriple />}>
-            <strong>Hint / Explain / Summary</strong> — extra help for your spot in the game (when the game has sent tutor
-            context recently).
+            <strong>{t('hintExplainSummaryLabel')}</strong> {t('hintExplainSummaryDesc')}
           </BulletWithIcon>
 
           <BulletWithIcon
@@ -209,8 +218,8 @@ export default function TutorialPage() {
               </IconBadge>
             }
           >
-            <strong>Auto-advance</strong> — moves between lines when tutor voice is <em>off</em>; with voice on, playback
-            usually sets the pace.
+            <strong>{t('autoAdvanceLabel')}</strong> {t('autoAdvanceDescStart')} <em>{t('autoAdvanceVoiceOff')}</em>
+            {t('autoAdvanceDescMid')}
           </BulletWithIcon>
 
           <BulletWithIcon
@@ -223,7 +232,7 @@ export default function TutorialPage() {
               </IconBadge>
             }
           >
-            <strong>Speaker</strong> — voice on/off in the tutor bar (same setting as mute in the game toolbar above).
+            <strong>{t('speakerLabel')}</strong> {t('speakerDesc')}
           </BulletWithIcon>
 
           <BulletWithIcon
@@ -233,7 +242,7 @@ export default function TutorialPage() {
               </IconBadge>
             }
           >
-            <strong>History / notebook</strong> — opens a log of tutor messages; small ✕ only closes that panel.
+            <strong>{t('historyLabel')}</strong> {t('historyDesc')}
           </BulletWithIcon>
 
           <BulletWithIcon
@@ -243,7 +252,7 @@ export default function TutorialPage() {
               </IconBadge>
             }
           >
-            <strong>Skip (×)</strong> — end the current tutor scene quickly.
+            <strong>{t('skipLabel')}</strong> {t('skipDesc')}
           </BulletWithIcon>
 
           <BulletWithIcon
@@ -256,9 +265,9 @@ export default function TutorialPage() {
               </IconBadge>
             }
           >
-            <strong>Chat box</strong> — type a question (up to 500 characters).{' '}
-            <kbd className="tutorial-kbd">Enter</kbd> sends; <kbd className="tutorial-kbd">Shift+Enter</kbd> is a new line.
-            Mic = hold to dictate where supported.
+            <strong>{t('chatBoxLabel')}</strong> {t('chatBoxDesc')}{' '}
+            <kbd className="tutorial-kbd">Enter</kbd> {t('chatBoxEnterSends')}{' '}
+            <kbd className="tutorial-kbd">Shift+Enter</kbd> {t('chatBoxNewLine')} {t('chatBoxMic')}
           </BulletWithIcon>
 
           <BulletWithIcon
@@ -268,44 +277,44 @@ export default function TutorialPage() {
               </IconBadge>
             }
           >
-            <strong>Red or yellow banners</strong> — rate limits or voice quota; read the note, dismiss with ✕ when ready.
+            <strong>{t('bannersLabel')}</strong> {t('bannersDesc')}
           </BulletWithIcon>
 
           <Title order={3} mt="lg" mb="sm" fz="md" style={{ color: 'var(--text-primary)' }}>
-            Handy keys
+            {t('handyKeys')}
           </Title>
           <div className="-mx-1 touch-pan-x overflow-x-auto pb-px [-webkit-overflow-scrolling:touch] sm:mx-0">
             <table className="tutorial-shortcuts-table tutorial-shortcuts-table--mobile">
               <thead>
                 <tr>
-                  <th scope="col">Key</th>
-                  <th scope="col">What it does</th>
+                  <th scope="col">{t('thKey')}</th>
+                  <th scope="col">{t('thDoes')}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td>
-                    <kbd className="tutorial-kbd">Enter</kbd> in chat
+                    <kbd className="tutorial-kbd">Enter</kbd> {t('rowInChat')}
                   </td>
-                  <td>Send your message</td>
+                  <td>{t('rowEnterSend')}</td>
                 </tr>
                 <tr>
                   <td>
                     <kbd className="tutorial-kbd">Shift</kbd> + <kbd className="tutorial-kbd">Enter</kbd>
                   </td>
-                  <td>New line in chat (without sending)</td>
+                  <td>{t('rowShiftEnterDesc')}</td>
                 </tr>
                 <tr>
                   <td>
-                    <kbd className="tutorial-kbd">Space</kbd> or <kbd className="tutorial-kbd">Enter</kbd>
+                    <kbd className="tutorial-kbd">Space</kbd> {t('rowOr')} <kbd className="tutorial-kbd">Enter</kbd>
                   </td>
-                  <td>Advance tutor dialogue (when you’re not typing in chat)</td>
+                  <td>{t('rowAdvanceDialogue')}</td>
                 </tr>
                 <tr>
                   <td>
                     <kbd className="tutorial-kbd">Esc</kbd>
                   </td>
-                  <td>Close the current tutor dialogue</td>
+                  <td>{t('rowCloseDialogue')}</td>
                 </tr>
               </tbody>
             </table>
@@ -313,13 +322,13 @@ export default function TutorialPage() {
         </Paper>
 
         <Text size="sm" c="dimmed" className="break-words" style={{ lineHeight: 1.55 }}>
-          Want to try it?{' '}
+          {t('tryGame')}{' '}
           <Link
             href="/games/circuit-breaker"
             style={{ color: 'var(--link-color)' }}
             className="inline-flex min-h-10 items-center underline-offset-[3px] [touch-action:manipulation] hover:underline"
           >
-            Open a sample game
+            {t('openSampleGame')}
           </Link>
           .
         </Text>

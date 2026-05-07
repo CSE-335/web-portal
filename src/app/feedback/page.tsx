@@ -185,9 +185,13 @@ export default function FeedbackPage() {
 
                 <Stack gap="sm">
                   <Text style={staticInfoLabel}>{t("likelihood")}</Text>
-                  <SimpleGrid
-                    cols={{ base: 2, xs: 3, sm: 5 }}
-                    style={{ gap: "clamp(0.35rem, 1.5vw, 0.5rem)" }}
+                  <Box
+                    style={{
+                      display: "flex",
+                      flexWrap: "nowrap",
+                      gap: "clamp(0.35rem, 1.5vw, 0.5rem)",
+                      overflowX: "visible",
+                    }}
                   >
                     {likelihoodKeys.map((key) => (
                       <Box
@@ -196,8 +200,8 @@ export default function FeedbackPage() {
                         type="button"
                         onClick={() => setReturnLikelihood(key)}
                         style={{
-                          padding: "10px 6px",
-                          minHeight: 44,
+                          padding: isNarrow ? "8px 4px" : "10px 8px",
+                          minHeight: isNarrow ? 40 : 44,
                           borderRadius: "12px",
                           border:
                             returnLikelihood === key
@@ -207,8 +211,12 @@ export default function FeedbackPage() {
                           textAlign: "center",
                           fontFamily: "var(--font-alexandria), sans-serif",
                           fontWeight: 500,
-                          fontSize: "clamp(0.6875rem, 1vw + 0.55rem, 0.75rem)",
+                          fontSize: isNarrow
+                            ? "clamp(0.58rem, 0.8vw + 0.5rem, 0.66rem)"
+                            : "clamp(0.6875rem, 1vw + 0.55rem, 0.75rem)",
                           lineHeight: 1.25,
+                          flex: "1 1 0",
+                          minWidth: 0,
                           color:
                             returnLikelihood === key
                               ? "var(--button-primary-text)"
@@ -223,7 +231,7 @@ export default function FeedbackPage() {
                         {t(key)}
                       </Box>
                     ))}
-                  </SimpleGrid>
+                  </Box>
                 </Stack>
 
                 <Textarea

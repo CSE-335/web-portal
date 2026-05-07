@@ -88,8 +88,11 @@ async function renderHomePage() {
 describe('Home page', () => {
   it('renders the welcome banner', async () => {
     await renderHomePage();
-    expect(screen.getByText(/Welcome to LLNL/)).toBeInTheDocument();
-    expect(screen.getByText(/STEM Games/)).toBeInTheDocument();
+    const bannerHeadings = screen.getAllByRole('heading', {
+      level: 1,
+      name: /Welcome to LLNL STEM Games!/i,
+    });
+    expect(bannerHeadings.length).toBeGreaterThan(0);
   });
 
   it('renders a game card for each game', async () => {

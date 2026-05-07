@@ -12,6 +12,7 @@ import ThemeToggle from "@/components/layout/Header/ThemeToggle";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
 import FlagIcon from "@/components/FlagIcon";
 import { locales, LOCALE_COOKIE, type Locale } from "@/i18n/routing";
+import { getFriendsDashboard } from "@/lib/supabase/friends";
 
 
 export type UtilityNavDensity = "desktop" | "mobile";
@@ -34,6 +35,8 @@ export default function UtilityNav({
   const [langOpened, setLangOpened] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("/images/bobcat.png");
   const [currentLocale, setCurrentLocale] = useState<Locale>('en');
+  const [pendingFriendRequests, setPendingFriendRequests] = useState(0);
+  const [lastSeenFriendRequestCount, setLastSeenFriendRequestCount] = useState(0);
   const router = useRouter();
   const t = useTranslations('nav');
 
@@ -54,6 +57,47 @@ export default function UtilityNav({
       setCurrentLocale(raw as Locale);
     }
   }, []);
+
+  useEffect(() => {
+    const onMarkSeen = () => {
+      setLastSeenFriendRequestCount((prev) =>
+        pendingFriendRequests > prev ? pendingFriendRequests : prev
+      );
+    };
+
+    window.addEventListener("friends:markSeen", onMarkSeen);
+    return () => {
+      window.removeEventListener("friends:markSeen", onMarkSeen);
+    };
+  }, [pendingFriendRequests]);
+
+  useEffect(() => {
+    if (!user) {
+      setPendingFriendRequests(0);
+      return;
+    }
+
+    let active = true;
+
+    const load = async () => {
+      try {
+        const dashboard = await getFriendsDashboard();
+        if (!active) return;
+        setPendingFriendRequests(dashboard.incomingRequests.length);
+      } catch {
+        if (!active) return;
+        setPendingFriendRequests(0);
+      }
+    };
+
+    void load();
+    const intervalId = window.setInterval(load, 60000);
+
+    return () => {
+      active = false;
+      window.clearInterval(intervalId);
+    };
+  }, [user]);
 
   const languageLabel = t('language');
   const favoritesLabel = t('favorites');
@@ -125,7 +169,11 @@ export default function UtilityNav({
 
       {user ? (
         <>
-          <span className="nav-tooltip" data-tooltip={accountLabel}>
+          <span
+            className="nav-tooltip"
+            data-tooltip={accountLabel}
+            style={{ position: "relative", display: "inline-flex" }}
+          >
             <ActionIcon
               variant="filled"
               color="#585D92"
@@ -139,12 +187,42 @@ export default function UtilityNav({
               <img
                 src={avatarUrl}
                 alt="Profile"
-                width={isMobile ? 32 : 50}
-                height={isMobile ? 32 : 50}
-                style={{ borderRadius: "50%", objectFit: "cover" }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  objectPosition: "center",
+                  display: "block",
+                }}
                 onError={(e) => { e.currentTarget.src = "/images/bobcat.png"; }}
               />
             </ActionIcon>
+            {pendingFriendRequests > lastSeenFriendRequestCount && (
+              <span
+                aria-hidden="true"
+                style={{
+                  position: "absolute",
+                  top: -4,
+                  right: -4,
+                  minWidth: 16,
+                  height: 16,
+                  padding: "0 4px",
+                  borderRadius: 999,
+                  background: "#ef4444",
+                  color: "#ffffff",
+                  fontSize: 10,
+                  fontWeight: 700,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  border: "2px solid var(--surface-header)",
+                  boxShadow: "0 0 0 1px rgba(0,0,0,0.15)",
+                }}
+              >
+                {pendingFriendRequests > 9 ? "9+" : pendingFriendRequests}
+              </span>
+            )}
           </span>
           <ProfilePopup
             opened={profileOpened}

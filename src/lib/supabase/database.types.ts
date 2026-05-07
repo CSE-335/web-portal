@@ -1,6 +1,6 @@
 /**
  * Supabase database types — manually maintained.
- * Tables: games, game_translations, user_profiles, game_likes, play_sessions, game_data, feedback, app_settings
+ * Tables: games, game_translations, user_profiles, game_likes, play_sessions, friendships, user_presence, game_data, feedback, app_settings
  * See supabase-migration.sql for the full schema DDL.
  */
 export type Json =
@@ -185,6 +185,57 @@ export interface Database {
           started_at?: string;
           ended_at?: string | null;
           duration_seconds?: number | null;
+        };
+        Relationships: [];
+      };
+      friendships: {
+        Row: {
+          id: string;
+          requester_id: string;
+          addressee_id: string;
+          status: "pending" | "accepted";
+          created_at: string;
+          responded_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          requester_id: string;
+          addressee_id: string;
+          status?: "pending" | "accepted";
+          created_at?: string;
+          responded_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          requester_id?: string;
+          addressee_id?: string;
+          status?: "pending" | "accepted";
+          created_at?: string;
+          responded_at?: string | null;
+        };
+        Relationships: [];
+      };
+      user_presence: {
+        Row: {
+          user_id: string;
+          is_online: boolean;
+          current_game_slug: string | null;
+          last_seen: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          is_online?: boolean;
+          current_game_slug?: string | null;
+          last_seen?: string;
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          is_online?: boolean;
+          current_game_slug?: string | null;
+          last_seen?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };
