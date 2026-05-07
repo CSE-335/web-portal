@@ -26,7 +26,7 @@ type LeaderboardEntry = {
 type LeaderboardResponse = {
   ok: true;
   scope: Scope;
-  mode: "overall" | "per-game";
+  mode: "per-game";
   slug?: string;
   entries: LeaderboardEntry[];
 };
@@ -159,6 +159,12 @@ function buildLeaderboardFromRows(
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const slug = url.searchParams.get("slug");
+  if (!slug) {
+    return NextResponse.json(
+      { ok: false, error: "A game slug is required for leaderboard requests." },
+      { status: 400 }
+    );
+  }
   const scope = (url.searchParams.get("scope") as Scope | null) ?? "global";
   const limitParam = url.searchParams.get("limit");
   const limit = Math.min(Math.max(Number(limitParam) || 20, 1), 100);
@@ -175,12 +181,9 @@ export async function GET(request: NextRequest) {
   const adminSupabase = adminResult.supabase;
   const authUserId = authResult.authUserId;
 
-  let gameId: number | null = null;
-  if (slug) {
-    const gameResult = await getGameIdBySlug(adminSupabase, slug);
-    if (!gameResult.ok) return gameResult.response;
-    gameId = gameResult.gameId;
-  }
+  const gameResult = await getGameIdBySlug(adminSupabase, slug);
+  if (!gameResult.ok) return gameResult.response;
+  const gameId = gameResult.gameId;
 
   let userFilterIds: string[] | null = null;
   if (scope === "friends") {
@@ -188,17 +191,9 @@ export async function GET(request: NextRequest) {
     userFilterIds = Array.from(ids);
   }
 
-  let query = adminSupabase.from("game_data").select("user_id, game_id, data_json");
-  if (gameId != null) {
-    query = query.eq("game_id", gameId);
-  }
+  let query = adminSupabase.from("game_data").select("user_id, game_id, data_json").eq("game_id", gameId);
   if (userFilterIds && userFilterIds.length > 0) {
     query = query.in("user_id", userFilterIds);
-  }
-
-  // Safety cap for overall/global case so we don't scan unbounded rows.
-  if (!gameId && !userFilterIds) {
-    query = query.limit(1000);
   }
 
   const { data: rows, error } = await query;
@@ -214,8 +209,8 @@ export async function GET(request: NextRequest) {
     const empty: LeaderboardResponse = {
       ok: true,
       scope,
-      mode: slug ? "per-game" : "overall",
-      ...(slug ? { slug } : {}),
+      mode: "per-game",
+      slug,
       entries: [],
     };
     return NextResponse.json(empty);
@@ -241,8 +236,8 @@ export async function GET(request: NextRequest) {
   const response: LeaderboardResponse = {
     ok: true,
     scope,
-    mode: slug ? "per-game" : "overall",
-    ...(slug ? { slug } : {}),
+    mode: "per-game",
+    slug,
     entries,
   };
 

@@ -17,7 +17,7 @@ type LeaderboardEntry = {
 type LeaderboardResponse = {
   ok: true;
   scope: Scope;
-  mode: "overall" | "per-game";
+  mode: "per-game";
   slug?: string;
   entries: LeaderboardEntry[];
 };
@@ -31,8 +31,7 @@ const font = { fontFamily: "var(--font-alexandria), sans-serif" };
 export default function LeaderboardsTab({ initialGameSlug }: LeaderboardsTabProps) {
   const t = useTranslations("profilePage");
   const [scope, setScope] = useState<Scope>("global");
-  const [mode, setMode] = useState<"overall" | "per-game">("overall");
-  const [selectedSlug, setSelectedSlug] = useState<string | null>(initialGameSlug ?? null);
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(initialGameSlug ?? games[0]?.slug ?? null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
@@ -55,9 +54,7 @@ export default function LeaderboardsTab({ initialGameSlug }: LeaderboardsTabProp
       try {
         const params = new URLSearchParams();
         params.set("scope", scope);
-        if (mode === "per-game" && selectedSlug) {
-          params.set("slug", selectedSlug);
-        }
+        if (selectedSlug) params.set("slug", selectedSlug);
         const res = await fetch(`/api/leaderboards?${params.toString()}`, {
           method: "GET",
           credentials: "include",
@@ -84,7 +81,7 @@ export default function LeaderboardsTab({ initialGameSlug }: LeaderboardsTabProp
       }
     }
 
-    if (mode === "per-game" && !selectedSlug) {
+    if (!selectedSlug) {
       // No game selected yet – don't fire a request.
       setEntries([]);
       setLoading(false);
@@ -95,20 +92,12 @@ export default function LeaderboardsTab({ initialGameSlug }: LeaderboardsTabProp
     return () => {
       aborted = true;
     };
-  }, [scope, mode, selectedSlug]);
+  }, [scope, selectedSlug]);
 
   return (
     <Stack gap="md">
       <Group justify="space-between" align="center" wrap="wrap">
         <Group gap="xs" wrap="wrap">
-          <SegmentedControl
-            value={mode}
-            onChange={(value) => setMode(value as "overall" | "per-game")}
-            data={[
-              { value: "overall", label: t("leaderboardsOverall") },
-              { value: "per-game", label: t("leaderboardsPerGame") },
-            ]}
-          />
           <SegmentedControl
             value={scope}
             onChange={(value) => setScope(value as Scope)}
@@ -119,16 +108,14 @@ export default function LeaderboardsTab({ initialGameSlug }: LeaderboardsTabProp
           />
         </Group>
 
-        {mode === "per-game" && (
-          <Select
-            value={selectedSlug}
-            onChange={setSelectedSlug}
-            placeholder={t("leaderboardsSelectGame")}
-            data={gameOptions}
-            searchable
-            style={{ minWidth: 220 }}
-          />
-        )}
+        <Select
+          value={selectedSlug}
+          onChange={setSelectedSlug}
+          placeholder={t("leaderboardsSelectGame")}
+          data={gameOptions}
+          searchable
+          style={{ minWidth: 220 }}
+        />
       </Group>
 
       {loading && (
