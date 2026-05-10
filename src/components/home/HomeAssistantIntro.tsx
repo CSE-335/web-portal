@@ -122,24 +122,23 @@ export default function HomeAssistantIntro() {
   }, []);
 
   useEffect(() => {
-    setHydrated(true);
+    queueMicrotask(() => setHydrated(true));
   }, []);
 
   useEffect(() => {
     if (!hydrated || process.env.NODE_ENV === "test") return;
     let cancelled = false;
-    let timer: ReturnType<typeof setTimeout> | undefined;
     try {
       if (localStorage.getItem(STORAGE_KEY)) return;
     } catch {
       return;
     }
-    timer = setTimeout(() => {
+    const timer = setTimeout(() => {
       if (!cancelled) setOpened(true);
     }, 700);
     return () => {
       cancelled = true;
-      if (timer) clearTimeout(timer);
+      clearTimeout(timer);
     };
   }, [hydrated]);
 

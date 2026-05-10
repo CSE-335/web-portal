@@ -18,27 +18,20 @@ type MobileImmersiveHintsProps = {
   active: boolean;
 };
 
-/**
- * During mobile immersive play: suggests rotating in portrait; on iOS Safari, reminds users they can Add to Home Screen.
- */
-export default function MobileImmersiveHints({ active }: MobileImmersiveHintsProps) {
+function MobileImmersiveHintsWhenActive() {
   const t = useTranslations("common");
   const [dismissed, setDismissed] = useState(false);
   const [portrait, setPortrait] = useState(false);
 
   useEffect(() => {
-    if (!active) {
-      setDismissed(false);
-      return;
-    }
     const mq = window.matchMedia("(orientation: portrait)");
     const sync = () => setPortrait(mq.matches);
     sync();
     mq.addEventListener("change", sync);
     return () => mq.removeEventListener("change", sync);
-  }, [active]);
+  }, []);
 
-  if (!active || dismissed) return null;
+  if (dismissed) return null;
 
   const standalone = isStandaloneDisplayMode();
   const showRotate = portrait;
@@ -61,4 +54,12 @@ export default function MobileImmersiveHints({ active }: MobileImmersiveHintsPro
       </Stack>
     </Alert>
   );
+}
+
+/**
+ * During mobile immersive play: suggests rotating in portrait; on iOS Safari, reminds users they can Add to Home Screen.
+ */
+export default function MobileImmersiveHints({ active }: MobileImmersiveHintsProps) {
+  if (!active) return null;
+  return <MobileImmersiveHintsWhenActive />;
 }

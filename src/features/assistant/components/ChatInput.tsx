@@ -10,7 +10,6 @@ import { Box, Textarea, ActionIcon, Text, Loader, Group, Tooltip } from "@mantin
 import { useMediaQuery } from "@mantine/hooks";
 import { useAssistant } from "../AssistantContext";
 import { useHoldToTalkSpeechRecognition } from "../hooks/useHoldToTalkSpeechRecognition";
-import { ASSISTANT_UI_Z } from "../uiConstants";
 import { MicIcon, SendIcon } from "./icons";
 
 const MAX_MESSAGE_LENGTH = 500;
