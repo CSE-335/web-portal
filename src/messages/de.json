@@ -151,7 +151,16 @@
     "playAnyDevice": "Spiele auf jedem Gerät",
     "quickPlayTitle": "Schnellstart",
     "quickPlayDescription": "Suche ein Spiel nach Namen und wähle dann ein passendes Ergebnis aus.",
-    "quickPlayNoResults": "Keine Spiele gefunden. Versuche eine andere Suche."
+    "quickPlayNoResults": "Keine Spiele gefunden. Versuche eine andere Suche.",
+    "assistantIntro": {
+      "modalTitle": "Lerne Laurie & Livvy kennen — deine KI-Tutorinnen",
+      "laurieIntro": "Hi! Ich bin Laurie. Im Spiel können Livvy und ich dir Konzepte erklären, Tipps geben und mit dir über deine Aufgaben sprechen.",
+      "livvyIntro": "Ich bin Livvy! Öffne uns über die runden Buttons unter dem Spieler. Tippe auf das hervorgehobene Chat-Symbol unten — mit der Maus darüber steht „Ask AI tutors“.",
+      "iconCaption": "Dieses Symbol findest du unter dem Spiel",
+      "toolbarHint": "Gleiche Reihenfolge wie im echten Spiel: Favorit, KI-Tutorinnen, Ton, Vollbild.",
+      "gotIt": "Alles klar",
+      "seeTutorial": "Komplette Anleitung öffnen"
+    }
   },
   "gameCard": {
     "tags": "Tags",

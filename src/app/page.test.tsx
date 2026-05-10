@@ -62,6 +62,11 @@ jest.mock('next/navigation', () => ({
   notFound: jest.fn(),
 }));
 
+jest.mock('@/components/home/HomeAssistantIntro', () => ({
+  __esModule: true,
+  default: () => null,
+}));
+
 jest.mock('../lib/supabase/server', () => {
   const mockClient = () => ({
     from: () => ({

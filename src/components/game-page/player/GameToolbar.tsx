@@ -23,6 +23,7 @@ export default function GameToolbar({
 
   return (
     <Flex
+      className="game-fullscreen-toolbar"
       direction={{ base: "column", md: "row" }}
       align={{ md: "center" }}
       justify={{ md: "space-between" }}

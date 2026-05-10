@@ -176,7 +176,16 @@
     "playAnyDevice": "Play on any device",
     "quickPlayTitle": "Quick play",
     "quickPlayDescription": "Search for a game by name, then pick a matching result to start playing.",
-    "quickPlayNoResults": "No games found. Try a different search."
+    "quickPlayNoResults": "No games found. Try a different search.",
+    "assistantIntro": {
+      "modalTitle": "Meet Laurie & Livvy — your AI tutors",
+      "laurieIntro": "Hi! I'm Laurie. When you're playing a game, Livvy and I can explain ideas, offer hints, and chat about what you're working on.",
+      "livvyIntro": "I'm Livvy! Open us from the round buttons under the game. Tap the chat-bubble icon highlighted below — it shows \"Ask AI tutors\" when you hover with a mouse.",
+      "iconCaption": "Look for this icon under the game",
+      "toolbarHint": "Same order as in a real game: favorite, AI tutors, sound, then fullscreen.",
+      "gotIt": "Got it",
+      "seeTutorial": "Open the full tutorial"
+    }
   },
   "gameCard": {
     "tags": "Tags",

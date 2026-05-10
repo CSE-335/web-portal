@@ -65,6 +65,7 @@ jest.mock('@/lib/supabase/client', () => ({
 }));
 
 jest.mock('@/features/assistant', () => ({
+  AssistantPanel: () => null,
   GameIframeBridge: () => null,
   GameSessionRegistration: () => null,
   useAssistant: () => ({

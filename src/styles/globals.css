@@ -325,24 +325,62 @@ html[lang="ar"] button {
   100% { background-position: 200% center; }
 }
 
-/* Game embed fullscreen — fill the entire screen */
-:fullscreen,
-:-webkit-full-screen {
+/* Game player — column stack for embed + toolbar (fullscreen flex rules below) */
+.game-fullscreen-main {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Game player fullscreen — media grows; toolbar stays sized; assistant is out-of-flow */
+:fullscreen[data-game-fullscreen-root],
+:-webkit-full-screen[data-game-fullscreen-root] {
   display: flex !important;
   flex-direction: column !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100dvh !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
   background: #000 !important;
   border-radius: 0 !important;
 }
-:fullscreen > *,
-:-webkit-full-screen > * {
-  flex: 1 !important;
+:fullscreen[data-game-fullscreen-root] .game-fullscreen-main,
+:-webkit-full-screen[data-game-fullscreen-root] .game-fullscreen-main {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+}
+:fullscreen[data-game-fullscreen-root] .game-fullscreen-media,
+:-webkit-full-screen[data-game-fullscreen-root] .game-fullscreen-media {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+}
+:fullscreen[data-game-fullscreen-root] .game-fullscreen-iframe-inner,
+:-webkit-full-screen[data-game-fullscreen-root] .game-fullscreen-iframe-inner {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
   min-height: 0 !important;
   border-radius: 0 !important;
 }
-:fullscreen iframe,
-:-webkit-full-screen iframe {
+:fullscreen[data-game-fullscreen-root] .game-fullscreen-iframe-inner iframe,
+:-webkit-full-screen[data-game-fullscreen-root] .game-fullscreen-iframe-inner iframe {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
   width: 100% !important;
   height: 100% !important;
+  border-radius: 0 !important;
+}
+:fullscreen[data-game-fullscreen-root] .game-fullscreen-toolbar,
+:-webkit-full-screen[data-game-fullscreen-root] .game-fullscreen-toolbar {
+  flex: 0 0 auto !important;
   border-radius: 0 !important;
 }
 

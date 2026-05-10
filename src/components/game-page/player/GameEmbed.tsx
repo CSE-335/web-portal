@@ -7,6 +7,8 @@ type GameEmbedProps = {
   title: string;
   height?: string;
   slug: string;
+  /** Merged onto the root wrapper (e.g. fullscreen flex sizing hooks). */
+  rootClassName?: string;
 };
 
 export default function GameEmbed({
@@ -14,6 +16,7 @@ export default function GameEmbed({
   title,
   height = "800px",
   slug,
+  rootClassName,
 }: GameEmbedProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const gameOrigin = useMemo(() => {
@@ -193,7 +196,10 @@ export default function GameEmbed({
   }, [slug, gameOrigin]);
 
   return (
-    <Box style={{ overflow: "hidden", borderRadius: 20, background: "rgba(0,0,0,0.2)" }}>
+    <Box
+      className={rootClassName}
+      style={{ overflow: "hidden", borderRadius: 20, background: "rgba(0,0,0,0.2)" }}
+    >
       <iframe
         ref={iframeRef}
         src={src}

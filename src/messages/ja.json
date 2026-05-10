@@ -151,7 +151,16 @@
     "playAnyDevice": "どのデバイスでもプレイ",
     "quickPlayTitle": "クイックプレイ",
     "quickPlayDescription": "ゲーム名で検索し、一致する結果を選んで開始します。",
-    "quickPlayNoResults": "ゲームが見つかりません。別の検索を試してください。"
+    "quickPlayNoResults": "ゲームが見つかりません。別の検索を試してください。",
+    "assistantIntro": {
+      "modalTitle": "ロリーとリヴィーを紹介 — AIチューターです",
+      "laurieIntro": "こんにちは、ロリーだよ。ゲーム中はリヴィーと一緒に、考え方の説明やヒント、やっていることについて話せるよ。",
+      "livvyIntro": "リヴィーだよ！プレーヤーの下の丸いボタンから開いてね。下で強調しているチャットの吹き出しアイコンをタップ — マウスを乗せると「Ask AI tutors」と出るよ。",
+      "iconCaption": "ゲームの下のこのアイコンを探してね",
+      "toolbarHint": "本番と同じ並び：お気に入り、AIチューター、音、フルスクリーン。",
+      "gotIt": "わかった",
+      "seeTutorial": "詳しいチュートリアルを開く"
+    }
   },
   "gameCard": {
     "tags": "タグ",

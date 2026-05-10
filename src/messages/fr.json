@@ -152,7 +152,16 @@
     "playAnyDevice": "Jouez sur n'importe quel appareil",
     "quickPlayTitle": "Jeu rapide",
     "quickPlayDescription": "Recherchez un jeu par nom, puis choisissez un résultat correspondant.",
-    "quickPlayNoResults": "Aucun jeu trouvé. Essayez une autre recherche."
+    "quickPlayNoResults": "Aucun jeu trouvé. Essayez une autre recherche.",
+    "assistantIntro": {
+      "modalTitle": "Voici Laurie et Livvy — vos tuteures IA",
+      "laurieIntro": "Salut ! Je suis Laurie. Pendant une partie, Livvy et moi pouvons expliquer les idées, donner des indices et discuter de ce que tu fais.",
+      "livvyIntro": "Je suis Livvy ! Ouvre-nous avec les boutons ronds sous le lecteur. Appuie sur l’icône de bulle mise en évidence ci-dessous — au survol de la souris c’est « Ask AI tutors ».",
+      "iconCaption": "Repère cette icône sous le jeu",
+      "toolbarHint": "Même ordre que dans un vrai jeu : favori, tuteures IA, son, plein écran.",
+      "gotIt": "Compris",
+      "seeTutorial": "Ouvrir le guide complet"
+    }
   },
   "gameCard": {
     "tags": "Tags",

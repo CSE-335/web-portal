@@ -151,7 +151,16 @@
     "playAnyDevice": "Jogue em qualquer dispositivo",
     "quickPlayTitle": "Jogo rápido",
     "quickPlayDescription": "Pesquise um jogo pelo nome e escolha um resultado correspondente.",
-    "quickPlayNoResults": "Nenhum jogo encontrado. Tente outra busca."
+    "quickPlayNoResults": "Nenhum jogo encontrado. Tente outra busca.",
+    "assistantIntro": {
+      "modalTitle": "Conheça Laurie e Livvy — suas tutoras de IA",
+      "laurieIntro": "Oi! Sou a Laurie. No jogo, a Livvy e eu podemos explicar ideias, dar dicas e conversar sobre o que você está fazendo.",
+      "livvyIntro": "Sou a Livvy! Abra-nos pelos botões redondos abaixo do player. Toque no ícone de balão destacado abaixo — com o mouse aparece «Ask AI tutors».",
+      "iconCaption": "Procure este ícone abaixo do jogo",
+      "toolbarHint": "Mesma ordem do jogo real: favorito, tutoras IA, som e tela cheia.",
+      "gotIt": "Entendi",
+      "seeTutorial": "Abrir o tutorial completo"
+    }
   },
   "gameCard": {
     "tags": "Tags",

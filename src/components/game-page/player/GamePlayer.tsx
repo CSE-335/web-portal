@@ -1,6 +1,7 @@
 "use client";
 
 import { Box, Paper } from "@mantine/core";
+import { AssistantPanel } from "@/features/assistant";
 import SaveProgressBanner from "./SaveProgressBanner";
 import GameEmbed from "./GameEmbed";
 import GameToolbar from "./GameToolbar";
@@ -34,22 +35,44 @@ export default function GamePlayer({
         boxShadow: "var(--shadow-card)",
       }}
     >
-      <Box p={{ base: 6, md: "xs" }}>
+      <Box
+        ref={embedRef}
+        data-game-fullscreen-root
+        style={{ position: "relative", display: "flex", flexDirection: "column" }}
+      >
+        <Box p={{ base: 6, md: "xs" }} className="game-fullscreen-main">
+          <Box
+            className="game-fullscreen-media"
+            style={{
+              overflow: "hidden",
+              borderRadius: "clamp(14px, 2.5vw, 20px)",
+              background: "var(--player-embed-bg)",
+            }}
+          >
+            <SaveProgressBanner />
+            <GameEmbed
+              src={iframeSrc}
+              title={title}
+              height={embedHeight}
+              slug={slug}
+              rootClassName="game-fullscreen-iframe-inner"
+            />
+          </Box>
+        </Box>
+
+        <GameToolbar slug={slug} title={title} subject={subject} embedRef={embedRef} />
         <Box
-          ref={embedRef}
+          className="game-fullscreen-assistant-host"
           style={{
-            position: "relative",
-            overflow: "hidden",
-            borderRadius: "clamp(14px, 2.5vw, 20px)",
-            background: "var(--player-embed-bg)",
+            position: "absolute",
+            inset: 0,
+            zIndex: 5,
+            pointerEvents: "none",
           }}
         >
-          <SaveProgressBanner />
-          <GameEmbed src={iframeSrc} title={title} height={embedHeight} slug={slug} />
+          <AssistantPanel />
         </Box>
       </Box>
-
-      <GameToolbar slug={slug} title={title} subject={subject} embedRef={embedRef} />
     </Paper>
   );
 }
