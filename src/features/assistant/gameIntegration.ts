@@ -9,6 +9,7 @@ import { games, getGameBySlug, type GameMeta } from "@/data/games";
  * `generate-games.mjs`) gets a profile automatically from title, subject,
  * description, and longDescription. Optional `assistant-tutor-brief` and
  * `assistant-target-concept` in `game.json` override the derived brief / topic.
+ * Optional `assistant-mistake-guide` lists common slips so wrong-answer tutoring stays concrete.
  * Add an entry in `INTEGRATION_OVERRIDES` only for custom static fallbacks.
  */
 export type AssistantGameIntegration = {
@@ -17,6 +18,11 @@ export type AssistantGameIntegration = {
   subject: string;
   /** Compact briefing injected into the system prompt. */
   tutorBrief: string;
+  /**
+   * Optional: typical wrong answers, UI pitfalls, or misconceptions (from game.json
+   * `assistant-mistake-guide`). Helps the model explain *this* game's slips, not generic STEM.
+   */
+  mistakeGuide?: string;
   /** Default learning label for chat before iframe events. */
   defaultTargetConcept: string;
   /** Optional static fallbacks keyed by event type (subset). */
@@ -29,6 +35,7 @@ export type AssistantGameIntegration = {
 };
 
 const MAX_TUTOR_BRIEF_CHARS = 2000;
+const MAX_MISTAKE_GUIDE_CHARS = 1200;
 
 type AssistantIntegrationOverride = Partial<
   Omit<AssistantGameIntegration, "slug">
@@ -251,11 +258,17 @@ export function deriveAssistantFromGameMeta(meta: GameMeta): AssistantGameIntegr
     tutorBrief = `${tutorBrief.slice(0, MAX_TUTOR_BRIEF_CHARS)}…`;
   }
 
+  let mistakeGuide = meta.assistantMistakeGuide?.trim();
+  if (mistakeGuide && mistakeGuide.length > MAX_MISTAKE_GUIDE_CHARS) {
+    mistakeGuide = `${mistakeGuide.slice(0, MAX_MISTAKE_GUIDE_CHARS)}…`;
+  }
+
   return {
     slug: meta.slug,
     title: meta.title,
     subject: `${meta.subject} — STEM / educational game`,
     tutorBrief,
+    mistakeGuide: mistakeGuide || undefined,
     defaultTargetConcept:
       meta.assistantDefaultTargetConcept?.trim() ||
       meta.slug.replace(/-/g, "_"),
@@ -274,6 +287,7 @@ function mergeIntegration(
     title: override.title ?? base.title,
     subject: override.subject ?? base.subject,
     tutorBrief: override.tutorBrief ?? base.tutorBrief,
+    mistakeGuide: override.mistakeGuide ?? base.mistakeGuide,
     defaultTargetConcept:
       override.defaultTargetConcept ?? base.defaultTargetConcept,
     staticFallbacks: override.staticFallbacks ?? base.staticFallbacks,

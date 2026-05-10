@@ -99,7 +99,9 @@ export default function QuickPlaySearch({ games }: QuickPlaySearchProps) {
           }}
           radius="xl"
           size="md"
-          rightSection={<img src="/images/search.svg" alt="" aria-hidden width={20} height={20} style={{ filter: "var(--icon-filter)" }} />}
+          rightSection={
+            <Image src="/images/search.svg" alt="" width={20} height={20} aria-hidden style={{ filter: "var(--icon-filter)" }} />
+          }
           styles={{
             input: {
               background: "var(--input-bg)",

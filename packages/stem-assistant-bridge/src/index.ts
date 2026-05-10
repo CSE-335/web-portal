@@ -184,6 +184,7 @@ export const stemAssistant = {
     sendStemAssistantEvent({ eventType: "level_start", ...extra });
   },
 
+  /** Pass `playerAnswer`, `correctAnswer`, `mistakeCategory`, and/or `additionalContext` when possible so the hub tutor can diagnose slips instead of generic advice. */
   incorrect(extra?: Partial<GameEvent>): void {
     sendStemAssistantEvent({ eventType: "incorrect_submission", ...extra });
   },
@@ -192,6 +193,7 @@ export const stemAssistant = {
     sendStemAssistantEvent({ eventType: "correct_submission", ...extra });
   },
 
+  /** Optional `additionalContext` (e.g. stuck step id) helps the hub give a narrower hint. */
   hintRequest(extra?: Partial<GameEvent>): void {
     if (state) {
       state.hintCount += 1;

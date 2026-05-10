@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from 'next-intl';
 import { useMantineColorScheme } from "@mantine/core";
@@ -20,6 +20,7 @@ import {
 import type { User } from "@supabase/supabase-js";
 import { signOutUser } from "@/lib/supabase/auth";
 import { generateUsername } from "@/lib/utils/generateUsername";
+import { oauthAvatarUrlFromUser } from "@/lib/utils/oauthAvatarUrl";
 import { getUserProfile, updateUserProfile, validateUsername, isUsernameTaken } from "@/lib/supabase/user-profile";
 import { AVATAR_MAX_MB, uploadUserAvatar, uploadUserBanner, validateAvatarFileForUpload } from "@/lib/supabase/avatar-storage";
 import AccountSettingsPopup from "./AccountSettingsPopup";
@@ -155,7 +156,7 @@ export default function ProfilePopup({
   const [draftBannerUrl, setDraftBannerUrl] = useState<string | null>(null);
   const [avatarChanged, setAvatarChanged] = useState(false);
   const [bannerChanged, setBannerChanged] = useState(false);
-  const avatarUrl = draftAvatarUrl || user.user_metadata?.avatar_url || "/images/bobcat.png";
+  const avatarUrl = draftAvatarUrl || oauthAvatarUrlFromUser(user) || "/images/bobcat.png";
   const email = user.email ?? "";
 
   // Reset view on open
@@ -197,24 +198,26 @@ export default function ProfilePopup({
   useEffect(() => {
     if (!opened) {
       autoActionTriggeredRef.current = null;
-      setAvatarCropSrc((prev) => {
-        if (prev) URL.revokeObjectURL(prev);
-        return null;
+      queueMicrotask(() => {
+        setAvatarCropSrc((prev) => {
+          if (prev) URL.revokeObjectURL(prev);
+          return null;
+        });
+        setBannerCropSrc((prev) => {
+          if (prev) URL.revokeObjectURL(prev);
+          return null;
+        });
+        setAvatarPreviewObjectUrl((prev) => {
+          if (prev) URL.revokeObjectURL(prev);
+          return null;
+        });
+        setBannerPreviewObjectUrl((prev) => {
+          if (prev) URL.revokeObjectURL(prev);
+          return null;
+        });
+        setAvatarDraftFile(null);
+        setBannerDraftFile(null);
       });
-      setBannerCropSrc((prev) => {
-        if (prev) URL.revokeObjectURL(prev);
-        return null;
-      });
-      setAvatarPreviewObjectUrl((prev) => {
-        if (prev) URL.revokeObjectURL(prev);
-        return null;
-      });
-      setBannerPreviewObjectUrl((prev) => {
-        if (prev) URL.revokeObjectURL(prev);
-        return null;
-      });
-      setAvatarDraftFile(null);
-      setBannerDraftFile(null);
     }
   }, [opened]);
 
@@ -225,19 +228,19 @@ export default function ProfilePopup({
     router.refresh();
   };
 
-  const triggerAvatarPick = () => {
+  const triggerAvatarPick = useCallback(() => {
     if (avatarUploading || bannerUploading) return;
     setAvatarError(null);
     setBannerError(null);
     avatarFileInputRef.current?.click();
-  };
+  }, [avatarUploading, bannerUploading]);
 
-  const triggerBannerPick = () => {
+  const triggerBannerPick = useCallback(() => {
     if (avatarUploading || bannerUploading) return;
     setAvatarError(null);
     setBannerError(null);
     bannerFileInputRef.current?.click();
-  };
+  }, [avatarUploading, bannerUploading]);
 
   const closeAvatarCrop = () => {
     if (avatarCropSrc) {
@@ -316,9 +319,11 @@ export default function ProfilePopup({
     if (!opened || view !== "edit" || !initialAction) return;
     if (autoActionTriggeredRef.current === initialAction) return;
     autoActionTriggeredRef.current = initialAction;
-    if (initialAction === "avatar") triggerAvatarPick();
-    if (initialAction === "banner") triggerBannerPick();
-  }, [opened, view, initialAction]);
+    queueMicrotask(() => {
+      if (initialAction === "avatar") triggerAvatarPick();
+      if (initialAction === "banner") triggerBannerPick();
+    });
+  }, [opened, view, initialAction, triggerAvatarPick, triggerBannerPick]);
 
   const handleUsernameChange = (value: string) => {
     setEditUsername(value);

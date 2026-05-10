@@ -27,13 +27,13 @@ jest.mock('../data/games', () => ({
       featured: true,
     },
   ],
-  getGameBySlug: (slug: string) => undefined,
+  getGameBySlug: () => undefined,
 }));
 jest.mock('next-intl/server', () => ({
   getLocale: () => Promise.resolve('en'),
 }));
 jest.mock('@/lib/supabase/game-translations', () => ({
-  getLocalizedGames: async (_locale: string, _slugs: string[]) => ([
+  getLocalizedGames: async () => ([
     {
       slug: 'test-game-1',
       title: 'Test Game One',

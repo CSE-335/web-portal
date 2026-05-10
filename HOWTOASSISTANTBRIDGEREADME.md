@@ -64,7 +64,7 @@ In your game repo’s `package.json`:
 }
 ```
 
-When this package is published, we’ll replace the `file:` path with a version like `"^0.1.0"`.
+The `file:` URL must resolve from **your game repo’s root** to the portal’s `packages/stem-assistant-bridge` folder. The path above is an example for a fixed monorepo-style layout; standalone clones often need a different relative path, `npm link`, or a git submodule. When this package is published, prefer a semver range like `"^0.1.0"` instead of `file:`.
 
 Then run:
 
@@ -87,13 +87,17 @@ initStemAssistantBridge({
   // MUST match `game-id` in data/game.json and the portal slug (/games/<game-id>)
   gameId: "your-game-id",
   // Optional but recommended – concise label for the main concept/topic
-  defaultTargetConcept: "your_topic_slug" // e.g. "python_programming"
+  defaultTargetConcept: "your_topic_slug", // e.g. "python_programming"
+  // Optional – first level id used for the automatic level_start (default "level_1")
+  // defaultLevelId: "intro",
 });
 
 render(<App />, document.getElementById("app"));
 ```
 
 This is enough for the portal to know which game is in the iframe and for free‑form chat to be scoped to your title.
+
+**Automatic first `level_start`:** When the game is actually embedded in the portal iframe, `initStemAssistantBridge` already emits one `level_start` (using `defaultLevelId`, which defaults to `level_1`, and your `defaultTargetConcept` or a derived concept). Do not immediately call `stemAssistant.levelStart()` again for that same opening screen unless you want a duplicate event. Use `setStemAssistantLevel` + `stemAssistant.levelStart` when the player moves to another level or problem (see §3.1).
 
 ---
 
@@ -112,7 +116,7 @@ import {
 
 #### 3.1 Level / problem start
 
-Call this when a new level, exercise, or problem becomes active:
+Call this when a **new** level, exercise, or problem becomes active after the first one (the bridge already sent `level_start` once during `initStemAssistantBridge` while embedded):
 
 ```ts
 setStemAssistantLevel(`level-${levelId}`, "your_topic_slug");
@@ -186,6 +190,7 @@ The bridge understands the following `eventType` values (you generally use helpe
 - `hint_request`
 - `timeout`
 - `recap_request`
+- `user_message` (advanced / hub use; send via `sendStemAssistantEvent` if needed)
 
 The portal’s `GameIframeBridge` listens for:
 
@@ -201,7 +206,7 @@ and forwards that into the assistant system.
 
 1. **Game iframe** calls a bridge helper → `sendStemAssistantEvent({...})`.
 2. Bridge sends `postMessage` to `window.parent` with `{ type: "ASSISTANT_GAME_EVENT", payload }`.
-3. Portal’s `GameIframeBridge` receives the message, verifies origin and `gameId`, and calls `sendGameEvent`.
+3. Portal’s `GameIframeBridge` receives the message, verifies the sender **origin** (trusted list plus same origin) and optional `gameId` filter, then calls `sendGameEvent`. Games shipped under `public/staticGames/` are same‑origin as the portal in normal use.
 4. `/api/assistant` builds prompts using:
    - the event fields (`gameId`, `levelId`, `eventType`, `targetConcept`, etc.)
    - the per‑game profile from `gameIntegration.ts`
@@ -225,6 +230,7 @@ does the following:
 3. Copies `dist/` into `public/staticGames/<game-id>/`.
 4. Copies `data/thumbnail.png` into `public/gameThumbnails/<game-id>.png`.
 5. Regenerates `src/data/games.ts` from each repo’s `data/game.json`.
+6. Optionally seeds game metadata to Supabase when `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are set (skipped in CI or local runs without those secrets).
 
 For your bridge changes to show up in the portal:
 

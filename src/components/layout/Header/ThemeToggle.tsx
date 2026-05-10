@@ -39,7 +39,9 @@ export default function ThemeToggle() {
   const { setColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme("dark", { getInitialValueInEffect: true });
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    queueMicrotask(() => setMounted(true));
+  }, []);
 
   // Always render as dark on server/first paint to avoid hydration mismatch
   const isDark = !mounted || computedColorScheme === "dark";

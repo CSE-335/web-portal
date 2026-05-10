@@ -105,6 +105,7 @@
     "leaderboardsGlobal": "Global",
     "leaderboardsFriends": "Friends",
     "leaderboardsSelectGame": "Select a game",
+    "leaderboardsScoreTrack": "Score track",
     "leaderboardsScore": "High score: {score}",
     "leaderboardsEmpty": "No scores yet. Play a game to appear here!",
     "leaderboardsError": "Could not load leaderboards. Please try again.",

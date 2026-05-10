@@ -176,4 +176,22 @@ describe('generateGamesData', () => {
     expect(writtenContent).toContain('Help students learn algebra');
     expect(writtenContent).toContain('Linear equations');
   });
+
+  it('includes assistantMistakeGuide when assistant-mistake-guide is provided', () => {
+    setupEntries([
+      { repoName: 'mistake-game', repoDir: '/repos/mistake-game' },
+    ]);
+    setupFs(['/repos/mistake-game', 'game.json']);
+    readJson.mockReturnValue({
+      'game-id': 'mistake-game',
+      subject: 'Science',
+      'assistant-mistake-guide': 'Players often confuse R0 with mortality rate.',
+    });
+
+    generateGamesData();
+
+    const writtenContent = (mockedFs.writeFileSync as jest.Mock).mock.calls[0][1] as string;
+    expect(writtenContent).toContain('Players often confuse R0 with mortality rate.');
+    expect(writtenContent).toContain('assistantMistakeGuide');
+  });
 });

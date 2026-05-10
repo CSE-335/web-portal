@@ -23,31 +23,41 @@ function useTypewriter(text: string, speed: number = 25) {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    setDisplayed("");
-    setIsDone(false);
-    indexRef.current = 0;
+    let cancelled = false;
+    let timer: ReturnType<typeof setInterval> | null = null;
 
-    if (!text) {
-      setIsDone(true);
-      return;
-    }
+    void Promise.resolve().then(() => {
+      if (cancelled) return;
+      setDisplayed("");
+      setIsDone(false);
+      indexRef.current = 0;
 
-    const timer = setInterval(() => {
-      indexRef.current++;
-      if (indexRef.current >= text.length) {
-        setDisplayed(text);
+      if (!text) {
         setIsDone(true);
-        clearInterval(timer);
-        timerRef.current = null;
-      } else {
-        setDisplayed(text.slice(0, indexRef.current));
+        return;
       }
-    }, speed);
-    timerRef.current = timer;
+
+      timer = setInterval(() => {
+        indexRef.current++;
+        if (indexRef.current >= text.length) {
+          setDisplayed(text);
+          setIsDone(true);
+          if (timer) clearInterval(timer);
+          timerRef.current = null;
+        } else {
+          setDisplayed(text.slice(0, indexRef.current));
+        }
+      }, speed);
+      timerRef.current = timer;
+    });
 
     return () => {
-      clearInterval(timer);
-      timerRef.current = null;
+      cancelled = true;
+      if (timer) clearInterval(timer);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
     };
   }, [text, speed]);
 

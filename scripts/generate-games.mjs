@@ -76,6 +76,13 @@ export function generateGamesData() {
     ) {
       entry.assistantDefaultTargetConcept = assistantTargetConcept.trim();
     }
+    const assistantMistakeGuide = meta['assistant-mistake-guide'];
+    if (
+      typeof assistantMistakeGuide === 'string' &&
+      assistantMistakeGuide.trim() !== ''
+    ) {
+      entry.assistantMistakeGuide = assistantMistakeGuide.trim();
+    }
 
     games.push(entry);
 
@@ -106,6 +113,8 @@ export type GameMeta = {
   assistantTutorBrief?: string;
   /** Optional: default learning-topic label for assistant chat session. */
   assistantDefaultTargetConcept?: string;
+  /** Optional: common wrong answers / misconceptions so the assistant can address slips concretely. */
+  assistantMistakeGuide?: string;
 };
 
 export const games: GameMeta[] = ${JSON.stringify(games, null, 2)};
