@@ -7,6 +7,7 @@
 
 import { useCallback, useMemo } from "react";
 import { useAssistant } from "../AssistantContext";
+import { unlockWebAudioPlayback } from "../lib/unlockWebAudioPlayback";
 import type { GameEvent, AssistantEventType } from "../types";
 
 interface GameAssistantOptions {
@@ -125,7 +126,10 @@ export function useGameAssistant(options: GameAssistantOptions) {
       sendMessage,
       isGenerating: state.isGenerating,
       isOpen: state.isOpen,
-      open: () => dispatch({ type: "OPEN_PANEL" }),
+      open: () => {
+        unlockWebAudioPlayback();
+        dispatch({ type: "OPEN_PANEL" });
+      },
       close: () => dispatch({ type: "CLOSE_PANEL" }),
       dismiss: dismissDialogue,
     }),

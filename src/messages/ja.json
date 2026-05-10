@@ -140,7 +140,10 @@
     "play": "プレイ",
     "randomGame": "ランダムゲーム",
     "backToTop": "トップへ戻る",
-    "returnToMain": "メインページに戻る"
+    "returnToMain": "メインページに戻る",
+    "rotateLandscapeHint": "画面を横向きにすると、より広くプレイできます。",
+    "immersiveHintDismiss": "閉じる",
+    "addToHomeShortTip": "ヒント：共有 → ホーム画面に追加で、ブラウザの表示を減らしアプリに近い体験にできます。"
   },
   "home": {
     "welcome1": "LLNLへようこそ",
@@ -155,7 +158,7 @@
     "assistantIntro": {
       "modalTitle": "ロリーとリヴィーを紹介 — AIチューターです",
       "laurieIntro": "こんにちは、ロリーだよ。ゲーム中はリヴィーと一緒に、考え方の説明やヒント、やっていることについて話せるよ。",
-      "livvyIntro": "リヴィーだよ！プレーヤーの下の丸いボタンから開いてね。下で強調しているチャットの吹き出しアイコンをタップ — マウスを乗せると「Ask AI tutors」と出るよ。",
+      "livvyIntro": "リヴィーだよ！ゲームの下の丸ボタンから開いて、強調してあるチャットのアイコンをタップしてね。「Ask AI tutors」って出るよ。",
       "iconCaption": "ゲームの下のこのアイコンを探してね",
       "toolbarHint": "本番と同じ並び：お気に入り、AIチューター、音、フルスクリーン。",
       "gotIt": "わかった",

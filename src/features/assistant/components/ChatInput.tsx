@@ -7,8 +7,10 @@
 
 import { useState, useRef, useCallback } from "react";
 import { Box, Textarea, ActionIcon, Text, Loader, Group, Tooltip } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { useAssistant } from "../AssistantContext";
 import { useHoldToTalkSpeechRecognition } from "../hooks/useHoldToTalkSpeechRecognition";
+import { ASSISTANT_UI_Z } from "../uiConstants";
 import { MicIcon, SendIcon } from "./icons";
 
 const MAX_MESSAGE_LENGTH = 500;
@@ -42,6 +44,7 @@ export default function ChatInput() {
   const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const holdBaseRef = useRef("");
+  const coarsePointer = useMediaQuery("(pointer: coarse)", true);
 
   const isDisabled = state.isGenerating || cooldown;
 
@@ -122,6 +125,7 @@ export default function ChatInput() {
           padding: "8px 10px",
           backdropFilter: "blur(16px)",
           boxShadow: "var(--shadow-card)",
+          touchAction: "manipulation",
         }}
       >
         <Textarea
@@ -150,7 +154,8 @@ export default function ChatInput() {
               background: "rgba(255,255,255,0.15)",
               border: "1px solid rgba(255,255,255,0.2)",
               color: "var(--text-primary)",
-              fontSize: 14,
+              /* ≥16px on touch avoids iOS focus-zoom snapping the viewport */
+              fontSize: coarsePointer ? 16 : 14,
               borderRadius: 8,
               "&::placeholder": { color: "rgba(160, 200, 255, 0.6)" },
               "&:focus": { borderColor: "rgba(96,165,250,0.5)" },
@@ -167,7 +172,7 @@ export default function ChatInput() {
           >
             <ActionIcon
               variant={listening ? "filled" : "subtle"}
-              size="lg"
+              size={coarsePointer ? "xl" : "lg"}
               radius="md"
               aria-label="Hold to talk"
               aria-pressed={listening}
@@ -192,7 +197,7 @@ export default function ChatInput() {
 
         <ActionIcon
           variant="filled"
-          size="lg"
+          size={coarsePointer ? "xl" : "lg"}
           radius="md"
           onClick={handleSubmit}
           disabled={isDisabled || !value.trim()}

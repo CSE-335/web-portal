@@ -8,7 +8,9 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Box, Text, Group, Loader } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { useAssistant } from "../AssistantContext";
+import { unlockWebAudioPlayback } from "../lib/unlockWebAudioPlayback";
 import { SPEAKER_THEME } from "../speakerTheme";
 import type { Speaker } from "../types";
 
@@ -142,6 +144,7 @@ export interface VNDialogueBoxProps {
 
 export default function VNDialogueBox({ compact }: VNDialogueBoxProps) {
   const { state, advanceLine, dismissDialogue } = useAssistant();
+  const coarsePointer = useMediaQuery("(pointer: coarse)", true);
   const dialogue = state.currentDialogue;
 
   // Current line being displayed
@@ -212,6 +215,9 @@ export default function VNDialogueBox({ compact }: VNDialogueBoxProps) {
   if (isLoading) {
     return (
       <Box
+        onPointerDownCapture={() => {
+          if (state.voiceEnabled) unlockWebAudioPlayback();
+        }}
         style={{
           position: "relative",
           width: "100%",
@@ -241,6 +247,9 @@ export default function VNDialogueBox({ compact }: VNDialogueBoxProps) {
   return (
     <Box
       onClick={handleClick}
+      onPointerDownCapture={() => {
+        if (state.voiceEnabled) unlockWebAudioPlayback();
+      }}
       style={{
         position: "relative",
         width: "100%",
@@ -311,11 +320,13 @@ export default function VNDialogueBox({ compact }: VNDialogueBoxProps) {
               pointerEvents: "none",
             }}
           >
-            Space / Enter &middot; Esc to dismiss
+            {coarsePointer
+              ? "Tap to skip or advance dialogue"
+              : "Space / Enter · Esc to dismiss"}
           </Text>
           {isDone && isLastLine && (
             <Text className="tutor-hint-text" size="10px" style={{ color: "rgba(160, 200, 255, 0.5)" }}>
-              click to close
+              {coarsePointer ? "tap to close" : "click to close"}
             </Text>
           )}
         </Box>

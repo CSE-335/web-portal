@@ -5,6 +5,7 @@
 "use client";
 
 import { useRef, useEffect } from "react";
+import { useMediaQuery } from "@mantine/hooks";
 import { Box, Text, ScrollArea, Group, ActionIcon, Tooltip } from "@mantine/core";
 import { useAssistant } from "../AssistantContext";
 import { CloseIcon } from "./icons";
@@ -64,6 +65,7 @@ function HistoryEntry({
 export default function DialogueHistory() {
   const { state, dispatch } = useAssistant();
   const viewportRef = useRef<HTMLDivElement>(null);
+  const constrainHistoryHeight = useMediaQuery("(max-height: 40rem), (pointer: coarse)", true);
 
   useEffect(() => {
     if (viewportRef.current) {
@@ -100,16 +102,34 @@ export default function DialogueHistory() {
           <ActionIcon
             variant="subtle"
             color="gray"
-            size="xs"
+            size={constrainHistoryHeight ? "sm" : "xs"}
             onClick={() => dispatch({ type: "TOGGLE_HISTORY" })}
             aria-label="Close history"
+            style={{
+              touchAction: "manipulation",
+              minWidth: constrainHistoryHeight ? 36 : undefined,
+              minHeight: constrainHistoryHeight ? 36 : undefined,
+            }}
           >
-            <CloseIcon size={10} />
+            <CloseIcon size={12} />
           </ActionIcon>
         </Tooltip>
       </Group>
 
-      <ScrollArea h={220} viewportRef={viewportRef} scrollbarSize={4}>
+      <ScrollArea
+        viewportRef={viewportRef}
+        scrollbarSize={4}
+        style={{
+          touchAction: "pan-y",
+          flex: "0 1 auto",
+        }}
+        styles={{
+          viewport: {
+            maxHeight: constrainHistoryHeight ? "min(220px, 38dvh)" : 220,
+          },
+          root: { maxHeight: constrainHistoryHeight ? "min(220px, 38dvh)" : 220 },
+        }}
+      >
         {state.history.map((response, i) => (
           <HistoryEntry key={i} response={response} index={i} />
         ))}

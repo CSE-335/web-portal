@@ -15,8 +15,10 @@ export default function LogoBrand({ children, size = "sm" }: LogoBrandProps) {
     imgClass = "h-auto w-[90px] object-contain md:w-[139px]";
     textClass = "text-center text-xl font-extrabold leading-tight md:text-[24px]";
   } else {
-    imgClass = "h-9 w-10 rounded-sm object-contain md:h-[52px] md:w-[60px]";
-    textClass = "hidden text-center text-sm font-extrabold leading-tight sm:block md:text-[20px]";
+    imgClass = "h-9 w-10 shrink-0 rounded-sm object-contain md:h-[52px] md:w-[60px]";
+    /* Always show label on phones (readable clamp) so the bar isn’t logo-only */
+    textClass =
+      "max-w-[min(100%,9.5rem)] text-left text-[clamp(9px,2.6vw,13px)] font-extrabold leading-[1.05] sm:max-w-none sm:text-center sm:text-sm md:text-[20px]";
   }
 
   return (

@@ -140,7 +140,10 @@
     "play": "Jugar",
     "randomGame": "Juego aleatorio",
     "backToTop": "Volver arriba",
-    "returnToMain": "Volver a la página principal"
+    "returnToMain": "Volver a la página principal",
+    "rotateLandscapeHint": "Gira el dispositivo al modo horizontal para más espacio de juego.",
+    "immersiveHintDismiss": "Entendido",
+    "addToHomeShortTip": "Consejo: Compartir → Añadir a pantalla de inicio para menos interfaz del navegador y una experiencia más parecida a una app."
   },
   "home": {
     "welcome1": "Bienvenido a LLNL",
@@ -155,7 +158,7 @@
     "assistantIntro": {
       "modalTitle": "Conoce a Laurie y Livvy — tus tutoras con IA",
       "laurieIntro": "¡Hola! Soy Laurie. Mientras juegas, Livvy y yo podemos explicar ideas, dar pistas y charlar sobre lo que estás haciendo.",
-      "livvyIntro": "¡Soy Livvy! Ábrenos con los botones redondos debajo del reproductor. Toca el icono de burbuja resaltado abajo — al pasar el ratón dice «Ask AI tutors».",
+      "livvyIntro": "¡Soy Livvy! Ábrenos con los botones redondos debajo del juego y toca el icono de chat resaltado — pone «Ask AI tutors».",
       "iconCaption": "Busca este icono debajo del juego",
       "toolbarHint": "Mismo orden que en un juego real: favoritos, tutoras IA, sonido y pantalla completa.",
       "gotIt": "Entendido",

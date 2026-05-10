@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { Container } from "@mantine/core";
 import { createAnonymousSupabaseServerClient } from "@/lib/supabase";
 import { createSessionClient, createAdminClient } from "@/lib/supabase/game-data";
 import type { Database } from "@/lib/supabase/database.types";
@@ -87,21 +86,19 @@ export default async function FriendProfilePage({ params }: FriendProfilePagePro
   const locationLabel = profile.locale?.trim() || t("locationUnknown");
 
   return (
-    <Container size="xl" py={0} px={0}>
-      <FriendProfileClient
-        userId={userId}
-        displayName={displayName}
-        avatarUrl={avatarUrl}
-        bannerUrl={bannerUrl}
-        locationLabel={locationLabel}
-        likedGames={likedGames}
-        friends={(friendProfiles ?? []).map((fp) => ({
-          userId: fp.auth_user_id,
-          displayName: fp.display_name ?? "Player",
-          avatarUrl: fp.avatar_url ?? null,
-        }))}
-      />
-    </Container>
+    <FriendProfileClient
+      userId={userId}
+      displayName={displayName}
+      avatarUrl={avatarUrl}
+      bannerUrl={bannerUrl}
+      locationLabel={locationLabel}
+      likedGames={likedGames}
+      friends={(friendProfiles ?? []).map((fp) => ({
+        userId: fp.auth_user_id,
+        displayName: fp.display_name ?? "Player",
+        avatarUrl: fp.avatar_url ?? null,
+      }))}
+    />
   );
 }
 

@@ -103,6 +103,8 @@ After running `npm run setup-games`, the game will be available at:
 /games/<game-id>
 ```
 
+**Mobile & iframe sizing (for game repos):** use the copy-paste pack in [`MOBILE_EMBED_GAME_GUIDE.md`](./MOBILE_EMBED_GAME_GUIDE.md) (viewport, CSS, resize script, `embedHeight` notes, and a per-game README checklist). Portal height rules live in `src/lib/games/embed-height.ts`.
+
 Checklist:
 - Repo URL added to `games.config.mjs`
 - `data/game.json` includes a valid `game-id`

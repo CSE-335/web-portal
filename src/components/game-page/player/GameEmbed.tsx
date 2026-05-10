@@ -197,13 +197,19 @@ export default function GameEmbed({
 
   return (
     <Box
-      className={rootClassName}
-      style={{ overflow: "hidden", borderRadius: 20, background: "rgba(0,0,0,0.2)" }}
+      className={["game-embed-touch-shell", rootClassName].filter(Boolean).join(" ")}
+      style={{
+        overflow: "hidden",
+        borderRadius: 20,
+        background: "rgba(0,0,0,0.2)",
+        touchAction: "manipulation",
+      }}
     >
       <iframe
         ref={iframeRef}
         src={src}
         title={title}
+        className="game-embed-touch-iframe"
         style={{ display: "block", width: "100%", height, border: 0 }}
         allow="microphone; autoplay"
         allowFullScreen

@@ -193,6 +193,9 @@ async function speakViaTtsHttp(
       }
 
       const audio = new Audio(url);
+      // iOS: inline playback avoids some cases where the element never leaves "paused".
+      audio.setAttribute("playsinline", "");
+      audio.preload = "auto";
       activeAudioRef.current = audio;
 
       const cleanup = () => {
@@ -598,7 +601,14 @@ export function useAssistantTTS(config?: TTSConfig): UseAssistantTTSReturn {
       stop();
       return;
     }
-    if (line === spokenLineRef.current) return;
+    if (line === spokenLineRef.current) {
+      // FINISH_STREAMING replaces currentDialogue with an equivalent object reference;
+      // keep refs aligned without stop()-ing an in-flight first-line speak.
+      if (spokenDialogueRef.current !== state.currentDialogue) {
+        spokenDialogueRef.current = state.currentDialogue;
+      }
+      return;
+    }
 
     const isFirstLineOfNewDialogue =
       spokenDialogueRef.current !== state.currentDialogue &&

@@ -165,7 +165,10 @@
     "play": "Play",
     "randomGame": "Random Game",
     "backToTop": "Back to the top",
-    "returnToMain": "Return to main page"
+    "returnToMain": "Return to main page",
+    "rotateLandscapeHint": "Rotate your device to landscape for the widest play area.",
+    "immersiveHintDismiss": "Got it",
+    "addToHomeShortTip": "Tip: Share → Add to Home Screen for less browser chrome and a more app-like experience."
   },
   "home": {
     "welcome1": "Welcome to LLNL",
@@ -180,7 +183,7 @@
     "assistantIntro": {
       "modalTitle": "Meet Laurie & Livvy — your AI tutors",
       "laurieIntro": "Hi! I'm Laurie. When you're playing a game, Livvy and I can explain ideas, offer hints, and chat about what you're working on.",
-      "livvyIntro": "I'm Livvy! Open us from the round buttons under the game. Tap the chat-bubble icon highlighted below — it shows \"Ask AI tutors\" when you hover with a mouse.",
+      "livvyIntro": "I'm Livvy! Open us from the round buttons under the game, then tap the highlighted chat icon — it's labeled \"Ask AI tutors\".",
       "iconCaption": "Look for this icon under the game",
       "toolbarHint": "Same order as in a real game: favorite, AI tutors, sound, then fullscreen.",
       "gotIt": "Got it",
