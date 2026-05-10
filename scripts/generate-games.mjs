@@ -83,6 +83,13 @@ export function generateGamesData() {
     ) {
       entry.assistantMistakeGuide = assistantMistakeGuide.trim();
     }
+    const assistantDialogueConstraints = meta['assistant-dialogue-constraints'];
+    if (
+      typeof assistantDialogueConstraints === 'string' &&
+      assistantDialogueConstraints.trim() !== ''
+    ) {
+      entry.assistantDialogueConstraints = assistantDialogueConstraints.trim();
+    }
 
     games.push(entry);
 
@@ -115,6 +122,8 @@ export type GameMeta = {
   assistantDefaultTargetConcept?: string;
   /** Optional: common wrong answers / misconceptions so the assistant can address slips concretely. */
   assistantMistakeGuide?: string;
+  /** Optional: extra hub tutor rules (tone, topics to avoid). See gameIntegration + assistant API prompts. */
+  assistantDialogueConstraints?: string;
 };
 
 export const games: GameMeta[] = ${JSON.stringify(games, null, 2)};

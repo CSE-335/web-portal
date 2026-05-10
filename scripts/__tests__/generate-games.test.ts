@@ -177,6 +177,24 @@ describe('generateGamesData', () => {
     expect(writtenContent).toContain('Linear equations');
   });
 
+  it('includes assistantDialogueConstraints when assistant-dialogue-constraints is provided', () => {
+    setupEntries([
+      { repoName: 'constraints-game', repoDir: '/repos/constraints-game' },
+    ]);
+    setupFs(['/repos/constraints-game', 'game.json']);
+    readJson.mockReturnValue({
+      'game-id': 'constraints-game',
+      subject: 'Science',
+      'assistant-dialogue-constraints': '- Focus on lab procedure only.',
+    });
+
+    generateGamesData();
+
+    const writtenContent = (mockedFs.writeFileSync as jest.Mock).mock.calls[0][1] as string;
+    expect(writtenContent).toContain('Focus on lab procedure only.');
+    expect(writtenContent).toContain('assistantDialogueConstraints');
+  });
+
   it('includes assistantMistakeGuide when assistant-mistake-guide is provided', () => {
     setupEntries([
       { repoName: 'mistake-game', repoDir: '/repos/mistake-game' },

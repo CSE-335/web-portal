@@ -26,6 +26,22 @@ describe("buildSystemPrompt", () => {
     const prompt = buildSystemPrompt(4, sampleGame);
     expect(prompt).not.toContain("Common slips in this game");
   });
+
+  it("includes global concept-first tutoring for all games", () => {
+    const prompt = buildSystemPrompt(4, sampleGame);
+    expect(prompt).toContain("Concept-first tutoring (every game)");
+    expect(prompt).toContain("Do **not** initiate discussion");
+  });
+
+  it("injects assistant dialogue constraints when provided", () => {
+    const prompt = buildSystemPrompt(4, {
+      ...sampleGame,
+      dialogueConstraints:
+        "- Do not discuss score.\n- Focus on concepts only.",
+    });
+    expect(prompt).toContain("Additional tutor constraints for this game");
+    expect(prompt).toContain("Do not discuss score.");
+  });
 });
 
 describe("buildUserPrompt", () => {
@@ -94,5 +110,19 @@ describe("buildUserPrompt", () => {
     const out = buildUserPrompt(event, [], gameWithGuide);
     expect(out).toContain("Typical misconceptions in this game");
     expect(out).toContain("same factor");
+  });
+
+  it("reminds tutors to apply dialogue constraints when metadata provides them", () => {
+    const event: GameEvent = {
+      ...baseEvent,
+      eventType: "correct_submission",
+      playerAnswer: "[[1,0],[0,1]]",
+    };
+    const game: AssistantGameIntegration = {
+      ...sampleGame,
+      dialogueConstraints: "- No score talk.",
+    };
+    const out = buildUserPrompt(event, [], game);
+    expect(out).toContain("Additional tutor constraints");
   });
 });
