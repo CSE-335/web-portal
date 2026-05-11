@@ -17,7 +17,7 @@ for (const repoUrl of getConfiguredGameRepos()) {
       hash.update(repoUrl);
       hash.update('unknown');
     }
-  } catch (err) {
+  } catch {
     console.warn(`Failed to reach ${repoUrl}, using fallback hash`);
     hash.update(repoUrl);
     hash.update('unreachable');

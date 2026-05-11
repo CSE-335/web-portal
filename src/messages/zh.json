@@ -140,7 +140,10 @@
     "play": "游玩",
     "randomGame": "随机游戏",
     "backToTop": "返回顶部",
-    "returnToMain": "返回主页"
+    "returnToMain": "返回主页",
+    "rotateLandscapeHint": "将设备横过来以获得更大的游戏区域。",
+    "immersiveHintDismiss": "知道了",
+    "addToHomeShortTip": "提示：通过“分享”→“添加到主屏幕”，可减少浏览器界面，更接近应用体验。"
   },
   "home": {
     "welcome1": "欢迎来到LLNL",
@@ -151,7 +154,16 @@
     "playAnyDevice": "在任何设备上游玩",
     "quickPlayTitle": "快速游玩",
     "quickPlayDescription": "按名称搜索游戏，然后选择匹配结果开始游玩。",
-    "quickPlayNoResults": "未找到游戏。请尝试其他搜索。"
+    "quickPlayNoResults": "未找到游戏。请尝试其他搜索。",
+    "assistantIntro": {
+      "modalTitle": "认识 Laurie 和 Livvy — 你的 AI 助教",
+      "laurieIntro": "嗨！我是 Laurie。玩游戏时，我和 Livvy 可以讲解概念、给提示，还能聊聊你在做什么。",
+      "livvyIntro": "我是 Livvy！在游戏下方的圆形按钮打开我们，然后点高亮的聊天图标 — 会显示「Ask AI tutors」。",
+      "iconCaption": "在游戏下方找到这个图标",
+      "toolbarHint": "与真实游戏工具栏顺序一致：收藏、AI 助教、声音、全屏。",
+      "gotIt": "知道了",
+      "seeTutorial": "打开完整教程"
+    }
   },
   "gameCard": {
     "tags": "标签",

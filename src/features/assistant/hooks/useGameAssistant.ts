@@ -7,6 +7,7 @@
 
 import { useCallback, useMemo } from "react";
 import { useAssistant } from "../AssistantContext";
+import { unlockWebAudioPlayback } from "../lib/unlockWebAudioPlayback";
 import type { GameEvent, AssistantEventType } from "../types";
 
 interface GameAssistantOptions {
@@ -39,6 +40,8 @@ export function useGameAssistant(options: GameAssistantOptions) {
       mistakeCategory?: string;
       hintCount?: number;
       timeSpentSeconds?: number;
+      /** e.g. question id, option labels, or skill tags — forwarded to the tutor API. */
+      additionalContext?: Record<string, unknown>;
     }) =>
       sendGameEvent(
         buildEvent("incorrect_submission", {
@@ -47,6 +50,7 @@ export function useGameAssistant(options: GameAssistantOptions) {
           mistakeCategory: p.mistakeCategory,
           hintCount: p.hintCount ?? 0,
           timeSpentSeconds: p.timeSpentSeconds ?? 0,
+          additionalContext: p.additionalContext,
         })
       ),
     [sendGameEvent, buildEvent]
@@ -64,11 +68,16 @@ export function useGameAssistant(options: GameAssistantOptions) {
   );
 
   const requestHint = useCallback(
-    (p?: { hintCount?: number; timeSpentSeconds?: number }) =>
+    (p?: {
+      hintCount?: number;
+      timeSpentSeconds?: number;
+      additionalContext?: Record<string, unknown>;
+    }) =>
       sendGameEvent(
         buildEvent("hint_request", {
           hintCount: p?.hintCount ?? 0,
           timeSpentSeconds: p?.timeSpentSeconds ?? 0,
+          additionalContext: p?.additionalContext,
         })
       ),
     [sendGameEvent, buildEvent]
@@ -117,7 +126,10 @@ export function useGameAssistant(options: GameAssistantOptions) {
       sendMessage,
       isGenerating: state.isGenerating,
       isOpen: state.isOpen,
-      open: () => dispatch({ type: "OPEN_PANEL" }),
+      open: () => {
+        unlockWebAudioPlayback();
+        dispatch({ type: "OPEN_PANEL" });
+      },
       close: () => dispatch({ type: "CLOSE_PANEL" }),
       dismiss: dismissDialogue,
     }),

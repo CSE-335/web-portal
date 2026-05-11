@@ -140,7 +140,10 @@
     "play": "Spielen",
     "randomGame": "Zufälliges Spiel",
     "backToTop": "Nach oben",
-    "returnToMain": "Zur Hauptseite zurückkehren"
+    "returnToMain": "Zur Hauptseite zurückkehren",
+    "rotateLandscapeHint": "Drehen Sie Ihr Gerät ins Querformat für maximale Spielfläche.",
+    "immersiveHintDismiss": "Verstanden",
+    "addToHomeShortTip": "Tipp: „Teilen“ → „Zum Home-Bildschirm“ — weniger Browser-Rahmen, eher wie eine App."
   },
   "home": {
     "welcome1": "Willkommen bei LLNL",
@@ -151,7 +154,16 @@
     "playAnyDevice": "Spiele auf jedem Gerät",
     "quickPlayTitle": "Schnellstart",
     "quickPlayDescription": "Suche ein Spiel nach Namen und wähle dann ein passendes Ergebnis aus.",
-    "quickPlayNoResults": "Keine Spiele gefunden. Versuche eine andere Suche."
+    "quickPlayNoResults": "Keine Spiele gefunden. Versuche eine andere Suche.",
+    "assistantIntro": {
+      "modalTitle": "Lerne Laurie & Livvy kennen — deine KI-Tutorinnen",
+      "laurieIntro": "Hi! Ich bin Laurie. Im Spiel können Livvy und ich dir Konzepte erklären, Tipps geben und mit dir über deine Aufgaben sprechen.",
+      "livvyIntro": "Ich bin Livvy! Öffne uns über die runden Buttons unter dem Spieler und tippe auf das hervorgehobene Chat-Symbol — es heißt „Ask AI tutors“.",
+      "iconCaption": "Dieses Symbol findest du unter dem Spiel",
+      "toolbarHint": "Gleiche Reihenfolge wie im echten Spiel: Favorit, KI-Tutorinnen, Ton, Vollbild.",
+      "gotIt": "Alles klar",
+      "seeTutorial": "Komplette Anleitung öffnen"
+    }
   },
   "gameCard": {
     "tags": "Tags",

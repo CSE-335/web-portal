@@ -80,7 +80,6 @@ export function useHoldToTalkSpeechRecognition(
 } {
   const { onDictationSegment, disabled } = options;
   const onDictationRef = useRef(onDictationSegment);
-  onDictationRef.current = onDictationSegment;
 
   const [supported] = useState(() => isBrowserSpeechRecognitionSupported());
   const [listening, setListening] = useState(false);
@@ -103,6 +102,10 @@ export function useHoldToTalkSpeechRecognition(
     }
     finalBufferRef.current = "";
   }, []);
+
+  useEffect(() => {
+    onDictationRef.current = onDictationSegment;
+  }, [onDictationSegment]);
 
   useEffect(() => () => tearDownRecognition(), [tearDownRecognition]);
 

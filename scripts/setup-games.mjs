@@ -31,7 +31,6 @@ import {
   CACHE_GAMES_DIR,
   getConfiguredGameRepos,
   getRepoDirName,
-  getRepoCacheDir,
   syncGameRepo,
 } from './gameSources.mjs';
 import { generateGamesData } from './generate-games.mjs';
@@ -104,7 +103,7 @@ export function runSetupGames({
     mkdirp(publicGamesDir);
     mkdirp(publicThumbsDir);
 
-    for (const { repoUrl, repoName, repoDir } of entries) {
+    for (const { repoName, repoDir } of entries) {
       if (!fs.existsSync(repoDir)) {
         continue; // already warned during sync
       }

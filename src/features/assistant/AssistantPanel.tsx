@@ -11,6 +11,7 @@ import { usePathname } from "next/navigation";
 import { useMediaQuery } from "@mantine/hooks";
 import { Alert, Box, Text, Transition } from "@mantine/core";
 import { useAssistant } from "./AssistantContext";
+import { ASSISTANT_UI_Z } from "./uiConstants";
 import { MASCOT_VN_LAYOUT, MASCOT_VN_LAYOUT_COMPACT } from "./mascotLayout";
 import { useAutoAdvance } from "./hooks/useAutoAdvance";
 import { useAssistantTTS } from "./hooks/useAssistantTTS";
@@ -52,8 +53,17 @@ export default function AssistantPanel() {
   const { state, dismissDialogue, dispatch } = useAssistant();
   const pathname = usePathname();
   const prevPathnameRef = useRef(pathname);
-  /** Bottom-sheet style tutor row instead of full-screen twin sprites */
-  const compactAssistantUi = useMediaQuery("(max-width: 40em)");
+  /**
+   * Short viewports → row layout + compact chrome.
+   * Coarse pointers on tablets/phones prefer compact twin layout when width is modest.
+   */
+  const compactAssistantUi = useMediaQuery(
+    "(max-width: 42em), (max-height: 34rem), ((max-width: 64em) and (pointer: coarse))",
+    true,
+  );
+
+  /** Extra bottom inset when iOS toolbar / home gesture competes with fixed UI */
+  const assistantBottomInset = "calc(20px + env(safe-area-inset-bottom, 0px))";
 
   useAutoAdvance();
   const { stop } = useAssistantTTS();
@@ -94,7 +104,6 @@ export default function AssistantPanel() {
     state.errorCooldownUntilMs,
   );
 
-  const toastMaxWidth = "min(340px, calc(100vw - 40px))";
   const toastStackBottom = showPill ? 96 : 22;
 
   if (
@@ -119,17 +128,17 @@ export default function AssistantPanel() {
         <Box
           style={{
             position: "fixed",
-            bottom: toastStackBottom,
-            right: 20,
-            left: "auto",
-            zIndex: 1002,
+            bottom: `calc(${toastStackBottom}px + env(safe-area-inset-bottom, 0px))`,
+            left: "max(16px, env(safe-area-inset-left, 0px))",
+            right: "max(16px, env(safe-area-inset-right, 0px))",
+            zIndex: ASSISTANT_UI_Z.toast,
             pointerEvents: "auto",
             display: "flex",
             flexDirection: "column",
-            alignItems: "flex-end",
+            alignItems: "stretch",
             gap: 10,
-            maxWidth: toastMaxWidth,
-            width: toastMaxWidth,
+            maxWidth: "none",
+            width: "auto",
           }}
         >
           {showErrorBanner && (
@@ -215,13 +224,25 @@ export default function AssistantPanel() {
         <Box
           style={{
             position: "fixed",
-            bottom: 20,
-            left: "50%",
-            transform: "translateX(-50%)",
-            zIndex: 1000,
+            bottom: assistantBottomInset,
+            left: "max(16px, env(safe-area-inset-left, 0px))",
+            right: "max(16px, env(safe-area-inset-right, 0px))",
+            zIndex: ASSISTANT_UI_Z.fixedLayer,
+            pointerEvents: "none",
+            display: "flex",
+            justifyContent: "center",
           }}
         >
-          <VNDialogueBox />
+          <Box
+            style={{
+              pointerEvents: "auto",
+              width: "min(680px, 100%)",
+              maxWidth: "100%",
+              touchAction: "manipulation",
+            }}
+          >
+            <VNDialogueBox />
+          </Box>
         </Box>
       )}
 
@@ -233,8 +254,9 @@ export default function AssistantPanel() {
               ...styles,
               position: "fixed",
               inset: 0,
-              zIndex: 999,
+              zIndex: ASSISTANT_UI_Z.fixedLayer,
               pointerEvents: "none",
+              touchAction: "manipulation",
             }}
           >
             {/* Backdrop — visual only, does not dismiss on click */}
@@ -242,6 +264,7 @@ export default function AssistantPanel() {
               style={{
                 position: "absolute",
                 inset: 0,
+                zIndex: ASSISTANT_UI_Z.overlayBackdrop,
                 background: compactAssistantUi
                   ? "linear-gradient(to bottom, color-mix(in srgb, var(--surface-primary) 55%, transparent) 0%, color-mix(in srgb, var(--surface-primary) 88%, transparent) 45%, var(--surface-primary) 100%)"
                   : "linear-gradient(to top, var(--surface-primary) 0%, color-mix(in srgb, var(--surface-primary) 30%, transparent) 50%, transparent 100%)",
@@ -258,6 +281,7 @@ export default function AssistantPanel() {
                   right: 0,
                   height: MASCOT_VN_LAYOUT.stageHeight,
                   pointerEvents: "none",
+                  zIndex: ASSISTANT_UI_Z.mascotStage,
                 }}
               >
                 <VNSprite
@@ -273,51 +297,87 @@ export default function AssistantPanel() {
               </Box>
             )}
 
-            {/* Dialogue box + actions + chat input — anchored at bottom */}
+            {/* Bottom stack: outer hit-none so taps pass through beside the tutor column */}
             <Box
-              onClick={(e) => e.stopPropagation()}
               style={{
                 position: "absolute",
-                zIndex: 2,
-                bottom: "calc(20px + env(safe-area-inset-bottom, 0px))",
+                zIndex: ASSISTANT_UI_Z.dialogueColumn,
+                bottom: assistantBottomInset,
                 left: "max(16px, env(safe-area-inset-left, 0px))",
                 right: "max(16px, env(safe-area-inset-right, 0px))",
-                pointerEvents: "auto",
+                pointerEvents: "none",
+                overscrollBehaviorY: "contain",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 0,
               }}
             >
-              <DialogueHistory />
-              {compactAssistantUi ? (
-                <Box
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "flex-end",
-                    gap: 10,
-                    width: "100%",
-                    maxWidth: 680,
-                    margin: "0 auto",
-                  }}
-                >
-                  {(activeSpeaker === "Laurie" || activeSpeaker === "Livvy") && (
-                    <VNSprite
-                      speaker={activeSpeaker}
-                      emotion={activeEmotion}
-                      isActive
-                      inlineSize={{
-                        width: MASCOT_VN_LAYOUT_COMPACT.spriteWidth,
-                        height: MASCOT_VN_LAYOUT_COMPACT.spriteHeight,
-                      }}
-                    />
-                  )}
-                  <Box style={{ flex: 1, minWidth: 0 }}>
-                    <VNDialogueBox compact />
+              <Box
+                style={{
+                  pointerEvents: "auto",
+                  width: "min(680px, 100%)",
+                  maxWidth: "100%",
+                  touchAction: "manipulation",
+                }}
+              >
+                <DialogueHistory />
+              </Box>
+              <Box
+                style={{
+                  pointerEvents: "auto",
+                  width: "min(680px, 100%)",
+                  maxWidth: "100%",
+                  touchAction: "manipulation",
+                }}
+              >
+                {compactAssistantUi ? (
+                  <Box
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "flex-end",
+                      gap: 10,
+                      width: "100%",
+                    }}
+                  >
+                    {(activeSpeaker === "Laurie" || activeSpeaker === "Livvy") && (
+                      <VNSprite
+                        speaker={activeSpeaker}
+                        emotion={activeEmotion}
+                        isActive
+                        inlineSize={{
+                          width: MASCOT_VN_LAYOUT_COMPACT.spriteWidth,
+                          height: MASCOT_VN_LAYOUT_COMPACT.spriteHeight,
+                        }}
+                      />
+                    )}
+                    <Box style={{ flex: 1, minWidth: 0 }}>
+                      <VNDialogueBox compact />
+                    </Box>
                   </Box>
-                </Box>
-              ) : (
-                <VNDialogueBox />
-              )}
-              <VNActionBar compact={Boolean(compactAssistantUi)} />
-              <ChatInput />
+                ) : (
+                  <VNDialogueBox />
+                )}
+              </Box>
+              <Box
+                style={{
+                  pointerEvents: "auto",
+                  width: "min(680px, 100%)",
+                  maxWidth: "100%",
+                }}
+              >
+                <VNActionBar compact={Boolean(compactAssistantUi)} />
+              </Box>
+              <Box
+                style={{
+                  pointerEvents: "auto",
+                  width: "min(680px, 100%)",
+                  maxWidth: "100%",
+                }}
+              >
+                <ChatInput />
+              </Box>
             </Box>
           </Box>
         )}
@@ -328,15 +388,35 @@ export default function AssistantPanel() {
         <Box
           style={{
             position: "fixed",
-            bottom: "calc(20px + env(safe-area-inset-bottom, 0px))",
+            bottom: assistantBottomInset,
             left: "max(16px, env(safe-area-inset-left, 0px))",
             right: "max(16px, env(safe-area-inset-right, 0px))",
-            zIndex: 1000,
-            pointerEvents: "auto",
+            zIndex: ASSISTANT_UI_Z.fixedLayer,
+            pointerEvents: "none",
+            touchAction: "manipulation",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
-          <DialogueHistory />
-          <ChatInput />
+          <Box
+            style={{
+              pointerEvents: "auto",
+              width: "min(680px, 100%)",
+              maxWidth: "100%",
+            }}
+          >
+            <DialogueHistory />
+          </Box>
+          <Box
+            style={{
+              pointerEvents: "auto",
+              width: "min(680px, 100%)",
+              maxWidth: "100%",
+            }}
+          >
+            <ChatInput />
+          </Box>
         </Box>
       )}
     </>

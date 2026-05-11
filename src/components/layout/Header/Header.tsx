@@ -36,9 +36,13 @@ export default function Header() {
   useEffect(() => {
     let isMounted = true;
 
-    supabase.auth.getUser().then(({ data }) => {
+    void supabase.auth.getUser().then(({ data }) => {
       if (isMounted) {
         setUser(data.user ?? null);
+      }
+    }).catch(() => {
+      if (isMounted) {
+        setUser(null);
       }
     });
 
@@ -48,7 +52,7 @@ export default function Header() {
       if (isMounted) {
         setUser(session?.user ?? null);
         if (session?.user) {
-          ensureUserProfile();
+          void ensureUserProfile().catch(() => {});
         }
       }
     });

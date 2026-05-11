@@ -35,16 +35,21 @@ export default function GameListCard({
           />
         </div>
 
-        <div className="flex flex-col justify-between px-1 py-1">
-          <div>
-            <h2 className="text-3xl font-extrabold tracking-tight" style={{ color: "var(--title-color)", textShadow: "var(--title-glow)" }}>{title}</h2>
-            <p className="mt-3 max-w-xl text-lg leading-relaxed" style={{ color: "var(--text-body)" }}>
+        <div className="flex min-w-0 flex-col justify-between px-1 py-1">
+          <div className="min-w-0">
+            <h2
+              className="text-2xl font-extrabold tracking-tight sm:text-3xl"
+              style={{ color: "var(--title-color)", textShadow: "var(--title-glow)" }}
+            >
+              {title}
+            </h2>
+            <p className="mt-3 max-w-xl text-base leading-relaxed sm:text-lg" style={{ color: "var(--text-body)" }}>
               {description}
             </p>
           </div>
 
-          <div className="mt-6 flex items-end justify-between gap-4">
-            <div>
+          <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div className="min-w-0">
               <p className="mb-2 text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-label)" }}>
                 {tCard('tags')}
               </p>
@@ -57,7 +62,7 @@ export default function GameListCard({
 
             <Link
               href={`/games/${slug}`}
-              className="play-btn play-btn-game-card inline-flex rounded-[20px] px-6 py-2.5 text-base font-semibold text-white transition hover:opacity-95"
+              className="play-btn play-btn-game-card inline-flex w-full shrink-0 items-center justify-center rounded-[20px] px-6 py-2.5 text-base font-semibold text-white transition hover:opacity-95 sm:w-auto"
               style={{
                 backgroundColor: "var(--play-button-bg)",
               }}

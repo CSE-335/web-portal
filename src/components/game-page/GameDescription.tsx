@@ -13,7 +13,7 @@ export default function GameDescription({
   const t = useTranslations('gameDescription');
 
   return (
-    <Paper radius={24} p="lg" style={CARD_PANEL_STYLE}>
+    <Paper radius={24} p={{ base: "md", sm: "lg" }} style={CARD_PANEL_STYLE}>
       <Title order={2} fz="h3">
         {t('title')}
       </Title>

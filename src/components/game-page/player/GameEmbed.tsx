@@ -7,6 +7,8 @@ type GameEmbedProps = {
   title: string;
   height?: string;
   slug: string;
+  /** Merged onto the root wrapper (e.g. fullscreen flex sizing hooks). */
+  rootClassName?: string;
 };
 
 export default function GameEmbed({
@@ -14,6 +16,7 @@ export default function GameEmbed({
   title,
   height = "800px",
   slug,
+  rootClassName,
 }: GameEmbedProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const gameOrigin = useMemo(() => {
@@ -193,11 +196,20 @@ export default function GameEmbed({
   }, [slug, gameOrigin]);
 
   return (
-    <Box style={{ overflow: "hidden", borderRadius: 20, background: "rgba(0,0,0,0.2)" }}>
+    <Box
+      className={["game-embed-touch-shell", rootClassName].filter(Boolean).join(" ")}
+      style={{
+        overflow: "hidden",
+        borderRadius: 20,
+        background: "rgba(0,0,0,0.2)",
+        touchAction: "manipulation",
+      }}
+    >
       <iframe
         ref={iframeRef}
         src={src}
         title={title}
+        className="game-embed-touch-iframe"
         style={{ display: "block", width: "100%", height, border: 0 }}
         allow="microphone; autoplay"
         allowFullScreen

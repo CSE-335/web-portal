@@ -13,6 +13,15 @@ import LocaleSwitcher from "@/components/LocaleSwitcher";
 import FlagIcon from "@/components/FlagIcon";
 import { locales, LOCALE_COOKIE, type Locale } from "@/i18n/routing";
 import { getFriendsDashboard } from "@/lib/supabase/friends";
+import { oauthAvatarUrlFromUser } from "@/lib/utils/oauthAvatarUrl";
+
+function readLocaleFromCookie(): Locale {
+  if (typeof document === "undefined") return "en";
+  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${LOCALE_COOKIE}=([^;]+)`));
+  const raw = match?.[1];
+  if (raw && locales.includes(raw as Locale)) return raw as Locale;
+  return "en";
+}
 
 
 export type UtilityNavDensity = "desktop" | "mobile";
@@ -34,34 +43,27 @@ export default function UtilityNav({
   const [profileOpened, setProfileOpened] = useState(false);
   const [langOpened, setLangOpened] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("/images/bobcat.png");
-  const [currentLocale, setCurrentLocale] = useState<Locale>('en');
+  const [currentLocale] = useState<Locale>(() => readLocaleFromCookie());
   const [pendingFriendRequests, setPendingFriendRequests] = useState(0);
   const [lastSeenFriendRequestCount, setLastSeenFriendRequestCount] = useState(0);
   const router = useRouter();
   const t = useTranslations('nav');
+  const pendingForBadge = user ? pendingFriendRequests : 0;
 
   useEffect(() => {
     if (user) {
       getUserProfile(user.id).then((profile) => {
-        setAvatarUrl(profile?.avatar_url || user.user_metadata?.avatar_url || "/images/bobcat.png");
+        setAvatarUrl(profile?.avatar_url || oauthAvatarUrlFromUser(user) || "/images/bobcat.png");
       }).catch(() => {
-        setAvatarUrl(user.user_metadata?.avatar_url || "/images/bobcat.png");
+        setAvatarUrl(oauthAvatarUrlFromUser(user) || "/images/bobcat.png");
       });
     }
   }, [user]);
 
   useEffect(() => {
-    const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${LOCALE_COOKIE}=([^;]+)`));
-    const raw = match?.[1];
-    if (raw && locales.includes(raw as Locale)) {
-      setCurrentLocale(raw as Locale);
-    }
-  }, []);
-
-  useEffect(() => {
     const onMarkSeen = () => {
       setLastSeenFriendRequestCount((prev) =>
-        pendingFriendRequests > prev ? pendingFriendRequests : prev
+        pendingForBadge > prev ? pendingForBadge : prev
       );
     };
 
@@ -69,13 +71,10 @@ export default function UtilityNav({
     return () => {
       window.removeEventListener("friends:markSeen", onMarkSeen);
     };
-  }, [pendingFriendRequests]);
+  }, [pendingForBadge]);
 
   useEffect(() => {
-    if (!user) {
-      setPendingFriendRequests(0);
-      return;
-    }
+    if (!user) return;
 
     let active = true;
 
@@ -198,7 +197,7 @@ export default function UtilityNav({
                 onError={(e) => { e.currentTarget.src = "/images/bobcat.png"; }}
               />
             </ActionIcon>
-            {pendingFriendRequests > lastSeenFriendRequestCount && (
+            {pendingForBadge > lastSeenFriendRequestCount && (
               <span
                 aria-hidden="true"
                 style={{
@@ -220,7 +219,7 @@ export default function UtilityNav({
                   boxShadow: "0 0 0 1px rgba(0,0,0,0.15)",
                 }}
               >
-                {pendingFriendRequests > 9 ? "9+" : pendingFriendRequests}
+                {pendingForBadge > 9 ? "9+" : pendingForBadge}
               </span>
             )}
           </span>

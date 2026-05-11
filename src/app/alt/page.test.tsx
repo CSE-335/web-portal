@@ -50,7 +50,7 @@ jest.mock('next-intl/server', () => ({
 }));
 
 jest.mock('@/lib/supabase/game-translations', () => ({
-  getLocalizedGames: async (_locale: string, _slugs: string[]) =>
+  getLocalizedGames: async () =>
     jest.requireMock<{ games: unknown[] }>('@/data/games').games as never[],
 }));
 

@@ -8,6 +8,10 @@ import {
   type AdminClient,
 } from "@/lib/supabase/game-data";
 import type { Database, Json } from "@/lib/supabase/database.types";
+import {
+  buildCircuitBreakerTrackedPaths,
+  parseLeaderboardTrack,
+} from "@/lib/leaderboardTracks";
 
 type PublicTables = Database["public"]["Tables"];
 type GameDataRow = PublicTables["game_data"]["Row"];
@@ -26,18 +30,38 @@ type LeaderboardEntry = {
 type LeaderboardResponse = {
   ok: true;
   scope: Scope;
-  mode: "overall" | "per-game";
+  mode: "per-game";
   slug?: string;
+  /** e.g. `overall`, `circuit-level-3`, `multiplication-drill` */
+  track?: string;
   entries: LeaderboardEntry[];
 };
 
 const DEFAULT_SCORE_PATHS = ["highScore", "score"];
-
-const GAME_SCORE_PATHS: Record<string, string[]> = {
-  // Keep these aliases tolerant so game repos can migrate incrementally.
-  "circuit-breaker": ["highScore", "score", "circuitBreaker.highScore", "circuitBreaker.score"],
-  "sonic-lab": ["highScore", "score", "points", "sonicLab.highScore", "sonicLab.points"],
-  "matrix-meadow": ["highScore", "score", "matrixMeadow.highScore", "matrixMeadow.score"],
+const TRACKED_SCORE_PATHS: Record<string, Record<string, string[]>> = {
+  "circuit-breaker": buildCircuitBreakerTrackedPaths(),
+  "sonic-lab": {
+    overall: ["highScore", "score", "points", "sonicLab.highScore", "sonicLab.points"],
+  },
+  "matrix-meadow": {
+    overall: ["highScore", "score", "matrixMeadow.highScore", "matrixMeadow.score"],
+    "multiplication-drill": [
+      "matrixMeadow.multiplicationDrill.highScore",
+      "matrixMeadow.multiplicationDrill.score",
+      "matrixMeadow.drill.highScore",
+      "matrixMeadow.drill.score",
+      "multiplicationDrillHighScore",
+      "drillHighScore",
+    ],
+    "vocabulary-quiz": [
+      "matrixMeadow.vocabularyQuiz.highScore",
+      "matrixMeadow.vocabularyQuiz.score",
+      "matrixMeadow.vocabQuiz.highScore",
+      "matrixMeadow.vocabQuiz.score",
+      "vocabularyQuizHighScore",
+      "vocabQuizHighScore",
+    ],
+  },
 };
 
 function getNumberAtPath(root: unknown, path: string): number | null {
@@ -58,12 +82,15 @@ function getNumberAtPath(root: unknown, path: string): number | null {
   return null;
 }
 
-function extractHighScore(data: Json, slug: string | null): number | null {
+function extractHighScore(data: Json, slug: string | null, track: string): number | null {
   if (!data || typeof data !== "object" || Array.isArray(data)) return null;
 
+  const gameTrackPaths = slug ? TRACKED_SCORE_PATHS[slug]?.[track] ?? [] : [];
+  const gameOverallPaths = slug ? TRACKED_SCORE_PATHS[slug]?.overall ?? [] : [];
   const candidatePaths = [
-    ...(slug ? GAME_SCORE_PATHS[slug] ?? [] : []),
-    ...DEFAULT_SCORE_PATHS,
+    ...gameTrackPaths,
+    ...(track === "overall" ? gameOverallPaths : []),
+    ...(track === "overall" ? DEFAULT_SCORE_PATHS : []),
   ];
 
   for (const path of candidatePaths) {
@@ -121,6 +148,7 @@ function buildLeaderboardFromRows(
   rows: GameDataRow[],
   gameIdToSlug: Map<number, string>,
   selectedSlug: string | null,
+  track: string,
   profiles: Map<string, Pick<UserProfileRow, "auth_user_id" | "display_name" | "avatar_url">>,
   limit: number
 ): LeaderboardEntry[] {
@@ -128,7 +156,7 @@ function buildLeaderboardFromRows(
 
   for (const row of rows) {
     const rowSlug = selectedSlug ?? gameIdToSlug.get(row.game_id) ?? null;
-    const score = extractHighScore(row.data_json as Json, rowSlug);
+    const score = extractHighScore(row.data_json as Json, rowSlug, track);
     if (score == null) continue;
 
     const prev = perUserBest.get(row.user_id);
@@ -159,7 +187,14 @@ function buildLeaderboardFromRows(
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const slug = url.searchParams.get("slug");
+  if (!slug) {
+    return NextResponse.json(
+      { ok: false, error: "A game slug is required for leaderboard requests." },
+      { status: 400 }
+    );
+  }
   const scope = (url.searchParams.get("scope") as Scope | null) ?? "global";
+  const track = parseLeaderboardTrack(slug, url.searchParams.get("track"));
   const limitParam = url.searchParams.get("limit");
   const limit = Math.min(Math.max(Number(limitParam) || 20, 1), 100);
 
@@ -175,12 +210,9 @@ export async function GET(request: NextRequest) {
   const adminSupabase = adminResult.supabase;
   const authUserId = authResult.authUserId;
 
-  let gameId: number | null = null;
-  if (slug) {
-    const gameResult = await getGameIdBySlug(adminSupabase, slug);
-    if (!gameResult.ok) return gameResult.response;
-    gameId = gameResult.gameId;
-  }
+  const gameResult = await getGameIdBySlug(adminSupabase, slug);
+  if (!gameResult.ok) return gameResult.response;
+  const gameId = gameResult.gameId;
 
   let userFilterIds: string[] | null = null;
   if (scope === "friends") {
@@ -188,17 +220,9 @@ export async function GET(request: NextRequest) {
     userFilterIds = Array.from(ids);
   }
 
-  let query = adminSupabase.from("game_data").select("user_id, game_id, data_json");
-  if (gameId != null) {
-    query = query.eq("game_id", gameId);
-  }
+  let query = adminSupabase.from("game_data").select("user_id, game_id, data_json").eq("game_id", gameId);
   if (userFilterIds && userFilterIds.length > 0) {
     query = query.in("user_id", userFilterIds);
-  }
-
-  // Safety cap for overall/global case so we don't scan unbounded rows.
-  if (!gameId && !userFilterIds) {
-    query = query.limit(1000);
   }
 
   const { data: rows, error } = await query;
@@ -214,8 +238,9 @@ export async function GET(request: NextRequest) {
     const empty: LeaderboardResponse = {
       ok: true,
       scope,
-      mode: slug ? "per-game" : "overall",
-      ...(slug ? { slug } : {}),
+      mode: "per-game",
+      slug,
+      track,
       entries: [],
     };
     return NextResponse.json(empty);
@@ -236,13 +261,14 @@ export async function GET(request: NextRequest) {
     }
   }
   const profiles = await loadProfilesForUserIds(adminSupabase, userIds);
-  const entries = buildLeaderboardFromRows(gameDataRows, gameIdToSlug, slug, profiles, limit);
+  const entries = buildLeaderboardFromRows(gameDataRows, gameIdToSlug, slug, track, profiles, limit);
 
   const response: LeaderboardResponse = {
     ok: true,
     scope,
-    mode: slug ? "per-game" : "overall",
-    ...(slug ? { slug } : {}),
+    mode: "per-game",
+    slug,
+    track,
     entries,
   };
 

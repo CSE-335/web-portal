@@ -15,6 +15,14 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vendored / built game assets (minified bundles explode hook rules, etc.)
+    ".game-sources/**",
+    "games/**",
+    "public/staticGames/**",
+    "public/gameThumbnails/**",
+    "packages/*/dist/**",
+    "storybook-static/**",
+    "coverage/**",
   ]),
   ...storybook.configs["flat/recommended"]
 ]);
