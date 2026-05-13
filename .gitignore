@@ -65,3 +65,6 @@ storybook-static
 /src/data/games.ts
 # Build cache for setup-games script (tracks synced repo commit hashes)
 .game-build-cache.json
+
+# local clone of GitHub wiki (https://github.com/cse120-ucm/S26-CSE-335.wiki.git)
+.wiki-clone/
