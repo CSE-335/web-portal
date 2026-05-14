@@ -23,6 +23,7 @@ export { loadConversation, saveConversation } from "./services/sessionStore";
 
 // Config (for overrides)
 export { DEFAULT_CONFIG } from "./config";
+export { ASSISTANT_UI_Z } from "./uiConstants";
 
 // Mascot / VN layout (fluid sizing — tweak in one place)
 export { MASCOT_VN_LAYOUT, MASCOT_PORTRAIT_FLUID_SIZE } from "./mascotLayout";

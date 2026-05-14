@@ -27,13 +27,13 @@ jest.mock('../data/games', () => ({
       featured: true,
     },
   ],
-  getGameBySlug: (slug: string) => undefined,
+  getGameBySlug: () => undefined,
 }));
 jest.mock('next-intl/server', () => ({
   getLocale: () => Promise.resolve('en'),
 }));
 jest.mock('@/lib/supabase/game-translations', () => ({
-  getLocalizedGames: async (_locale: string, _slugs: string[]) => ([
+  getLocalizedGames: async () => ([
     {
       slug: 'test-game-1',
       title: 'Test Game One',
@@ -60,6 +60,11 @@ jest.mock('@/lib/supabase/game-translations', () => ({
 jest.mock('next/navigation', () => ({
   useRouter: () => ({ push: jest.fn(), replace: jest.fn(), back: jest.fn() }),
   notFound: jest.fn(),
+}));
+
+jest.mock('@/components/home/HomeAssistantIntro', () => ({
+  __esModule: true,
+  default: () => null,
 }));
 
 jest.mock('../lib/supabase/server', () => {

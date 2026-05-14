@@ -1,6 +1,7 @@
 // Auth helpers — sign up, sign in, sign out, password reset, Google OAuth
 // Email update is handled via supabase.auth.updateUser() in AccountSettingsPopup
 // Email change confirmation goes through /auth/callback with token_hash
+import { oauthAvatarUrlFromUserMetadata } from "@/lib/utils/oauthAvatarUrl";
 import { supabase } from "./client";
 
 export type Email = string;
@@ -113,9 +114,11 @@ export async function ensureUserProfile(): Promise<void> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
 
+  const oauthAvatar = oauthAvatarUrlFromUserMetadata(user.user_metadata);
+
   const { data: existing } = await supabase
     .from("user_profiles")
-    .select("id")
+    .select("id, avatar_url")
     .eq("auth_user_id", user.id)
     .maybeSingle();
 
@@ -129,7 +132,17 @@ export async function ensureUserProfile(): Promise<void> {
     await supabase.from("user_profiles").insert({
       auth_user_id: user.id,
       display_name: displayName,
-      avatar_url: user.user_metadata?.avatar_url ?? null,
+      avatar_url: oauthAvatar ?? null,
     });
+    return;
+  }
+
+  // Public profile only had `avatar_url` from DB; friends can't read auth metadata.
+  // Google supplies `picture`, not `avatar_url`, so older rows may be null — backfill once.
+  if (!existing.avatar_url && oauthAvatar) {
+    await supabase
+      .from("user_profiles")
+      .update({ avatar_url: oauthAvatar })
+      .eq("auth_user_id", user.id);
   }
 }

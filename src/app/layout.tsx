@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { ColorSchemeScript, MantineProvider, Container, mantineHtmlProps } from '@mantine/core';
 import { Alexandria, Roboto } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
@@ -26,6 +26,29 @@ import { defaultTheme } from "@/themes/default";
 export const metadata: Metadata = {
   title: "LLNL STEM Games",
   description: "Educational STEM games from Lawrence Livermore National Laboratory",
+  applicationName: "LLNL STEM Games",
+  appleWebApp: {
+    capable: true,
+    title: "LLNL STEM Games",
+    statusBarStyle: "black-translucent",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  icons: {
+    apple: [{ url: "/images/llnl-stem-logo.png" }],
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#23233a" },
+    { media: "(prefers-color-scheme: light)", color: "#003087" },
+  ],
 };
 
 export default async function RootLayout({

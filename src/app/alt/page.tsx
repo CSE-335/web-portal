@@ -1,5 +1,6 @@
 import { Stack } from "@mantine/core";
 import WelcomeBanner from "@/components/home/WelcomeBanner";
+import HomeAssistantIntro from "@/components/home/HomeAssistantIntro";
 import StemSection from "@/components/home/alt/StemSection";
 import BottomButtons from "@/components/layout/BottomButtons";
 import { games } from "@/data/games";
@@ -19,6 +20,7 @@ export default async function AltHomePage() {
 
   return (
     <main>
+      <HomeAssistantIntro />
       <WelcomeBanner />
 
       <Stack gap={0}>

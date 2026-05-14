@@ -6,7 +6,8 @@
     "packages/*"
   ],
   "overrides": {
-    "fast-xml-parser": "^5.7.0"
+    "fast-xml-parser": "^5.7.0",
+    "icu-minify": "^4.9.2"
   },
   "scripts": {
     "dev": "next dev",

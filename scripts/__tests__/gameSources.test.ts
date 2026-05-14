@@ -8,12 +8,9 @@
  */
 
 import { execSync } from 'child_process';
-import fs from 'fs';
 
-jest.mock('fs');
 jest.mock('child_process');
 
-const mockedFs = fs as jest.Mocked<typeof fs>;
 const mockedExecSync = execSync as jest.MockedFunction<typeof execSync>;
 
 // ---------- Pure logic from gameSources.mjs, tested directly ----------

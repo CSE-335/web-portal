@@ -70,7 +70,6 @@ export default function WelcomeBanner() {
           style={{ background: "var(--welcome-overlay-mobile-bg)" }}
         >
           <h1
-            id="welcome-banner-heading"
             className="text-balance font-extrabold leading-tight tracking-tight text-[clamp(1.05rem,2.4vw,1.6rem)]"
             style={{
               color: "var(--welcome-banner-title-color)",
@@ -98,7 +97,6 @@ export default function WelcomeBanner() {
           style={{ background: "var(--welcome-overlay-mobile-bg)" }}
         >
           <h1
-            id="welcome-banner-heading"
             className="max-sm:break-words text-balance font-extrabold leading-[1.2] tracking-tight text-[clamp(1rem,3.7vw+0.45rem,2rem)] sm:leading-tight sm:text-[clamp(1.15rem,4.2vw+0.4rem,2.45rem)]"
             style={{
               color: "var(--welcome-banner-title-color)",

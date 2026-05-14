@@ -1,4 +1,5 @@
 import WelcomeBanner from "@/components/home/WelcomeBanner";
+import HomeAssistantIntro from "@/components/home/HomeAssistantIntro";
 import QuickPlaySearch from "@/components/home/QuickPlaySearch";
 import FilterableGameList from "@/components/home/FilterableGameList";
 import BottomButtons from "@/components/layout/BottomButtons";
@@ -19,6 +20,7 @@ export default async function HomePage() {
 
   return (
     <main>
+      <HomeAssistantIntro />
       <WelcomeBanner />
       <QuickPlaySearch games={localizedGames} />
       <FilterableGameList games={localizedGames} />

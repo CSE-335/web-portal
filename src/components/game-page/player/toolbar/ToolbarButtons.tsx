@@ -6,10 +6,23 @@ import { Group, ActionIcon } from "@mantine/core";
 import { toggleGameLike, isGameLikedByUser } from "@/lib/supabase/game-likes";
 import { supabase } from "@/lib/supabase/client";
 import { useAssistant } from "@/features/assistant";
+import { unlockWebAudioPlayback } from "@/features/assistant/lib/unlockWebAudioPlayback";
+import {
+  addFullscreenChangeListener,
+  exitFullscreenDocument,
+  getFullscreenElement,
+  lockLandscapePrimary,
+  matchesMobileImmersiveViewport,
+  requestFullscreenElement,
+  unlockScreenOrientation,
+} from "@/lib/dom/fullscreen";
 
 type ToolbarButtonsProps = {
   slug: string;
-  embedRef: RefObject<HTMLDivElement | null>;
+  embedRef: RefObject<HTMLElement | null>;
+  useMobileImmersiveFs?: boolean;
+  mobileImmersiveActive?: boolean;
+  onMobileImmersiveChange?: (next: boolean) => void;
 };
 
 const actionButtonStyle = {
@@ -43,24 +56,54 @@ function ToolbarAction({
   );
 }
 
-export default function ToolbarButtons({ slug, embedRef }: ToolbarButtonsProps) {
+export default function ToolbarButtons({
+  slug,
+  embedRef,
+  useMobileImmersiveFs = false,
+  mobileImmersiveActive = false,
+  onMobileImmersiveChange,
+}: ToolbarButtonsProps) {
   const [liked, setLiked] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [nativeFullscreen, setNativeFullscreen] = useState(false);
   const { state, dispatch } = useAssistant();
   const isMuted = !state.voiceEnabled;
 
   useEffect(() => {
-    const onChange = () => setIsFullscreen(!!document.fullscreenElement);
-    document.addEventListener("fullscreenchange", onChange);
-    return () => document.removeEventListener("fullscreenchange", onChange);
+    const onChange = () => setNativeFullscreen(!!getFullscreenElement());
+    return addFullscreenChangeListener(onChange);
   }, []);
 
+  const isFullscreen =
+    nativeFullscreen || (useMobileImmersiveFs && mobileImmersiveActive);
+
   const handleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      embedRef.current?.requestFullscreen();
+    if (useMobileImmersiveFs && onMobileImmersiveChange) {
+      const next = !mobileImmersiveActive;
+      onMobileImmersiveChange(next);
+      if (next) {
+        void lockLandscapePrimary();
+      } else {
+        unlockScreenOrientation();
+      }
+      return;
+    }
+
+    if (!getFullscreenElement()) {
+      void (async () => {
+        await requestFullscreenElement(embedRef.current);
+        // iOS Safari often omits / no-ops element fullscreen — fall back to immersive overlay on narrow screens.
+        if (
+          !getFullscreenElement() &&
+          onMobileImmersiveChange &&
+          matchesMobileImmersiveViewport()
+        ) {
+          onMobileImmersiveChange(true);
+          void lockLandscapePrimary();
+        }
+      })();
     } else {
-      document.exitFullscreen();
+      void exitFullscreenDocument();
     }
   };
 
@@ -92,7 +135,12 @@ export default function ToolbarButtons({ slug, embedRef }: ToolbarButtonsProps) 
       </ToolbarAction>
       <ToolbarAction
         label={state.isOpen ? "Hide tutors" : "Ask AI tutors"}
-        onClick={() => dispatch({ type: state.isOpen ? "CLOSE_PANEL" : "OPEN_PANEL" })}
+        onClick={() => {
+          if (!state.isOpen) {
+            unlockWebAudioPlayback();
+          }
+          dispatch({ type: state.isOpen ? "CLOSE_PANEL" : "OPEN_PANEL" });
+        }}
         style={state.isOpen ? { background: "rgba(27, 65, 255, 0.4)", border: "1px solid rgba(27, 65, 255, 0.6)" } : undefined}
       >
         <Image src="/images/aichat.svg" alt="" width={28} height={28} aria-hidden />

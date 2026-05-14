@@ -35,35 +35,7 @@ This project focuses on the development of AI-enhanced STEM learning games for s
 
 ### Software Stack / Technologies Used
 
-- Language: Javascript, HTML, CSS
-- Frontend Frameworks: React, Kaplay.js, Three.js
-- Backend Frameworks: Next.js
-- Database: 
-
-## Feedback Email Configuration
-
-Feedback submissions are saved to the Supabase `feedback` table with:
-
-- `name`
-- `email`
-- `answer`
-- `features`
-- `return_likelihood`
-- `comments`
-
-The API also sends a formatted email notification using Resend.
-
-Recommended place to store the destination email:
-
-- Use a Supabase settings table (default: `app_settings`) with:
-  - `key = feedback_recipient_email`
-  - `value = your-team-inbox@example.com`
-
-This allows developers/admins to change the recipient without redeploying.
-
-Environment variables used by `src/app/api/feedback/route.ts`:
-
-- `RESEND_API_KEY` (required for email sending)
-- `FEEDBACK_FROM_EMAIL` (sender address)
-- `FEEDBACK_RECIPIENT_EMAIL` (fallback recipient if settings row is missing)
-- `FEEDBACK_SETTINGS_KEY` (optional, defaults to `feedback_recipient_email`)
+- Languages: TypeScript, JavaScript, HTML, CSS
+- Portal: Next.js (App Router), React, Mantine, next-intl, Supabase client
+- Embedded games (separate repos): Vite; 2D stacks include KaPlay, Phaser 3, and/or vanilla HTML/CSS/JS (see wiki **Shipped Games**)
+- Data / auth: Supabase (Postgres, Auth, storage as configured)

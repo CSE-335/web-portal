@@ -97,6 +97,10 @@ export function assistantReducer(
       return {
         ...state,
         isGenerating: true,
+        // New streamed reply (e.g. from a game mistake) should use the full tutor
+        // overlay, not the minimized pill — otherwise fullscreen / iframe flows only
+        // surface the bottom-right chip.
+        isMinimized: false,
         // Preemptively buffer audio when voice is on so the dialogue overlay does
         // not flash in for one render before the TTS hook has a chance to react.
         isAudioBuffering: state.voiceEnabled,
@@ -125,6 +129,9 @@ export function assistantReducer(
       return {
         ...state,
         isGenerating: false,
+        // Never leave the UI stuck behind first-line TTS (e.g. autoplay blocked
+        // after iframe-only gestures, hung fetches, or fullscreen timing).
+        isAudioBuffering: false,
         currentDialogue: finished,
         history: [...state.history, finished],
       };

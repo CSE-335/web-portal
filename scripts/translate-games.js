@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- Node CJS script */
 /**
  * Background translation sync for game descriptions.
  *

@@ -1,20 +1,20 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Group, Stack, UnstyledButton, Text, ScrollArea } from '@mantine/core';
 import { locales, languageNames, LOCALE_COOKIE, type Locale } from '@/i18n/routing';
 import { switchLocale } from '@/lib/locale/switchLocale';
 import FlagIcon from '@/components/FlagIcon';
 
-export default function LocaleSwitcher({ onClose }: { onClose?: () => void }) {
-  const [current, setCurrent] = useState<Locale>('en');
+function readLocaleFromCookie(): Locale {
+  if (typeof document === 'undefined') return 'en';
+  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${LOCALE_COOKIE}=([^;]+)`));
+  const raw = match?.[1];
+  if (raw && locales.includes(raw as Locale)) return raw as Locale;
+  return 'en';
+}
 
-  useEffect(() => {
-    const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${LOCALE_COOKIE}=([^;]+)`));
-    const raw = match?.[1];
-    if (raw && locales.includes(raw as Locale)) {
-      setCurrent(raw as Locale);
-    }
-  }, []);
+export default function LocaleSwitcher({ onClose }: { onClose?: () => void }) {
+  const [current] = useState<Locale>(() => readLocaleFromCookie());
 
   function handleSelect(locale: Locale) {
     onClose?.();

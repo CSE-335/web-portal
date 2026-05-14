@@ -8,7 +8,9 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Box, Text, Group, Loader } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { useAssistant } from "../AssistantContext";
+import { unlockWebAudioPlayback } from "../lib/unlockWebAudioPlayback";
 import { SPEAKER_THEME } from "../speakerTheme";
 import type { Speaker } from "../types";
 
@@ -23,31 +25,41 @@ function useTypewriter(text: string, speed: number = 25) {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    setDisplayed("");
-    setIsDone(false);
-    indexRef.current = 0;
+    let cancelled = false;
+    let timer: ReturnType<typeof setInterval> | null = null;
 
-    if (!text) {
-      setIsDone(true);
-      return;
-    }
+    void Promise.resolve().then(() => {
+      if (cancelled) return;
+      setDisplayed("");
+      setIsDone(false);
+      indexRef.current = 0;
 
-    const timer = setInterval(() => {
-      indexRef.current++;
-      if (indexRef.current >= text.length) {
-        setDisplayed(text);
+      if (!text) {
         setIsDone(true);
-        clearInterval(timer);
-        timerRef.current = null;
-      } else {
-        setDisplayed(text.slice(0, indexRef.current));
+        return;
       }
-    }, speed);
-    timerRef.current = timer;
+
+      timer = setInterval(() => {
+        indexRef.current++;
+        if (indexRef.current >= text.length) {
+          setDisplayed(text);
+          setIsDone(true);
+          if (timer) clearInterval(timer);
+          timerRef.current = null;
+        } else {
+          setDisplayed(text.slice(0, indexRef.current));
+        }
+      }, speed);
+      timerRef.current = timer;
+    });
 
     return () => {
-      clearInterval(timer);
-      timerRef.current = null;
+      cancelled = true;
+      if (timer) clearInterval(timer);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
     };
   }, [text, speed]);
 
@@ -132,6 +144,7 @@ export interface VNDialogueBoxProps {
 
 export default function VNDialogueBox({ compact }: VNDialogueBoxProps) {
   const { state, advanceLine, dismissDialogue } = useAssistant();
+  const coarsePointer = useMediaQuery("(pointer: coarse)", true);
   const dialogue = state.currentDialogue;
 
   // Current line being displayed
@@ -202,6 +215,9 @@ export default function VNDialogueBox({ compact }: VNDialogueBoxProps) {
   if (isLoading) {
     return (
       <Box
+        onPointerDownCapture={() => {
+          if (state.voiceEnabled) unlockWebAudioPlayback();
+        }}
         style={{
           position: "relative",
           width: "100%",
@@ -231,6 +247,9 @@ export default function VNDialogueBox({ compact }: VNDialogueBoxProps) {
   return (
     <Box
       onClick={handleClick}
+      onPointerDownCapture={() => {
+        if (state.voiceEnabled) unlockWebAudioPlayback();
+      }}
       style={{
         position: "relative",
         width: "100%",
@@ -301,11 +320,13 @@ export default function VNDialogueBox({ compact }: VNDialogueBoxProps) {
               pointerEvents: "none",
             }}
           >
-            Space / Enter &middot; Esc to dismiss
+            {coarsePointer
+              ? "Tap to skip or advance dialogue"
+              : "Space / Enter · Esc to dismiss"}
           </Text>
           {isDone && isLastLine && (
             <Text className="tutor-hint-text" size="10px" style={{ color: "rgba(160, 200, 255, 0.5)" }}>
-              click to close
+              {coarsePointer ? "tap to close" : "click to close"}
             </Text>
           )}
         </Box>

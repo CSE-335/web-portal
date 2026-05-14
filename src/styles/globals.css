@@ -4,6 +4,38 @@
    (common at end-of-page), which can re-fire `matchMedia` and/or flex overflow layouts. */
 html {
   scrollbar-gutter: stable;
+  overflow-x: clip;
+}
+
+/* ---------- Game routes (/games/*) — touch / drag UX (portal host only; see MOBILE_EMBED_GAME_GUIDE.md) ---------- */
+html.game-route-touch-isolation,
+body.game-route-touch-isolation {
+  overscroll-behavior-y: contain;
+}
+
+/* Mobile immersive / native fullscreen: sticky header & footer stacked above inline content and clip the iframe */
+body.game-immersive-ui-active .site-header,
+body.game-immersive-ui-active .site-footer {
+  display: none !important;
+}
+
+/* AI tutors minimized pill — no hover jitter on phones */
+@media (hover: hover) and (pointer: fine) {
+  .assistant-minimized-pill:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+}
+
+@media (pointer: coarse) {
+  .game-embed-touch-shell {
+    touch-action: none !important;
+  }
+
+  /* Lets drags originate in the iframe without the host treating them as mainly “scroll/zoom gestures” first */
+  .game-embed-touch-iframe {
+    touch-action: none !important;
+  }
 }
 
 /* Arabic RTL */
@@ -325,25 +357,115 @@ html[lang="ar"] button {
   100% { background-position: 200% center; }
 }
 
-/* Game embed fullscreen — fill the entire screen */
-:fullscreen,
-:-webkit-full-screen {
+/* Game player — column stack for embed + toolbar (fullscreen flex rules below) */
+.game-fullscreen-main {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Game player fullscreen — media grows; toolbar stays sized; assistant is out-of-flow */
+:fullscreen[data-game-fullscreen-root],
+:-webkit-full-screen[data-game-fullscreen-root],
+.game-mobile-immersive-root {
   display: flex !important;
   flex-direction: column !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100dvh !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
   background: #000 !important;
   border-radius: 0 !important;
+  /* Keep playable area inside safe regions (notches / home indicator ) */
+  padding-top: env(safe-area-inset-top, 0px) !important;
+  padding-right: env(safe-area-inset-right, 0px) !important;
+  padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+  padding-left: env(safe-area-inset-left, 0px) !important;
 }
-:fullscreen > *,
-:-webkit-full-screen > * {
-  flex: 1 !important;
+
+/* Mobile Safari often lacks element fullscreen; fixed viewport layer + optional orientation lock */
+.game-mobile-immersive-root {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 120000 !important;
+  width: 100dvw !important;
+  max-width: 100dvw !important;
+  /* Safari iOS: fill-available dodges some dynamic toolbar / dvh quirks */
+  height: -webkit-fill-available !important;
+  height: 100dvh !important;
+  max-height: -webkit-fill-available !important;
+  max-height: 100dvh !important;
+  margin: 0 !important;
+}
+
+.game-mobile-fs-exit {
+  position: fixed !important;
+  top: max(12px, env(safe-area-inset-top, 0px)) !important;
+  right: max(12px, env(safe-area-inset-right, 0px)) !important;
+  z-index: 10150 !important;
+  pointer-events: auto !important;
+}
+
+/* Top-aligned so it never covers the bottom toolbar / fullscreen control */
+.game-mobile-immersive-hint {
+  position: fixed !important;
+  left: 50% !important;
+  top: max(72px, calc(env(safe-area-inset-top, 0px) + 52px)) !important;
+  bottom: auto !important;
+  transform: translateX(-50%) !important;
+  z-index: 10110 !important;
+  max-width: min(420px, calc(100vw - 24px)) !important;
+  width: calc(100vw - 24px) !important;
+  pointer-events: auto !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35) !important;
+}
+:fullscreen[data-game-fullscreen-root] .game-fullscreen-main,
+:-webkit-full-screen[data-game-fullscreen-root] .game-fullscreen-main,
+.game-mobile-immersive-root .game-fullscreen-main {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+}
+:fullscreen[data-game-fullscreen-root] .game-fullscreen-media,
+:-webkit-full-screen[data-game-fullscreen-root] .game-fullscreen-media,
+.game-mobile-immersive-root .game-fullscreen-media {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+}
+:fullscreen[data-game-fullscreen-root] .game-fullscreen-iframe-inner,
+:-webkit-full-screen[data-game-fullscreen-root] .game-fullscreen-iframe-inner,
+.game-mobile-immersive-root .game-fullscreen-iframe-inner {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
   min-height: 0 !important;
   border-radius: 0 !important;
 }
-:fullscreen iframe,
-:-webkit-full-screen iframe {
+:fullscreen[data-game-fullscreen-root] .game-fullscreen-iframe-inner iframe,
+:-webkit-full-screen[data-game-fullscreen-root] .game-fullscreen-iframe-inner iframe,
+.game-mobile-immersive-root .game-fullscreen-iframe-inner iframe {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
   width: 100% !important;
   height: 100% !important;
   border-radius: 0 !important;
+}
+:fullscreen[data-game-fullscreen-root] .game-fullscreen-toolbar,
+:-webkit-full-screen[data-game-fullscreen-root] .game-fullscreen-toolbar,
+.game-mobile-immersive-root .game-fullscreen-toolbar {
+  flex: 0 0 auto !important;
+  flex-shrink: 0 !important;
+  border-radius: 0 !important;
+  position: relative !important;
+  z-index: 120 !important;
+  pointer-events: auto !important;
 }
 
 /* Save progress banner buttons */

@@ -1,4 +1,5 @@
 import { Container, Stack, Title, Text, Paper, SimpleGrid, Box } from "@mantine/core";
+import Image from "next/image";
 import {
   staticInfoPageShell,
   staticInfoPageTitle,
@@ -107,12 +108,12 @@ export default function AboutPage() {
                   }}
                 >
                   {member.image ? (
-                    <img
+                    <Image
                       src={member.image}
                       alt={member.name}
+                      width={110}
+                      height={110}
                       style={{
-                        width: "110px",
-                        height: "110px",
                         objectFit: "cover",
                         borderRadius: "12px",
                         border: "2px solid var(--about-border-strong)",

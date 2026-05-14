@@ -7,7 +7,7 @@ import {
   getGameIdBySlug,
   type AdminClient,
 } from "@/lib/supabase/game-data";
-import type { Database, Json } from "../../../../lib/supabase/database.types";
+import type { Json } from "../../../../lib/supabase/database.types";
 
 const DEFAULT_GAME_DATA: Json = {};
 

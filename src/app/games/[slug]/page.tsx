@@ -10,6 +10,7 @@ import TutorToggle from "@/components/game-page/TutorToggle";
 import { getLocale } from "next-intl/server";
 import { defaultLocale, locales, type Locale } from "@/i18n/routing";
 import { getLocalizedGameBySlug } from "@/lib/supabase/game-translations";
+import { resolveEmbedHeights } from "@/lib/games/embed-height";
 
 export async function generateStaticParams() {
   return games.map((game) => ({
@@ -34,10 +35,7 @@ export default async function GamePage({ params }: GamePageProps) {
     notFound();
   }
 
-  const embedHeight =
-    game.slug === "circuit-breaker"
-      ? "clamp(620px, calc(100dvh - 132px), 820px)"
-      : game.embedHeight ?? "clamp(360px, 68dvh, 800px)";
+  const { desktop: embedHeight, mobile: embedHeightMobile } = resolveEmbedHeights(game);
 
   return (
     <main>
@@ -50,6 +48,7 @@ export default async function GamePage({ params }: GamePageProps) {
         subject={game.subject}
         iframeSrc={game.iframeSrc}
         embedHeight={embedHeight}
+        embedHeightMobile={embedHeightMobile}
       />
 
       <Stack component="section" gap="lg" mt="lg">

@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Box, Button, Group, Stack, Text, TextInput } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import {
-  getFriendsDashboard,
   removeFriend,
   respondToFriendRequest,
   sendFriendRequestByUsername,
