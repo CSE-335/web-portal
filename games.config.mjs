@@ -1,10 +1,10 @@
 export const gameRepos = [
-  'https://github.com/atalania/CircuitBreakerV3.git',
-  'https://github.com/jeinjein60/Biology-Virus-AI-Game.git',
-  'https://github.com/NatalieParker/human-motion-simulator.git',
-  'https://github.com/ayoosxrgio/Bridge-Snap.git',
-  'https://github.com/jeinjein60/Stellar-Odyssey.git',
-  'https://github.com/atalania/Matrix-Meadow-Academy.git',
-  'https://github.com/etchre/python-programming-game.git',
-  'https://github.com/atalania/SonicLab.git',
+  'https://github.com/CSE-335/CircuitBreaker.git',
+  'https://github.com/CSE-335/Biology-Virus-AI-Game.git',
+  'https://github.com/CSE-335/human-motion-simulator.git',
+  'https://github.com/CSE-335/Bridge-Snap.git',
+  'https://github.com/CSE-335/Stellar-Odyssey.git',
+  'https://github.com/CSE-335/Matrix-Meadow-Academy.git',
+  'https://github.com/CSE-335/python-programming-game.git',
+  'https://github.com/CSE-335/SonicLab.git',
 ];
